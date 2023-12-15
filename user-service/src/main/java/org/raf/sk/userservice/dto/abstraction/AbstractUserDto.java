@@ -20,6 +20,4 @@ public abstract class AbstractUserDto {
     private String firstName;
     private String lastName;
 
-
-
 }

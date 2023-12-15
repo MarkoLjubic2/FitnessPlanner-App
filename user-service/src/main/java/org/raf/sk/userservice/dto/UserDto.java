@@ -16,7 +16,4 @@ public class UserDto extends AbstractUserDto {
     private String licenceID;
     private int totalSessions;
 
-
-
-
 }

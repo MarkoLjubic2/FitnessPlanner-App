@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import raf.rentacar.userservice.secutiry.tokenService.TokenService;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -23,15 +22,14 @@ public class SecurityAspect {
     @Value("${oauth.jwt.secret}")
     private String jwtSecret;
 
-    private TokenService tokenService;
-
-    private Base64.Decoder decoder = Base64.getUrlDecoder();
+    private final TokenService tokenService;
+    private final Base64.Decoder decoder = Base64.getUrlDecoder();
 
     public SecurityAspect(TokenService tokenService) {
         this.tokenService = tokenService;
     }
 
-    @Around("@annotation(raf.rentacar.userservice.secutiry.CheckSecurity)")
+    @Around("@annotation(org.raf.sk.userservice.security.CheckSecurity)")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         //Get method signature
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
@@ -39,11 +37,9 @@ public class SecurityAspect {
         //Check for authorization parameter
         String token = null;
         for (int i = 0; i < methodSignature.getParameterNames().length; i++) {
-
             if (methodSignature.getParameterNames()[i].equals("authorization")) {
                 //Check bearer schema
                 if (joinPoint.getArgs()[i].toString().startsWith("Bearer")) {
-                    //Get token
                     token = joinPoint.getArgs()[i].toString().split(" ")[1];
                 }
             }

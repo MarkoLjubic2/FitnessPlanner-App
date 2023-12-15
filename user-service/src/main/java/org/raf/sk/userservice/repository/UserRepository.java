@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findUserByCredentials(String username, String password);
+    Optional<User> findUserByUsernameAndPassword(String username, String password);
 
     Optional<User> findUserByUsername(String username);
 
@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findUserByLicenseID(String licenseID);
 
     @Modifying
-    @Query("update User u set u.email = :email, u.username = :username, u.firstName = :firstName, u.lastName = :lastName, u.password = :password, u.dateOfBirth = :dateOfBirth, u.licenceID = :licenceID where u.id = :id")
+    @Query("update User u set u.email = :email, u.username = :username, u.firstName = :firstName, u.lastName = :lastName, u.password = :password, u.dateOfBirth = :dateOfBirth, u.licenseID = :licenceID where u.id = :id")
     void updateUser(Long id, String email, String username, String firstName, String lastName, String password, Date dateOfBirth, String licenceID);
 
     @Modifying

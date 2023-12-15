@@ -24,11 +24,9 @@ public class User {
     private Role userRole;
     @ManyToOne(optional = false)
     private Status userStatus;
-    private String licenceID;
+    private String licenseID;
     private int totalSessions;
     private String hall;
     private Date hireDate;
-
-
 
 }

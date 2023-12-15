@@ -12,4 +12,5 @@ public class UpdateManagerDto extends AbstractUserDto {
 
         private String hall;
         private Date hireDate;
+
 }

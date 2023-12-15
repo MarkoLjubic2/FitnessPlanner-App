@@ -5,15 +5,18 @@ import org.raf.sk.userservice.dto.CreateManagerDto;
 import org.raf.sk.userservice.dto.CreateUserDto;
 import org.raf.sk.userservice.dto.UpdateUserDto;
 import org.raf.sk.userservice.dto.UserDto;
+import org.raf.sk.userservice.dto.abstraction.AbstractUserDto;
 import org.raf.sk.userservice.repository.RoleRepository;
 import org.raf.sk.userservice.repository.StatusRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class UserMapper {
 
-    private RoleRepository roleRepository;
-    private StatusRepository statusRepository;
+    private final RoleRepository roleRepository;
+    private final StatusRepository statusRepository;
 
     public UserMapper(RoleRepository roleRepository, StatusRepository statusRepository) {
         this.roleRepository = roleRepository;
@@ -21,93 +24,122 @@ public class UserMapper {
     }
 
     public UserDto userToUserDto(User user) {
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setEmail(user.getEmail());
-        userDto.setFirstName(user.getFirstName());
-        userDto.setLastName(user.getLastName());
-        userDto.setUsername(user.getUsername());
-        userDto.setDateOfBirth(user.getDateOfBirth());
-        userDto.setUserRole(user.getUserRole());
-        userDto.setUserStatus(user.getUserStatus());
-        userDto.setLicenceID(user.getLicenceID());
-        userDto.setTotalSessions(user.getTotalSessions());
-        return userDto;
+        return Optional.ofNullable(user)
+                .map(u -> {
+                    UserDto userDto = new UserDto();
+                    userDto.setId(u.getId());
+                    userDto.setEmail(u.getEmail());
+                    userDto.setFirstName(u.getFirstName());
+                    userDto.setLastName(u.getLastName());
+                    userDto.setUsername(u.getUsername());
+                    userDto.setDateOfBirth(u.getDateOfBirth());
+                    userDto.setUserRole(u.getUserRole());
+                    userDto.setUserStatus(u.getUserStatus());
+                    userDto.setLicenceID(u.getLicenseID());
+                    userDto.setTotalSessions(u.getTotalSessions());
+                    return userDto;
+                })
+                .orElse(null);
     }
 
     public User createUserDtoToUser(CreateUserDto createUserDto) {
-        User user = new User();
-        user.setEmail(createUserDto.getEmail());
-        user.setFirstName(createUserDto.getFirstName());
-        user.setLastName(createUserDto.getLastName());
-        user.setUsername(createUserDto.getUsername());
-        user.setPassword(createUserDto.getPassword());
-        user.setUserStatus(statusRepository.findStatusByName("UNVERIFIED").get());
-        user.setUserRole(roleRepository.findRoleByName("USER").get());
-        user.setLicenceID(createUserDto.getLicenceID());
-        user.setTotalSessions(0);
-        return user;
+        return Optional.of(transferStandardDataToUser(createUserDto))
+                .map(user -> {
+                    roleRepository.findRoleByName("USER").ifPresent(user::setUserRole);
+                    user.setLicenseID(createUserDto.getLicenceID());
+                    user.setTotalSessions(0);
+                    return user;
+                })
+                .orElse(null);
     }
 
     public CreateUserDto userToCreateUserDto(User user) {
-        CreateUserDto createUserDto = new CreateUserDto();
-        createUserDto.setEmail(user.getEmail());
-        createUserDto.setFirstName(user.getFirstName());
-        createUserDto.setLastName(user.getLastName());
-        createUserDto.setUsername(user.getUsername());
-        createUserDto.setPassword(user.getPassword());
-        createUserDto.setLicenceID(user.getLicenceID());
-        createUserDto.setTotalSessions(user.getTotalSessions());
-        return createUserDto;
+        return Optional.ofNullable(user)
+                .map(u -> {
+                    CreateUserDto createUserDto = new CreateUserDto();
+                    createUserDto.setEmail(u.getEmail());
+                    createUserDto.setFirstName(u.getFirstName());
+                    createUserDto.setLastName(u.getLastName());
+                    createUserDto.setUsername(u.getUsername());
+                    createUserDto.setPassword(u.getPassword());
+                    createUserDto.setLicenceID(u.getLicenseID());
+                    createUserDto.setTotalSessions(u.getTotalSessions());
+                    return createUserDto;
+                })
+                .orElse(null);
     }
 
     public UpdateUserDto userToUpdateUserDto(User user) {
-        UpdateUserDto updateUserDto = new UpdateUserDto();
-        updateUserDto.setEmail(user.getEmail());
-        updateUserDto.setFirstName(user.getFirstName());
-        updateUserDto.setLastName(user.getLastName());
-        updateUserDto.setUsername(user.getUsername());
-        updateUserDto.setDateOfBirth(user.getDateOfBirth());
-        updateUserDto.setLicenceID(user.getLicenceID());
-        updateUserDto.setTotalSessions(user.getTotalSessions());
-        return updateUserDto;
+        return Optional.ofNullable(user)
+                .map(u -> {
+                    UpdateUserDto updateUserDto = new UpdateUserDto();
+                    updateUserDto.setEmail(u.getEmail());
+                    updateUserDto.setFirstName(u.getFirstName());
+                    updateUserDto.setLastName(u.getLastName());
+                    updateUserDto.setUsername(u.getUsername());
+                    updateUserDto.setDateOfBirth(u.getDateOfBirth());
+                    updateUserDto.setLicenceID(u.getLicenseID());
+                    updateUserDto.setTotalSessions(u.getTotalSessions());
+                    return updateUserDto;
+                })
+                .orElse(null);
     }
 
     public User updateUserDtoToUser(UpdateUserDto updateUserDto) {
-        User user = new User();
-        user.setEmail(updateUserDto.getEmail());
-        user.setFirstName(updateUserDto.getFirstName());
-        user.setLastName(updateUserDto.getLastName());
-        user.setUsername(updateUserDto.getUsername());
-        user.setDateOfBirth(updateUserDto.getDateOfBirth());
-        user.setLicenceID(updateUserDto.getLicenceID());
-        user.setTotalSessions(updateUserDto.getTotalSessions());
-        return user;
+        return Optional.ofNullable(updateUserDto)
+                .map(dto -> {
+                    User user = new User();
+                    user.setEmail(dto.getEmail());
+                    user.setFirstName(dto.getFirstName());
+                    user.setLastName(dto.getLastName());
+                    user.setUsername(dto.getUsername());
+                    user.setDateOfBirth(dto.getDateOfBirth());
+                    user.setLicenseID(dto.getLicenceID());
+                    user.setTotalSessions(dto.getTotalSessions());
+                    return user;
+                })
+                .orElse(null);
     }
 
-    public User createManagerDtoToMangaer(CreateManagerDto createManagerDto){
-        User manager = new User();
-        manager.setEmail(createManagerDto.getEmail());
-        manager.setFirstName(createManagerDto.getFirstName());
-        manager.setLastName(createManagerDto.getLastName());
-        manager.setUsername(createManagerDto.getUsername());
-        manager.setPassword(createManagerDto.getPassword());
-        //Status manager?
-        manager.setUserStatus(statusRepository.findStatusByName("UNVERIFIED").get());
-        manager.setUserRole(roleRepository.findRoleByName("MANAGER").get());
-        manager.setLicenceID("-1");
-        manager.setTotalSessions(-1);
-        return manager;
+    public User createManagerDtoToManager(CreateManagerDto createManagerDto){
+        return Optional.of(transferStandardDataToUser(createManagerDto))
+                .map(manager -> {
+                    roleRepository.findRoleByName("MANAGER").ifPresent(manager::setUserRole);
+                    manager.setLicenseID("-1");
+                    manager.setTotalSessions(-1);
+                    return manager;
+                })
+                .orElse(null);
     }
 
     public CreateManagerDto managerToCreateManagerDto(User manager){
-        CreateManagerDto createManagerDto = new CreateManagerDto();
-        createManagerDto.setEmail(manager.getEmail());
-        createManagerDto.setFirstName(manager.getFirstName());
-        createManagerDto.setLastName(manager.getLastName());
-        createManagerDto.setUsername(manager.getUsername());
-        createManagerDto.setPassword(manager.getPassword());
-        return createManagerDto;
+        return Optional.ofNullable(manager)
+                .map(m -> {
+                    CreateManagerDto createManagerDto = new CreateManagerDto();
+                    createManagerDto.setEmail(m.getEmail());
+                    createManagerDto.setFirstName(m.getFirstName());
+                    createManagerDto.setLastName(m.getLastName());
+                    createManagerDto.setUsername(m.getUsername());
+                    createManagerDto.setPassword(m.getPassword());
+                    return createManagerDto;
+                })
+                .orElse(null);
+    }
+
+    // Helper
+    private User transferStandardDataToUser(AbstractUserDto createUserDto) {
+        return Optional.ofNullable(createUserDto)
+                .map(dto -> {
+                    User user = new User();
+                    user.setEmail(dto.getEmail());
+                    user.setFirstName(dto.getFirstName());
+                    user.setLastName(dto.getLastName());
+                    user.setUsername(dto.getUsername());
+                    user.setPassword(dto.getPassword());
+                    statusRepository.findStatusByName("UNVERIFIED").ifPresent(user::setUserStatus);
+                    return user;
+                })
+                .orElse(null);
     }
 
 }
