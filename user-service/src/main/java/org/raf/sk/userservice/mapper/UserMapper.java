@@ -1,5 +1,7 @@
 package org.raf.sk.userservice.mapper;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.raf.sk.userservice.domain.User;
 import org.raf.sk.userservice.dto.CreateManagerDto;
 import org.raf.sk.userservice.dto.CreateUserDto;
@@ -122,6 +124,19 @@ public class UserMapper {
                     createManagerDto.setUsername(m.getUsername());
                     createManagerDto.setPassword(m.getPassword());
                     return createManagerDto;
+                })
+                .orElse(null);
+    }
+
+    public Claims userToClaims(User user) {
+        return Optional.ofNullable(user)
+                .map(u -> {
+                    Claims claims = Jwts.claims();
+                    claims.put("id", u.getId());
+                    claims.put("username", u.getUsername());
+                    claims.put("role", u.getUserRole().getName());
+                    claims.put("time", System.currentTimeMillis() / 1000);
+                    return claims;
                 })
                 .orElse(null);
     }

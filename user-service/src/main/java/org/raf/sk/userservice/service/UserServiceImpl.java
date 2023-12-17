@@ -1,50 +1,113 @@
 package org.raf.sk.userservice.service;
 
+import lombok.AllArgsConstructor;
 import org.raf.sk.userservice.dto.*;
+import org.raf.sk.userservice.listener.MessageHelper;
+import org.raf.sk.userservice.mapper.UserMapper;
+import org.raf.sk.userservice.repository.RoleRepository;
+import org.raf.sk.userservice.repository.StatusRepository;
+import org.raf.sk.userservice.repository.UserRepository;
+import org.raf.sk.userservice.security.tokenService.TokenService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 @Service
-public class UserServiceImpl implements UserService{
+@Transactional
+@AllArgsConstructor
+public class UserServiceImpl implements UserService {
+
+    private TokenService tokenService;
+    private UserRepository userRepository;
+    private UserMapper userMapper;
+    private RoleRepository roleRepository;
+    private StatusRepository statusRepository;
+    private MessageHelper messageHelper;
+
     @Override
     public Response<Page<UserDto>> findAll(Pageable pageable) {
-        return null;
+        return new Response<>(200, "All users", userRepository.findAll(pageable).map(userMapper::userToUserDto));
     }
 
     @Override
     public Response<Boolean> findUser(Long userId) {
-        return null;
+        return userRepository.findById(userId)
+                .map(user -> new Response<>(200, "User found", true))
+                .orElse(new Response<>(404, "User not found", false));
     }
 
     @Override
     public Response<UserDto> getUserData(Long userId) {
-        return null;
+        return userRepository.findById(userId)
+                .map(user -> new Response<>(200, "User found", userMapper.userToUserDto(user)))
+                .orElse(new Response<>(404, "User not found", null));
     }
 
     @Override
     public Response<Boolean> changeTotalSessions(Long userId, int value) {
-        return null;
+        return userRepository.findById(userId)
+                .map(user -> {
+                    user.setTotalSessions(user.getTotalSessions() + value);
+                    userRepository.save(user);
+                    return new Response<>(200, "Total sessions changed", true);
+                })
+                .orElse(new Response<>(404, "User not found", false));
     }
 
     @Override
     public Response<Boolean> banUser(String username) {
-        return null;
+        return userRepository.findUserByUsername(username)
+                .map(user -> {
+                    if ("BANNED".equals(user.getUserStatus().getName())) {
+                        return new Response<>(409, "User is already banned", false);
+                    }
+                    statusRepository.findStatusByName("BANNED").ifPresent(user::setUserStatus);
+                    userRepository.save(user);
+                    return new Response<>(200, "User banned", true);
+                })
+                .orElse(new Response<>(404, "User not found", false));
     }
 
     @Override
     public Response<Boolean> unbanUser(String username) {
-        return null;
+        return userRepository.findUserByUsername(username)
+                .map(user -> {
+                    if ("ACTIVE".equals(user.getUserStatus().getName())) {
+                        return new Response<>(409, "User is not banned", false);
+                    }
+                    statusRepository.findStatusByName("ACTIVE").ifPresent(user::setUserStatus);
+                    userRepository.save(user);
+                    return new Response<>(200, "User unbanned", true);
+                })
+                .orElse(new Response<>(404, "User not found", false));
     }
 
+    // TODO: Ubaciti verifikaciju i notifikaciju
     @Override
     public Response<Boolean> addUser(CreateUserDto createUserDto) {
-        return null;
+        return userRepository.findUserByEmail(createUserDto.getEmail())
+                .map(user -> new Response<>(400, "User with this email already exists", false))
+                .orElseGet(() -> userRepository.findUserByUsername(createUserDto.getUsername())
+                        .map(user -> new Response<>(400, "User with this username already exists", false))
+                        .orElseGet(() -> {
+                            userRepository.save(userMapper.createUserDtoToUser(createUserDto));
+                            return new Response<>(200, "User created", true);
+                        }));
     }
 
+    // TODO: Ubaciti verifikaciju i notifikaciju
     @Override
     public Response<Boolean> addManager(CreateManagerDto createManagerDto) {
-        return null;
+        return userRepository.findUserByEmail(createManagerDto.getEmail())
+                .map(user -> new Response<>(400, "User with this email already exists", false))
+                .orElseGet(() -> userRepository.findUserByUsername(createManagerDto.getUsername())
+                        .map(user -> new Response<>(400, "User with this username already exists", false))
+                        .orElseGet(() -> {
+                            userRepository.save(userMapper.createManagerDtoToManager(createManagerDto));
+                            return new Response<>(200, "Manager created", true);
+                        }));
     }
 
     @Override
@@ -59,6 +122,14 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Response<TokenResponseDto> login(TokenRequestDto tokenRequestDto) {
-        return null;
+        return userRepository.findUserByUsernameAndPassword(tokenRequestDto.getUsername(), tokenRequestDto.getPassword())
+                .map(user -> {
+                    if ("BANNED".equals(user.getUserStatus().getName())) {
+                        return new Response<>(403, "User is banned", new TokenResponseDto(null));
+                    }
+                    return new Response<>(200, "User logged in", new TokenResponseDto(tokenService.generate(userMapper.userToClaims(user))));
+                })
+                .orElse(new Response<>(404, "User not found", new TokenResponseDto(null)));
     }
+
 }
