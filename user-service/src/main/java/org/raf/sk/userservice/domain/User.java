@@ -1,6 +1,7 @@
 package org.raf.sk.userservice.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import javax.persistence.*;
 import java.util.Date;
@@ -8,6 +9,7 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @Table(indexes = {@Index(columnList = "username", unique = true), @Index(columnList = "email", unique = true)})
 public class User {
 
@@ -28,5 +30,14 @@ public class User {
     private int totalSessions;
     private String hall;
     private Date hireDate;
+
+    public User(String username, String password, String firstName, String lastName, String email, Date dateOfBirth) {
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.dateOfBirth = dateOfBirth;
+    }
 
 }

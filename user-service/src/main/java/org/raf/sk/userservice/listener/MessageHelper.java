@@ -2,6 +2,7 @@ package org.raf.sk.userservice.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.jms.JMSException;
@@ -14,14 +15,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
+@AllArgsConstructor
 public class MessageHelper {
+
     private final Validator validator;
     private final ObjectMapper objectMapper;
-
-    public MessageHelper(Validator validator, ObjectMapper objectMapper) {
-        this.validator = validator;
-        this.objectMapper = objectMapper;
-    }
 
     public <T> T getMessage(Message message, Class<T> clazz) throws RuntimeException, JMSException {
         try {
@@ -29,9 +27,7 @@ public class MessageHelper {
             T data = objectMapper.readValue(json, clazz);
 
             Set<ConstraintViolation<T>> violations = validator.validate(data);
-            if (violations.isEmpty()) {
-                return data;
-            }
+            if (violations.isEmpty()) return data;
 
             printViolationsAndThrowException(violations);
             return null;
@@ -54,4 +50,5 @@ public class MessageHelper {
                 .collect(Collectors.joining(", "));
         throw new RuntimeException(concatenatedViolations);
     }
+
 }

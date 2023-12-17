@@ -32,11 +32,12 @@ public class UserController {
                             "Multiple sort criteria are supported.")})
     @GetMapping
     @CheckSecurity(roles = {"ADMIN"})
-    public ResponseEntity<Response<Page<UserDto>>> getAllUsers(Pageable pageable) {
+    public ResponseEntity<Response<Page<UserDto>>> getAllUsers(@RequestHeader("Authorization") String authorization, Pageable pageable) {
         Response<Page<UserDto>> response = userService.findAll(pageable);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @ApiOperation(value = "Find user by id")
     @GetMapping("/findUser/{userId}")
     @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
     public ResponseEntity<Response<Boolean>> findUser(@PathVariable Long userId) {
@@ -44,6 +45,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @ApiOperation(value = "Get user data")
     @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
     @GetMapping("/getUserData/{userId}")
     public ResponseEntity<Response<UserDto>> getUserData(@PathVariable("userId") Long userId) {
@@ -51,27 +53,31 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @ApiOperation(value = "Change total sessions")
     @CheckSecurity(roles = {"ADMIN"})
     @PutMapping("/changeTotalSessions/{userId}")
-    public ResponseEntity<Response<Boolean>> changeTotalSessions(@PathVariable("userId") Long userId, @RequestParam int value) {
+    public ResponseEntity<Response<Boolean>> changeTotalSessions(@RequestHeader("Authorization") String authorization, @PathVariable("userId") Long userId, @RequestParam int value) {
         Response<Boolean> response = userService.changeTotalSessions(userId, value);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @ApiOperation(value = "Ban user")
     @CheckSecurity(roles = {"ADMIN"})
     @PutMapping("/banUser/{username}")
-    public ResponseEntity<Response<Boolean>> banUser(@PathVariable("username") String username) {
+    public ResponseEntity<Response<Boolean>> banUser(@RequestHeader("Authorization") String authorization, @PathVariable("username") String username) {
         Response<Boolean> response = userService.banUser(username);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @ApiOperation(value = "Unban user")
     @CheckSecurity(roles = {"ADMIN"})
     @PutMapping("/unbanUser/{username}")
-    public ResponseEntity<Response<Boolean>> unbanUser(@PathVariable("username") String username) {
+    public ResponseEntity<Response<Boolean>> unbanUser(@RequestHeader("Authorization") String authorization, @PathVariable("username") String username) {
         Response<Boolean> response = userService.unbanUser(username);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @ApiOperation(value = "Add user")
     @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"}) //ko moze da doda usera?
     @PostMapping("/addUser")
     public ResponseEntity<Response<Boolean>> addUser(@RequestBody CreateUserDto createUserDto) {
@@ -79,6 +85,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @ApiOperation(value = "Add manager")
     @CheckSecurity(roles = {"ADMIN"})
     @PostMapping("/addManager")
     public ResponseEntity<Response<Boolean>> addManager(@RequestBody CreateManagerDto createManagerDto) {
@@ -86,6 +93,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @ApiOperation(value = "Update user")
     @CheckSecurity(roles = {"ADMIN", "USER"})
     @PutMapping("/updateUser")
     public ResponseEntity<Response<Boolean>> updateUser(@RequestHeader("Authorization") String jwt, @RequestBody UpdateUserDto updateUserDto) {
@@ -93,6 +101,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @ApiOperation(value = "Update manager")
     @CheckSecurity(roles = {"ADMIN", "MANAGER"})
     @PutMapping("/updateManager")
     public ResponseEntity<Response<Boolean>> updateManager(@RequestHeader("Authorization") String jwt, @RequestBody UpdateManagerDto updateManagerDto) {
@@ -100,6 +109,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @ApiOperation(value = "Login")
     @PostMapping("/login")
     public ResponseEntity<Response<TokenResponseDto>> login(@RequestBody TokenRequestDto tokenRequestDto) {
         Response<TokenResponseDto> response = userService.login(tokenRequestDto);
