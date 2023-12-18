@@ -10,6 +10,7 @@ import org.raf.sk.userservice.repository.UserRepository;
 import org.raf.sk.userservice.security.tokenService.TokenService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -19,6 +20,7 @@ import javax.transaction.Transactional;
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private BCryptPasswordEncoder encoder;
     private TokenService tokenService;
     private UserRepository userRepository;
     private UserMapper userMapper;
@@ -92,6 +94,7 @@ public class UserServiceImpl implements UserService {
                 .orElseGet(() -> userRepository.findUserByUsername(createUserDto.getUsername())
                         .map(user -> new Response<>(400, "User with this username already exists", false))
                         .orElseGet(() -> {
+                            createUserDto.setPassword(encoder.encode(createUserDto.getPassword()));
                             userRepository.save(userMapper.createUserDtoToUser(createUserDto));
                             return new Response<>(200, "User created", true);
                         }));
@@ -105,6 +108,7 @@ public class UserServiceImpl implements UserService {
                 .orElseGet(() -> userRepository.findUserByUsername(createManagerDto.getUsername())
                         .map(user -> new Response<>(400, "User with this username already exists", false))
                         .orElseGet(() -> {
+                            createManagerDto.setPassword(encoder.encode(createManagerDto.getPassword()));
                             userRepository.save(userMapper.createManagerDtoToManager(createManagerDto));
                             return new Response<>(200, "Manager created", true);
                         }));
@@ -122,10 +126,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response<TokenResponseDto> login(TokenRequestDto tokenRequestDto) {
-        return userRepository.findUserByUsernameAndPassword(tokenRequestDto.getUsername(), tokenRequestDto.getPassword())
+        return userRepository.findUserByUsername(tokenRequestDto.getUsername())
                 .map(user -> {
                     if ("BANNED".equals(user.getUserStatus().getName())) {
                         return new Response<>(403, "User is banned", new TokenResponseDto(null));
+                    }
+                    if (!encoder.matches(tokenRequestDto.getPassword(), user.getPassword())) {
+                        return new Response<>(403, "Invalid credentials", new TokenResponseDto(null));
                     }
                     return new Response<>(200, "User logged in", new TokenResponseDto(tokenService.generate(userMapper.userToClaims(user))));
                 })
