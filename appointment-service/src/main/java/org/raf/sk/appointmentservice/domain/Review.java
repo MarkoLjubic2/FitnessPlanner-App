@@ -21,4 +21,5 @@ public class Review {
     private Reservation reservation;
     private String comment;
     private int mark;
+
 }

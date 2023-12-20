@@ -22,6 +22,6 @@ public class Training {
     private Long id;
     private String name;
     private boolean individual;
-
+    private double price;
 
 }

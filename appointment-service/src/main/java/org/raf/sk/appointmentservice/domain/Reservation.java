@@ -13,6 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 public class Reservation {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,6 +22,5 @@ public class Reservation {
     @ManyToOne(optional = false)
     private Training training;
     private Long clientId;
-
 
 }

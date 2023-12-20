@@ -12,6 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(indexes = @Index(columnList = "name", unique = true))
 public class Hall {
 
     @Id
@@ -22,6 +23,5 @@ public class Hall {
     private int coaches;
     @ManyToOne(optional = false)
     private Training training;
-
 
 }

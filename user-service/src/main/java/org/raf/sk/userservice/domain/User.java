@@ -3,6 +3,9 @@ package org.raf.sk.userservice.domain;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -30,6 +33,11 @@ public class User {
     private int totalSessions;
     private String hall;
     private Date hireDate;
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Date createdAt;
+    @UpdateTimestamp
+    private Date updatedAt;
 
     public User(String username, String password, String firstName, String lastName, String email, Date dateOfBirth) {
         this.username = username;
