@@ -2,6 +2,7 @@ package org.raf.sk.userservice.mapper;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import lombok.AllArgsConstructor;
 import org.raf.sk.userservice.domain.User;
 import org.raf.sk.userservice.dto.CreateManagerDto;
 import org.raf.sk.userservice.dto.CreateUserDto;
@@ -15,15 +16,11 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
+@AllArgsConstructor
 public class UserMapper {
 
     private final RoleRepository roleRepository;
     private final StatusRepository statusRepository;
-
-    public UserMapper(RoleRepository roleRepository, StatusRepository statusRepository) {
-        this.roleRepository = roleRepository;
-        this.statusRepository = statusRepository;
-    }
 
     public UserDto userToUserDto(User user) {
         return Optional.ofNullable(user)

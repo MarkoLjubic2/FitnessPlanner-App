@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.raf.sk.userservice.domain.Status;
 import org.raf.sk.userservice.domain.User;
 import org.raf.sk.userservice.dto.UserDto;
 import org.raf.sk.userservice.listener.MessageHelper;
@@ -143,35 +144,137 @@ public class UserServiceTest {
         assertUserResponse(response, 200, "User found", userDto);
     }
 
-    @Test
-    public void change_total_sessions_increment_test() {
+    private void testChangeTotalSessions(int initialSessions, int change, int expectedSessions) {
         // Arrange
         User user = new User();
-        user.setTotalSessions(0);
+        user.setTotalSessions(initialSessions);
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
         // Act
-        Response<Boolean> response = userService.changeTotalSessions(1L, 1);
+        Response<Boolean> response = userService.changeTotalSessions(1L, change);
 
         // Assert
         assertUserResponse(response, 200, "Total sessions changed", true);
-        assertThat(user.getTotalSessions()).isEqualTo(1);
+        assertThat(user.getTotalSessions()).isEqualTo(expectedSessions);
+    }
+
+    @Test
+    public void change_total_sessions_increment_test() {
+        testChangeTotalSessions(0, 1, 1);
     }
 
     @Test
     public void change_total_sessions_decrement_test() {
-        // Arrange
-        User user = new User();
-        user.setTotalSessions(1);
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-
-        // Act
-        Response<Boolean> response = userService.changeTotalSessions(1L, -1);
-
-        // Assert
-        assertUserResponse(response, 200, "Total sessions changed", true);
-        assertThat(user.getTotalSessions()).isEqualTo(0);
+        testChangeTotalSessions(1, -1, 0);
     }
 
+    @Test
+    public void change_total_sessions_from_negative_to_positive_test() {
+        testChangeTotalSessions(-1, 2, 1);
+    }
+
+    @Test
+    public void change_total_sessions_from_positive_to_negative_test() {
+        testChangeTotalSessions(1, -2, -1);
+    }
+
+    @Test
+    public void change_total_sessions_zero_change_test() {
+        testChangeTotalSessions(1, 0, 1);
+    }
+
+    @Test
+    public void ban_user_not_found_test() {
+        // Arrange
+        when(userRepository.findUserByUsername(any())).thenReturn(Optional.empty());
+
+        // Act
+        Response<Boolean> response = userService.banUser("username");
+
+        // Assert
+        assertUserResponse(response, 404, "User not found", false);
+    }
+
+    @Test
+    public void ban_user_already_banned_test() {
+        // Arrange
+        User user = new User();
+        Status status = new Status();
+        status.setName("BANNED");
+        user.setUserStatus(status);
+        when(userRepository.findUserByUsername(any())).thenReturn(Optional.of(user));
+        when(statusRepository.findStatusByName("BANNED")).thenReturn(Optional.of(new Status(1L, "BANNED")));
+
+        // Act
+        Response<Boolean> response = userService.banUser("username");
+
+        // Assert
+        assertUserResponse(response, 409, "User is already banned", false);
+    }
+
+    @Test
+    public void ban_user_test() {
+        // Arrange
+        User user = new User();
+        Status status = new Status();
+        status.setName("VERIFIED");
+        user.setUserStatus(status);
+        when(userRepository.findUserByUsername(any())).thenReturn(Optional.of(user));
+        when(statusRepository.findStatusByName("BANNED")).thenReturn(Optional.of(new Status(1L, "BANNED")));
+
+        // Act
+        Response<Boolean> response = userService.banUser("username");
+
+        // Assert
+        assertUserResponse(response, 200, "User banned", true);
+        assertThat(user.getUserStatus().getName()).isEqualTo("BANNED");
+    }
+
+    @Test
+    public void unban_user_not_found_test() {
+        // Arrange
+        when(userRepository.findUserByUsername(any())).thenReturn(Optional.empty());
+
+        // Act
+        Response<Boolean> response = userService.unbanUser("username");
+
+        // Assert
+        assertUserResponse(response, 404, "User not found", false);
+    }
+
+    @Test
+    public void unban_user_already_verified_test() {
+        // Arrange
+        User user = new User();
+        Status status = new Status();
+        status.setName("VERIFIED");
+        user.setUserStatus(status);
+        when(userRepository.findUserByUsername(any())).thenReturn(Optional.of(user));
+        when(statusRepository.findStatusByName("VERIFIED")).thenReturn(Optional.of(new Status(1L, "VERIFIED")));
+
+        // Act
+        Response<Boolean> response = userService.unbanUser("username");
+
+        // Assert
+        assertUserResponse(response, 409, "User is not banned", false);
+    }
+
+    @Test
+    public void unban_user_test() {
+        // Arrange
+        User user = new User();
+        Status status = new Status();
+        status.setName("BANNED");
+        user.setUserStatus(status);
+        when(userRepository.findUserByUsername(any())).thenReturn(Optional.of(user));
+        when(statusRepository.findStatusByName("VERIFIED")).thenReturn(Optional.of(new Status(1L, "VERIFIED")));
+
+        // Act
+        Response<Boolean> response = userService.unbanUser("username");
+
+        // Assert
+        assertUserResponse(response, 200, "User unbanned", true);
+        assertThat(user.getUserStatus().getName()).isEqualTo("VERIFIED");
+    }
 
 }

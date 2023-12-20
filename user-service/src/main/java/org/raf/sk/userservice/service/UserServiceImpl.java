@@ -76,10 +76,10 @@ public class UserServiceImpl implements UserService {
     public Response<Boolean> unbanUser(String username) {
         return userRepository.findUserByUsername(username)
                 .map(user -> {
-                    if ("ACTIVE".equals(user.getUserStatus().getName())) {
+                    if ("VERIFIED".equals(user.getUserStatus().getName())) {
                         return new Response<>(409, "User is not banned", false);
                     }
-                    statusRepository.findStatusByName("ACTIVE").ifPresent(user::setUserStatus);
+                    statusRepository.findStatusByName("VERIFIED").ifPresent(user::setUserStatus);
                     userRepository.save(user);
                     return new Response<>(200, "User unbanned", true);
                 })
