@@ -6,42 +6,60 @@ import org.raf.sk.appointmentservice.dto.CreateTrainingDto;
 import org.raf.sk.appointmentservice.dto.TrainingDto;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 @NoArgsConstructor
 public class TrainingMapper {
 
     public TrainingDto trainingToTrainingDto(Training training) {
-        TrainingDto trainingDto = new TrainingDto();
-        trainingDto.setId(training.getId());
-        trainingDto.setName(training.getName());
-        trainingDto.setIndividual(training.isIndividual());
-        trainingDto.setPrice(training.getPrice());
-        return trainingDto;
+        return Optional.ofNullable(training)
+                .map(t -> {
+                    TrainingDto trainingDto = new TrainingDto();
+                    trainingDto.setId(t.getId());
+                    trainingDto.setName(t.getName());
+                    trainingDto.setIndividual(t.isIndividual());
+                    trainingDto.setPrice(t.getPrice());
+                    return trainingDto;
+                })
+                .orElse(null);
     }
 
     public Training trainingDtoToTraining(TrainingDto trainingDto) {
-        Training training = new Training();
-        training.setId(trainingDto.getId());
-        training.setName(trainingDto.getName());
-        training.setIndividual(trainingDto.isIndividual());
-        training.setPrice(trainingDto.getPrice());
-        return training;
+        return Optional.of(trainingDto)
+                .map(dto -> {
+                    Training training = new Training();
+                    training.setId(dto.getId());
+                    training.setName(dto.getName());
+                    training.setIndividual(dto.isIndividual());
+                    training.setPrice(dto.getPrice());
+                    return training;
+                })
+                .orElse(null);
     }
 
     public CreateTrainingDto trainingToCreateTrainingDto(Training training) {
-        CreateTrainingDto createTrainingDto = new CreateTrainingDto();
-        createTrainingDto.setName(training.getName());
-        createTrainingDto.setIndividual(training.isIndividual());
-        createTrainingDto.setPrice(training.getPrice());
-        return createTrainingDto;
+        return Optional.ofNullable(training)
+                .map(t -> {
+                    CreateTrainingDto createTrainingDto = new CreateTrainingDto();
+                    createTrainingDto.setName(t.getName());
+                    createTrainingDto.setIndividual(t.isIndividual());
+                    createTrainingDto.setPrice(t.getPrice());
+                    return createTrainingDto;
+                })
+                .orElse(null);
     }
 
     public Training createTrainingDtoToTraining(CreateTrainingDto createTrainingDto) {
-        Training training = new Training();
-        training.setName(createTrainingDto.getName());
-        training.setIndividual(createTrainingDto.isIndividual());
-        training.setPrice(createTrainingDto.getPrice());
-        return training;
+        return Optional.of(createTrainingDto)
+                .map(dto -> {
+                    Training training = new Training();
+                    training.setName(dto.getName());
+                    training.setIndividual(dto.isIndividual());
+                    training.setPrice(dto.getPrice());
+                    return training;
+                })
+                .orElse(null);
     }
 
 }
