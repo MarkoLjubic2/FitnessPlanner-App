@@ -1,16 +1,13 @@
 package org.raf.sk.notificationservice.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.raf.sk.notificationservice.dto.abstraction.NotificationDto;
 
 @Getter
 @Setter
-@AllArgsConstructor
-public class ReminderDto {
+public class ReminderDto extends NotificationDto {
 
-    private Long typeId;
-    private String clientEmail;
     private String managerEmail;
     private String clientFirstName;
     private String clientLastName;

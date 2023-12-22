@@ -2,16 +2,17 @@ package org.raf.sk.notificationservice.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.util.Date;
 
 @Getter
 @Setter
 @Entity
+@Table(indexes = {@Index(columnList = "clientEmail", unique = true)})
 public class Notification {
 
     @Id
@@ -27,4 +28,10 @@ public class Notification {
     private String clientLastName;
     private String link;
     private String hallName;
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Date createdAt;
+    @UpdateTimestamp
+    private Date updatedAt;
+
 }

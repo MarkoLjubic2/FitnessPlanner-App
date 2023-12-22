@@ -1,16 +1,13 @@
 package org.raf.sk.notificationservice.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.raf.sk.notificationservice.dto.abstraction.NotificationDto;
 
 @Getter
 @Setter
-@AllArgsConstructor
-public class ActivationDto {
+public class ActivationDto extends NotificationDto {
 
-    private Long typeId;
-    private String clientEmail;
     private String link;
     private String clientFirstName;
     private String clientLastName;
