@@ -1,5 +1,6 @@
 package org.raf.sk.appointmentservice.configuration;
 
+import org.raf.sk.appointmentservice.controller.HallController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -14,12 +15,12 @@ import java.util.Collections;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
-/*
+
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .useDefaultResponseMessages(false)
-                .select().apis(RequestHandlerSelectors.basePackage(AppointmentController.class.getPackage().getName()))
+                .select().apis(RequestHandlerSelectors.basePackage(HallController.class.getPackage().getName()))
                 .build()
                 .apiInfo(metaData());
     }
@@ -29,5 +30,5 @@ public class SwaggerConfig {
                 , "Terms of service", new Contact("", "", "")
                 , "", "", Collections.emptyList());
     }
-*/
+
 }

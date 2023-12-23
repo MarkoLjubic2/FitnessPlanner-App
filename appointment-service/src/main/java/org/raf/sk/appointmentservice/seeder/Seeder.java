@@ -37,15 +37,15 @@ public class Seeder implements CommandLineRunner {
     }
 
     private void insertTrainings() {
-        Training training1 = new Training("Calisthenics", false, 1000);
+        Training training1 = new Training("Calisthenics", true, 1600);
         Training training2 = new Training("Pilates", false, 1000);
-        Training training3 = new Training("Box", false, 1000);
-        Training training4 = new Training("Jiu Jitsu", false, 1000);
-        Training training5 = new Training("Taekwondo", false, 1000);
-        Training training6 = new Training("MMA", false, 1000);
-        Training training7 = new Training("Archery", false, 1000);
+        Training training3 = new Training("Box", true, 2000);
+        Training training4 = new Training("Jiu Jitsu", false, 1200);
+        Training training5 = new Training("Taekwondo", false, 1300);
+        Training training6 = new Training("MMA", false, 2300);
+        Training training7 = new Training("Archery", false, 1900);
         Training training8 = new Training("Swimming", false, 1000);
-        Training training9 = new Training("Ski Jumping", false, 1000);
+        Training training9 = new Training("Ski Jumping", true, 3000);
 
         trainingRepository.save(training1);
         trainingRepository.save(training2);
