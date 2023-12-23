@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -23,6 +24,7 @@ public class Review {
     private Reservation reservation;
     private String comment;
     private int mark;
+    @CreationTimestamp
     @Column(updatable = false)
     private Date createdAt;
     @UpdateTimestamp

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -25,6 +26,7 @@ public class Reservation {
     @ManyToOne(optional = false)
     private Training training;
     private Long clientId;
+    @CreationTimestamp
     @Column(updatable = false)
     private Date createdAt;
     @UpdateTimestamp

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -22,6 +23,7 @@ public class Training {
     private String name;
     private boolean individual;
     private double price;
+    @CreationTimestamp
     @Column(updatable = false)
     private Date createdAt;
     @UpdateTimestamp

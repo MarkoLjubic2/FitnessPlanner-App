@@ -22,7 +22,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     Optional<Reservation> findReservationByClientId(Long clientId);
 
     @Modifying
-    @Query("update Reservation r set r.startTime = :startTime, r.endTime = :endTime, r.training = :training, r.clientId = :clientId where r.id = :id")
+    @Query("update Reservation r set r.startTime = :startTime, r.endTime = :endTime, r.training = :trainingId, r.clientId = :clientId where r.id = :id")
     void updateReservationById(Long id, Integer startTime, Integer endTime, Long trainingId, Long clientId);
 
     @Modifying

@@ -2,8 +2,8 @@ package org.raf.sk.appointmentservice.mapper;
 
 import lombok.NoArgsConstructor;
 import org.raf.sk.appointmentservice.domain.Hall;
-import org.raf.sk.appointmentservice.dto.CreateHallDto;
-import org.raf.sk.appointmentservice.dto.HallDto;
+import org.raf.sk.appointmentservice.dto.hall.CreateHallDto;
+import org.raf.sk.appointmentservice.dto.hall.HallDto;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
