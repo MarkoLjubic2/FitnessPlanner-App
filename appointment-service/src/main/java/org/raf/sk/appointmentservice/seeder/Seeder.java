@@ -1,20 +1,15 @@
 package org.raf.sk.appointmentservice.seeder;
 
 import lombok.AllArgsConstructor;
-import org.raf.sk.appointmentservice.domain.Hall;
-import org.raf.sk.appointmentservice.domain.Reservation;
-import org.raf.sk.appointmentservice.domain.Review;
-import org.raf.sk.appointmentservice.domain.Training;
-import org.raf.sk.appointmentservice.repository.HallRepository;
-import org.raf.sk.appointmentservice.repository.ReservationRepository;
-import org.raf.sk.appointmentservice.repository.ReviewRepository;
-import org.raf.sk.appointmentservice.repository.TrainingRepository;
+import org.raf.sk.appointmentservice.domain.*;
+import org.raf.sk.appointmentservice.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
+import java.time.DayOfWeek;
 
 
 @Profile({"default"})
@@ -27,6 +22,7 @@ public class Seeder implements CommandLineRunner {
     private final TrainingRepository trainingRepository;
     private final ReservationRepository reservationRepository;
     private final ReviewRepository reviewRepository;
+    private final AppointmentRepository appointmentRepository;
 
     @Override
     public void run(String... args) {
@@ -34,6 +30,7 @@ public class Seeder implements CommandLineRunner {
         insertTrainings();
         insertReservations();
         insertReviews();
+        insertAppointments();
     }
 
     private void insertHalls() {
@@ -49,11 +46,11 @@ public class Seeder implements CommandLineRunner {
     }
 
     private void insertTrainings() {
-        Training training1 = new Training("Calisthenics", true, 1600, 1);
+        Training training1 = new Training("Calisthenics", true, 1600);
         hallRepository.findHallByName("Hall 1").ifPresent(training1::setHall);
-        Training training2 = new Training("Pilates", false, 1000, 16);
+        Training training2 = new Training("Pilates", false, 1000);
         hallRepository.findHallByName("Hall 2").ifPresent(training2::setHall);
-        Training training3 = new Training("Box", true, 2000, 6);
+        Training training3 = new Training("Box", true, 2000);
         hallRepository.findHallByName("Hall 3").ifPresent(training3::setHall);
 
         trainingRepository.save(training1);
@@ -79,6 +76,16 @@ public class Seeder implements CommandLineRunner {
 
         reviewRepository.save(review1);
         reviewRepository.save(review2);
+    }
+
+    private void insertAppointments() {
+        Appointment appointment1 = new Appointment(new Date(2021, 1, 1), 12, 14, 10, 0, DayOfWeek.MONDAY);
+        appointment1.setTraining(trainingRepository.findTrainingByName("Calisthenics").orElseThrow());
+        Appointment appointment2 = new Appointment(new Date(2021, 1, 3), 14, 16,10, 0, DayOfWeek.MONDAY);
+        appointment2.setTraining(trainingRepository.findTrainingByName("Box").orElseThrow());
+
+        appointmentRepository.save(appointment1);
+        appointmentRepository.save(appointment2);
     }
 
 

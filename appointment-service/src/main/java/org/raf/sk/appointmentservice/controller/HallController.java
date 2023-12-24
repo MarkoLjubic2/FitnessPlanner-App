@@ -2,12 +2,15 @@ package org.raf.sk.appointmentservice.controller;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.raf.sk.appointmentservice.domain.Schedulable;
 import org.raf.sk.appointmentservice.dto.hall.CreateHallDto;
 import org.raf.sk.appointmentservice.dto.hall.HallDto;
 import org.raf.sk.appointmentservice.dto.hall.UpdateHallDto;
+import org.raf.sk.appointmentservice.dto.reservation.ReservationDto;
 import org.raf.sk.appointmentservice.security.CheckSecurity;
 import org.raf.sk.appointmentservice.service.AppointmentService;
 import org.raf.sk.appointmentservice.service.Response;
+import org.raf.sk.appointmentservice.service.combinator.FilterCombinator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -55,6 +58,13 @@ public class HallController {
     @CheckSecurity(roles = {"ADMIN", "MANAGER"})
     public ResponseEntity<Response<Boolean>> deleteHall(@RequestHeader("Authorization") String jwt, @RequestParam("hallId") Long hallId) {
         return new ResponseEntity<>(appointmentService.deleteHall(jwt, hallId), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Get filtered reservations")
+    @GetMapping
+    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
+    public ResponseEntity<Response<Page<ReservationDto>>> getReservations(@ApiIgnore Pageable pageable, @RequestBody FilterCombinator<Schedulable> filter) {
+        return new ResponseEntity<>(appointmentService.findReservationByFilter(filter, pageable), HttpStatus.OK);
     }
 
 }

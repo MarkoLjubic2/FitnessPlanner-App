@@ -16,7 +16,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Reservation implements Schedulable{
+public class Appointment implements Schedulable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,8 @@ public class Reservation implements Schedulable{
     private Integer endTime;
     @ManyToOne(optional = false)
     private Training training;
-    private Long clientId;
+    private int maxClients;
+    private int currentClients;
     @Enumerated(EnumType.STRING)
     private DayOfWeek dayOfWeek;
     @CreationTimestamp
@@ -35,11 +36,13 @@ public class Reservation implements Schedulable{
     @UpdateTimestamp
     private Date updatedAt;
 
-    public Reservation(Date date, Integer startTime, Integer endTime, Long clientId) {
+    public Appointment(Date date, Integer startTime, Integer endTime, int maxClients, int currentClients, DayOfWeek dayOfWeek) {
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.clientId = clientId;
+        this.maxClients = maxClients;
+        this.currentClients = currentClients;
+        this.dayOfWeek = dayOfWeek;
     }
 
 }

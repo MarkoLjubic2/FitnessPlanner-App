@@ -3,6 +3,7 @@ package org.raf.sk.appointmentservice.dto.reservation;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.DayOfWeek;
 import java.util.Date;
 
 @Getter
@@ -15,5 +16,6 @@ public class ReservationDto {
     private Integer endTime;
     private Long trainingId;
     private Long clientId;
+    private DayOfWeek dayOfWeek;
 
 }
