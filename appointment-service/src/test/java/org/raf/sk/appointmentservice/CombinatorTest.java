@@ -8,6 +8,7 @@ import org.raf.sk.appointmentservice.domain.Training;
 import org.raf.sk.appointmentservice.service.combinator.FilterCombinator;
 
 import java.sql.Date;
+import java.time.DayOfWeek;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,9 +27,9 @@ public class CombinatorTest {
         Training training2 = new Training("Pilates", false, 1000);
         training2.setHall(hall2);
 
-        Reservation reservation1 = new Reservation(new Date(2021, 1, 1), 12, 14, 1L);
+        Reservation reservation1 = new Reservation(new Date(2021, 1, 1), 12, 14, DayOfWeek.MONDAY, 1L);
         reservation1.setTraining(training1);
-        Reservation reservation2 = new Reservation(new Date(2021, 1, 3), 14, 16, 1L);
+        Reservation reservation2 = new Reservation(new Date(2021, 1, 3), 14, 16, DayOfWeek.MONDAY,1L);
         reservation2.setTraining(training2);
 
         List<Reservation> reservations = Arrays.asList(reservation1, reservation2);
@@ -54,13 +55,13 @@ public class CombinatorTest {
         Training training2 = new Training("Pilates", false, 1000);
         training2.setHall(hall2);
 
-        Reservation reservation1 = new Reservation(new Date(2021, 1, 1), 12, 14, 1L);
+        Reservation reservation1 = new Reservation(new Date(2021, 1, 1), 12, 14, DayOfWeek.MONDAY, 1L);
         reservation1.setTraining(training1);
-        Reservation reservation2 = new Reservation(new Date(2021, 1, 3), 14, 16, 1L);
+        Reservation reservation2 = new Reservation(new Date(2021, 1, 3), 14, 16, DayOfWeek.MONDAY, 1L);
         reservation2.setTraining(training2);
 
         List<Reservation> reservations = Arrays.asList(reservation1, reservation2);
-        FilterCombinator<Schedulable> filter = FilterCombinator.isIndividual().and(FilterCombinator.isType("Calisthenics"));
+        FilterCombinator<Schedulable> filter = FilterCombinator.isIndividualTraining().and(FilterCombinator.isType("Calisthenics"));
 
         // Act
         long count = reservations.stream()

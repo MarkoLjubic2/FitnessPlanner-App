@@ -8,14 +8,17 @@ import java.util.function.Predicate;
 public interface FilterCombinator<T extends Schedulable> extends Predicate<T> {
 
     static <T extends Schedulable> FilterCombinator<T> isDay(DayOfWeek day) {
-        return reservation -> reservation.getDayOfWeek().equals(day);
+        return reservation -> {
+            DayOfWeek reservationDay = reservation.getDayOfWeek();
+            return reservationDay != null && reservationDay.equals(day);
+        };
     }
 
-    static <T extends Schedulable> FilterCombinator<T> isIndividual() {
+    static <T extends Schedulable> FilterCombinator<T> isIndividualTraining() {
         return reservation -> reservation.getTraining().isIndividual();
     }
 
-    static <T extends Schedulable> FilterCombinator<T> isGroup() {
+    static <T extends Schedulable> FilterCombinator<T> isGroupTraining() {
         return reservation -> !reservation.getTraining().isIndividual();
     }
 

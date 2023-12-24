@@ -35,10 +35,11 @@ public class Reservation implements Schedulable{
     @UpdateTimestamp
     private Date updatedAt;
 
-    public Reservation(Date date, Integer startTime, Integer endTime, Long clientId) {
+    public Reservation(Date date, Integer startTime, Integer endTime, DayOfWeek day, Long clientId) {
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.dayOfWeek = day;
         this.clientId = clientId;
     }
 

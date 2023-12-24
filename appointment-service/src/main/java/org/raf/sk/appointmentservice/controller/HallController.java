@@ -1,5 +1,7 @@
 package org.raf.sk.appointmentservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.raf.sk.appointmentservice.domain.Schedulable;
@@ -11,12 +13,16 @@ import org.raf.sk.appointmentservice.security.CheckSecurity;
 import org.raf.sk.appointmentservice.service.AppointmentService;
 import org.raf.sk.appointmentservice.service.Response;
 import org.raf.sk.appointmentservice.service.combinator.FilterCombinator;
+import org.raf.sk.appointmentservice.service.combinator.FilterJSON;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.time.DayOfWeek;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/halls")
@@ -61,10 +67,32 @@ public class HallController {
     }
 
     @ApiOperation(value = "Get filtered reservations")
-    @GetMapping
-    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
-    public ResponseEntity<Response<Page<ReservationDto>>> getReservations(@ApiIgnore Pageable pageable, @RequestBody FilterCombinator<Schedulable> filter) {
-        return new ResponseEntity<>(appointmentService.findReservationByFilter(filter, pageable), HttpStatus.OK);
+    @GetMapping("/reservations")
+    public ResponseEntity<Response<Page<ReservationDto>>> getReservations(@ApiIgnore Pageable pageable, @RequestParam("filter") String filter) {
+        FilterCombinator<Schedulable> filterCombinator = convertFromJson(filter);
+        System.out.println("filterCombinator: "+ filterCombinator);
+        return new ResponseEntity<>(appointmentService.findReservationByFilter(filterCombinator, pageable), HttpStatus.OK);
+    }
+
+    public FilterCombinator<Schedulable> convertFromJson(String json) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        FilterJSON filterJSON;
+        try {
+            filterJSON = objectMapper.readValue(json, FilterJSON.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        FilterCombinator<Schedulable> filterCombinator = schedulable -> true;
+
+        Optional.ofNullable(filterJSON.getType())
+                .ifPresent(type -> filterCombinator.and(FilterCombinator.isType(type)));
+        Optional.ofNullable(filterJSON.getDay())
+                .ifPresent(day -> filterCombinator.and(FilterCombinator.isDay(DayOfWeek.valueOf(day.name()))));
+        Optional.ofNullable(filterJSON.getIndividual())
+                .ifPresent(individual -> filterCombinator.and(individual ? FilterCombinator.isIndividualTraining() : FilterCombinator.isGroupTraining()));
+
+        return filterCombinator;
     }
 
 }

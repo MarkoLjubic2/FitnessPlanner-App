@@ -59,9 +59,9 @@ public class Seeder implements CommandLineRunner {
     }
 
     private void insertReservations() {
-        Reservation reservation1 = new Reservation(new Date(2021, 1, 1), 12, 14, 1L);
+        Reservation reservation1 = new Reservation(new Date(2021, 1, 1), 12, 14, DayOfWeek.MONDAY, 1L);
         reservation1.setTraining(trainingRepository.findTrainingByName("Calisthenics").orElseThrow());
-        Reservation reservation2 = new Reservation(new Date(2021, 1, 3), 14, 16, 1L);
+        Reservation reservation2 = new Reservation(new Date(2021, 1, 3), 14, 16, DayOfWeek.WEDNESDAY, 1L);
         reservation2.setTraining(trainingRepository.findTrainingByName("Box").orElseThrow());
 
         reservationRepository.save(reservation1);
