@@ -77,8 +77,6 @@ public class UserMapper {
                     updateUserDto.setLastName(u.getLastName());
                     updateUserDto.setUsername(u.getUsername());
                     updateUserDto.setDateOfBirth(u.getDateOfBirth());
-                    updateUserDto.setLicenceID(u.getLicenseID());
-                    updateUserDto.setTotalSessions(u.getTotalSessions());
                     return updateUserDto;
                 })
                 .orElse(null);
@@ -93,8 +91,6 @@ public class UserMapper {
                     user.setLastName(dto.getLastName());
                     user.setUsername(dto.getUsername());
                     user.setDateOfBirth(dto.getDateOfBirth());
-                    user.setLicenseID(dto.getLicenceID());
-                    user.setTotalSessions(dto.getTotalSessions());
                     return user;
                 })
                 .orElse(null);

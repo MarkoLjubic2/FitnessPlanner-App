@@ -24,8 +24,6 @@ public class Hall {
     private String name;
     private String description;
     private int coaches;
-    @ManyToOne(optional = false)
-    private Training training;
     @CreationTimestamp
     @Column(updatable = false)
     private Date createdAt;

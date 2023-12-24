@@ -1,4 +1,4 @@
-package org.raf.sk.appointmentservice.dto;
+package org.raf.sk.appointmentservice.dto.reservation;
 
 import lombok.Getter;
 import lombok.Setter;

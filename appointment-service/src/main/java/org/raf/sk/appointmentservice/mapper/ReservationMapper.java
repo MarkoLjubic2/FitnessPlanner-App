@@ -2,8 +2,8 @@ package org.raf.sk.appointmentservice.mapper;
 
 import lombok.NoArgsConstructor;
 import org.raf.sk.appointmentservice.domain.Reservation;
-import org.raf.sk.appointmentservice.dto.CreateReservationDto;
-import org.raf.sk.appointmentservice.dto.ReservationDto;
+import org.raf.sk.appointmentservice.dto.reservation.CreateReservationDto;
+import org.raf.sk.appointmentservice.dto.reservation.ReservationDto;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

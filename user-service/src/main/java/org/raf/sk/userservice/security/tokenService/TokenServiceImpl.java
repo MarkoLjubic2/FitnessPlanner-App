@@ -1,6 +1,7 @@
 package org.raf.sk.userservice.security.tokenService;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,4 +34,21 @@ public class TokenServiceImpl implements TokenService {
         }
         return claims;
     }
+
+    @Override
+    public boolean isTokenValid(String jwt) {
+        try {
+            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public String getRole(String jwt) {
+        Claims claims = parseToken(jwt);
+        return (claims != null) ? (String) claims.get("role") : null;
+    }
+
 }

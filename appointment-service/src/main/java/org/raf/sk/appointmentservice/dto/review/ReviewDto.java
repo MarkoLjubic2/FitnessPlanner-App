@@ -1,13 +1,14 @@
-package org.raf.sk.appointmentservice.dto;
+package org.raf.sk.appointmentservice.dto.review;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateReviewDto {
+public class ReviewDto {
 
     private Long reservationId;
     private String comment;
     private int mark;
+
 }

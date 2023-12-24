@@ -8,7 +8,4 @@ import org.raf.sk.userservice.dto.abstraction.AbstractUserDto;
 @Setter
 public class UpdateUserDto extends AbstractUserDto {
 
-    private String licenceID;
-    private int totalSessions;
-
 }

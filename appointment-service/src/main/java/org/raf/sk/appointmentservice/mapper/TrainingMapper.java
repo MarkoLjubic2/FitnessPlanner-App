@@ -2,8 +2,8 @@ package org.raf.sk.appointmentservice.mapper;
 
 import lombok.NoArgsConstructor;
 import org.raf.sk.appointmentservice.domain.Training;
-import org.raf.sk.appointmentservice.dto.CreateTrainingDto;
-import org.raf.sk.appointmentservice.dto.TrainingDto;
+import org.raf.sk.appointmentservice.dto.training.CreateTrainingDto;
+import org.raf.sk.appointmentservice.dto.training.TrainingDto;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;

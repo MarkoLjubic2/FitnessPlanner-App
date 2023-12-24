@@ -1,4 +1,4 @@
-package org.raf.sk.appointmentservice.dto;
+package org.raf.sk.appointmentservice.dto.reservation;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,9 +7,8 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class ReservationDto {
+public class CreateReservationDto {
 
-    private Long id;
     private Date date;
     private Integer startTime;
     private Integer endTime;

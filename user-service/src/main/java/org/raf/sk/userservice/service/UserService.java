@@ -36,27 +36,30 @@ public interface UserService {
     /**
      * Changes the total sessions for a user.
      *
+     * @param jwt    JWT token for authentication.
      * @param userId ID of the user whose sessions are to be modified.
      * @param value  New value for the total sessions.
      * @return Response object containing a Boolean indicating the success of the operation.
      */
-    Response<Boolean> changeTotalSessions(Long userId, int value);
+    Response<Boolean> changeTotalSessions(String jwt, Long userId, int value);
 
     /**
      * Bans a user based on the provided username.
      *
+     * @param jwt      JWT token for authentication.
      * @param username Username of the user to be banned.
      * @return Response object containing a Boolean indicating the success of the operation.
      */
-    Response<Boolean> banUser(String username);
+    Response<Boolean> banUser(String jwt, String username);
 
     /**
      * Unbans a user based on the provided username.
      *
+     * @param jwt      JWT token for authentication.
      * @param username Username of the user to be unbanned.
      * @return Response object containing a Boolean indicating the success of the operation.
      */
-    Response<Boolean> unbanUser(String username);
+    Response<Boolean> unbanUser(String jwt, String username);
 
     /**
      * Adds a new user.

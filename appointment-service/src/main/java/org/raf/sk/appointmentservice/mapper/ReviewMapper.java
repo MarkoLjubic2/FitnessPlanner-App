@@ -2,8 +2,8 @@ package org.raf.sk.appointmentservice.mapper;
 
 import lombok.AllArgsConstructor;
 import org.raf.sk.appointmentservice.domain.Review;
-import org.raf.sk.appointmentservice.dto.CreateReviewDto;
-import org.raf.sk.appointmentservice.dto.ReviewDto;
+import org.raf.sk.appointmentservice.dto.review.CreateReviewDto;
+import org.raf.sk.appointmentservice.dto.review.ReviewDto;
 import org.raf.sk.appointmentservice.repository.ReservationRepository;
 import org.springframework.stereotype.Component;
 

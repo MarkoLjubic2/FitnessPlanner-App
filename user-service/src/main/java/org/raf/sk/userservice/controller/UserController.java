@@ -56,29 +56,29 @@ public class UserController {
     @ApiOperation(value = "Change total sessions")
     @CheckSecurity(roles = {"ADMIN"})
     @PutMapping("/changeTotalSessions/{userId}")
-    public ResponseEntity<Response<Boolean>> changeTotalSessions(@RequestHeader("Authorization") String authorization, @PathVariable("userId") Long userId, @RequestParam int value) {
-        Response<Boolean> response = userService.changeTotalSessions(userId, value);
+    public ResponseEntity<Response<Boolean>> changeTotalSessions(@RequestHeader("Authorization") String jwt, @PathVariable("userId") Long userId, @RequestParam int value) {
+        Response<Boolean> response = userService.changeTotalSessions(jwt, userId, value);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @ApiOperation(value = "Ban user")
     @CheckSecurity(roles = {"ADMIN"})
     @PutMapping("/banUser/{username}")
-    public ResponseEntity<Response<Boolean>> banUser(@RequestHeader("Authorization") String authorization, @PathVariable("username") String username) {
-        Response<Boolean> response = userService.banUser(username);
+    public ResponseEntity<Response<Boolean>> banUser(@RequestHeader("Authorization") String jwt, @PathVariable("username") String username) {
+        Response<Boolean> response = userService.banUser(jwt, username);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @ApiOperation(value = "Unban user")
     @CheckSecurity(roles = {"ADMIN"})
     @PutMapping("/unbanUser/{username}")
-    public ResponseEntity<Response<Boolean>> unbanUser(@RequestHeader("Authorization") String authorization, @PathVariable("username") String username) {
-        Response<Boolean> response = userService.unbanUser(username);
+    public ResponseEntity<Response<Boolean>> unbanUser(@RequestHeader("Authorization") String jwt, @PathVariable("username") String username) {
+        Response<Boolean> response = userService.unbanUser(jwt, username);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @ApiOperation(value = "Add user")
-    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"}) //ko moze da doda usera?
+    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
     @PostMapping("/addUser")
     public ResponseEntity<Response<Boolean>> addUser(@RequestBody CreateUserDto createUserDto) {
         Response<Boolean> response = userService.addUser(createUserDto);

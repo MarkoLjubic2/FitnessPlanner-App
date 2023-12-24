@@ -2,6 +2,7 @@ package org.raf.sk.userservice.service;
 
 import lombok.AllArgsConstructor;
 import org.raf.sk.userservice.dto.*;
+import org.raf.sk.userservice.dto.abstraction.AbstractUserDto;
 import org.raf.sk.userservice.listener.MessageHelper;
 import org.raf.sk.userservice.mapper.UserMapper;
 import org.raf.sk.userservice.repository.RoleRepository;
@@ -14,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 @Transactional
@@ -48,7 +51,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response<Boolean> changeTotalSessions(Long userId, int value) {
+    public Response<Boolean> changeTotalSessions(String jwt, Long userId, int value) {
+        Response<Boolean> adminAndTokenCheck = checkAdminAndTokenValidity(jwt);
+        if (adminAndTokenCheck.getStatusCode() != 200) return adminAndTokenCheck;
+
         return userRepository.findById(userId)
                 .map(user -> {
                     user.setTotalSessions(user.getTotalSessions() + value);
@@ -59,7 +65,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response<Boolean> banUser(String username) {
+    public Response<Boolean> banUser(String jwt, String username) {
+        Response<Boolean> adminAndTokenCheck = checkAdminAndTokenValidity(jwt);
+        if (adminAndTokenCheck.getStatusCode() != 200) return adminAndTokenCheck;
+
         return userRepository.findUserByUsername(username)
                 .map(user -> {
                     if ("BANNED".equals(user.getUserStatus().getName())) {
@@ -73,7 +82,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response<Boolean> unbanUser(String username) {
+    public Response<Boolean> unbanUser(String jwt, String username) {
+        Response<Boolean> adminAndTokenCheck = checkAdminAndTokenValidity(jwt);
+        if (adminAndTokenCheck.getStatusCode() != 200) return adminAndTokenCheck;
+
         return userRepository.findUserByUsername(username)
                 .map(user -> {
                     if ("VERIFIED".equals(user.getUserStatus().getName())) {
@@ -89,6 +101,9 @@ public class UserServiceImpl implements UserService {
     // TODO: Ubaciti verifikaciju i notifikaciju
     @Override
     public Response<Boolean> addUser(CreateUserDto createUserDto) {
+        if (!isEmailValid(createUserDto.getEmail()))
+            return new Response<>(400, "Invalid email format", false);
+
         return userRepository.findUserByEmail(createUserDto.getEmail())
                 .map(user -> new Response<>(400, "User with this email already exists", false))
                 .orElseGet(() -> userRepository.findUserByUsername(createUserDto.getUsername())
@@ -116,12 +131,36 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response<Boolean> updateUser(String jwt, UpdateUserDto updateUserDto) {
-        return null;
+        Response<Boolean> validationResponse = checkUserAndTokenValidity(jwt, updateUserDto);
+        if (validationResponse.getStatusCode() != 200) return validationResponse;
+
+        return userRepository.findUserByUsername(updateUserDto.getUsername())
+                .map(user -> {
+                    Optional.ofNullable(updateUserDto.getFirstName()).ifPresent(user::setFirstName);
+                    Optional.ofNullable(updateUserDto.getLastName()).ifPresent(user::setLastName);
+                    Optional.ofNullable(updateUserDto.getEmail()).ifPresent(user::setEmail);
+                    userRepository.save(user);
+                    return new Response<>(200, "User updated", true);
+                })
+                .orElse(new Response<>(404, "User not found", false));
     }
 
     @Override
     public Response<Boolean> updateManager(String jwt, UpdateManagerDto updateManagerDto) {
-        return null;
+        Response<Boolean> validationResponse = checkUserAndTokenValidity(jwt, updateManagerDto);
+        if (validationResponse.getStatusCode() != 200) return validationResponse;
+
+        return userRepository.findUserByUsername(updateManagerDto.getUsername())
+                .map(user -> {
+                    Optional.ofNullable(updateManagerDto.getFirstName()).ifPresent(user::setFirstName);
+                    Optional.ofNullable(updateManagerDto.getLastName()).ifPresent(user::setLastName);
+                    Optional.ofNullable(updateManagerDto.getEmail()).ifPresent(user::setEmail);
+                    Optional.ofNullable(updateManagerDto.getHall()).ifPresent(user::setHall);
+                    Optional.ofNullable(updateManagerDto.getHireDate()).ifPresent(user::setHireDate);
+                    userRepository.save(user);
+                    return new Response<>(200, "Manager updated", true);
+                })
+                .orElse(new Response<>(404, "Manager not found", false));
     }
 
     @Override
@@ -137,6 +176,37 @@ public class UserServiceImpl implements UserService {
                     return new Response<>(200, "User logged in", new TokenResponseDto(tokenService.generate(userMapper.userToClaims(user))));
                 })
                 .orElse(new Response<>(404, "User not found", new TokenResponseDto(null)));
+    }
+
+    // Helper
+    private Response<Boolean> checkAdminAndTokenValidity(String jwt) {
+        String role = tokenService.getRole(jwt);
+        if (role == null || !role.equals("ADMIN"))
+            return new Response<>(401, "Unauthorized", false);
+        if (!tokenService.isTokenValid(jwt))
+            return new Response<>(401, "Invalid or expired token", false);
+
+        return new Response<>(200, "Valid admin and token", true);
+    }
+
+    private Response<Boolean> checkUserAndTokenValidity(String jwt, AbstractUserDto dto) {
+        String usernameFromToken = tokenService.parseToken(jwt).getSubject();
+        if (usernameFromToken == null || !usernameFromToken.equals(dto.getUsername()))
+            return new Response<>(401, "Unauthorized", false);
+        if (!tokenService.isTokenValid(jwt))
+            return new Response<>(401, "Invalid or expired token", false);
+        if (dto.getEmail() != null && !isEmailValid(dto.getEmail()))
+            return new Response<>(400, "Invalid email format", false);
+        if (dto.getEmail() != null && userRepository.findUserByEmail(dto.getEmail()).isPresent())
+            return new Response<>(400, "Email is already in use", false);
+
+        return new Response<>(200, "User and token are valid", true);
+    }
+
+    private boolean isEmailValid(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        Pattern pat = Pattern.compile(emailRegex);
+        return pat.matcher(email).matches();
     }
 
 }
