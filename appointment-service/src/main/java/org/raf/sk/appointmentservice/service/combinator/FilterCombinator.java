@@ -7,6 +7,10 @@ import java.util.function.Predicate;
 
 public interface FilterCombinator<T extends Schedulable> extends Predicate<T> {
 
+    static <T extends Schedulable> FilterCombinator<T> initialize() {
+        return reservation -> true;
+    }
+
     static <T extends Schedulable> FilterCombinator<T> isDay(DayOfWeek day) {
         return reservation -> {
             DayOfWeek reservationDay = reservation.getDayOfWeek();
