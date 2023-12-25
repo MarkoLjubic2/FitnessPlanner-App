@@ -3,9 +3,11 @@ package org.raf.sk.appointmentservice.service;
 import lombok.AllArgsConstructor;
 import org.raf.sk.appointmentservice.domain.Reservation;
 import org.raf.sk.appointmentservice.domain.Schedulable;
+import org.raf.sk.appointmentservice.dto.appointment.AppointmentDto;
 import org.raf.sk.appointmentservice.dto.hall.CreateHallDto;
 import org.raf.sk.appointmentservice.dto.hall.HallDto;
 import org.raf.sk.appointmentservice.dto.hall.UpdateHallDto;
+import org.raf.sk.appointmentservice.dto.reservation.CreateReservationDto;
 import org.raf.sk.appointmentservice.dto.reservation.ReservationDto;
 import org.raf.sk.appointmentservice.mapper.HallMapper;
 import org.raf.sk.appointmentservice.mapper.ReservationMapper;
@@ -57,6 +59,31 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Response<Boolean> deleteHall(String jwt, Long hallId) {
+        return null;
+    }
+
+    @Override
+    public Response<Boolean> scheduleReservation(CreateReservationDto createReservationDto) {
+        return null;
+    }
+
+    @Override
+    public Response<Boolean> cancelReservation(ReservationDto reservationDto) {
+        return null;
+    }
+
+    @Override
+    public Response<Page<AppointmentDto>> findAllAppointments(Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public Response<Page<AppointmentDto>> findAppointmentByFilter(FilterCombinator<Schedulable> filter, Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public Response<Page<ReservationDto>> findAllReservations(Pageable pageable) {
         return null;
     }
 

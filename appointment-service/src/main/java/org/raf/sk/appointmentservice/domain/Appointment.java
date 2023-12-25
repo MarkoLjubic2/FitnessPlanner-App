@@ -28,6 +28,7 @@ public class Appointment implements Schedulable{
     private Training training;
     private int maxClients;
     private int currentClients;
+    private boolean open;
     @Enumerated(EnumType.STRING)
     private DayOfWeek dayOfWeek;
     @CreationTimestamp
@@ -43,6 +44,7 @@ public class Appointment implements Schedulable{
         this.maxClients = maxClients;
         this.currentClients = currentClients;
         this.dayOfWeek = dayOfWeek;
+        this.open = true;
     }
 
 }

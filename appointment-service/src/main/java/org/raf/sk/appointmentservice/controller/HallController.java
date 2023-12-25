@@ -66,33 +66,4 @@ public class HallController {
         return new ResponseEntity<>(appointmentService.deleteHall(jwt, hallId), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Get filtered reservations")
-    @GetMapping("/reservations")
-    public ResponseEntity<Response<Page<ReservationDto>>> getReservations(@ApiIgnore Pageable pageable, @RequestParam("filter") String filter) {
-        FilterCombinator<Schedulable> filterCombinator = convertFromJson(filter);
-        System.out.println("filterCombinator: "+ filterCombinator);
-        return new ResponseEntity<>(appointmentService.findReservationByFilter(filterCombinator, pageable), HttpStatus.OK);
-    }
-
-    public FilterCombinator<Schedulable> convertFromJson(String json) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        FilterJSON filterJSON;
-        try {
-            filterJSON = objectMapper.readValue(json, FilterJSON.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        FilterCombinator<Schedulable> filterCombinator = schedulable -> true;
-
-        Optional.ofNullable(filterJSON.getType())
-                .ifPresent(type -> filterCombinator.and(FilterCombinator.isType(type)));
-        Optional.ofNullable(filterJSON.getDay())
-                .ifPresent(day -> filterCombinator.and(FilterCombinator.isDay(DayOfWeek.valueOf(day.name()))));
-        Optional.ofNullable(filterJSON.getIndividual())
-                .ifPresent(individual -> filterCombinator.and(individual ? FilterCombinator.isIndividualTraining() : FilterCombinator.isGroupTraining()));
-
-        return filterCombinator;
-    }
-
 }
