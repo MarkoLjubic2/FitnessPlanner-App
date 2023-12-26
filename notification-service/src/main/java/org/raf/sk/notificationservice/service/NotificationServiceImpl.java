@@ -27,7 +27,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo("testttt");
+        message.setTo("mljubic9422rn@raf.rs");
         message.setSubject("Account Activation");
         message.setText("Dear " + activationDto.getUsername() + ",\n\nPlease click the following link to activate your account: \n"
                 + "http://localhost:8080/activate?token=" + activationDto.getToken());

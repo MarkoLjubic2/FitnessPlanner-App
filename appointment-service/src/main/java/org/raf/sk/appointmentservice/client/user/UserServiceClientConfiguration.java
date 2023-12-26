@@ -13,7 +13,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.io.IOException;
 import java.util.Collections;
-
+/*
 @Configuration
 public class UserServiceClientConfiguration {
 
@@ -41,3 +41,4 @@ public class UserServiceClientConfiguration {
     }
 
 }
+*/

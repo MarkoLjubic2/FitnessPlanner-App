@@ -1,6 +1,7 @@
 package org.raf.sk.appointmentservice.service;
 
 import lombok.AllArgsConstructor;
+import org.raf.sk.appointmentservice.domain.Appointment;
 import org.raf.sk.appointmentservice.domain.Reservation;
 import org.raf.sk.appointmentservice.domain.Schedulable;
 import org.raf.sk.appointmentservice.dto.appointment.AppointmentDto;
@@ -9,14 +10,19 @@ import org.raf.sk.appointmentservice.dto.hall.HallDto;
 import org.raf.sk.appointmentservice.dto.hall.UpdateHallDto;
 import org.raf.sk.appointmentservice.dto.reservation.CreateReservationDto;
 import org.raf.sk.appointmentservice.dto.reservation.ReservationDto;
+import org.raf.sk.appointmentservice.listener.MessageHelper;
+import org.raf.sk.appointmentservice.mapper.AppointmentMapper;
 import org.raf.sk.appointmentservice.mapper.HallMapper;
 import org.raf.sk.appointmentservice.mapper.ReservationMapper;
+import org.raf.sk.appointmentservice.repository.AppointmentRepository;
 import org.raf.sk.appointmentservice.repository.HallRepository;
 import org.raf.sk.appointmentservice.repository.ReservationRepository;
+import org.raf.sk.appointmentservice.security.tokenService.TokenService;
 import org.raf.sk.appointmentservice.service.combinator.FilterCombinator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -30,8 +36,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     private final HallRepository hallRepository;
     private final ReservationRepository reservationRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final AppointmentService appointmentService;
     private final HallMapper hallMapper;
     private final ReservationMapper reservationMapper;
+    private final AppointmentMapper appointmentMapper;
+    private final JmsTemplate jmsTemplate;
+    private final MessageHelper messageHelper;
+    private final TokenService tokenService;
 
     @Override
     public Response<Page<HallDto>> findAllHalls(Pageable pageable) {
@@ -62,13 +74,45 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public Response<Boolean> scheduleReservation(CreateReservationDto createReservationDto) {
-        return null;
+    public Response<Boolean> scheduleReservation(String jwt, AppointmentDto appointmentDto) {
+
+        CreateReservationDto createReservationDto = reservationMapper.appointmentDtoToCreateReservationDto(appointmentDto);
+
+        Reservation reservation = reservationMapper.createReservationDtoToReservation(createReservationDto);
+
+        reservationRepository.save(reservation);
+
+        Appointment appointment = appointmentMapper.appointmentDtoToAppointment(appointmentDto);
+
+        if (appointment != null) {
+            appointment.setCurrentClients(appointment.getCurrentClients() + 1);
+
+            if (appointment.getMaxClients() == appointment.getCurrentClients()) {
+                appointment.setOpen(false);
+            }
+
+            appointmentRepository.save(appointment);
+        }
+
+        return new Response<>(200, "Reservation created", true);
     }
 
     @Override
     public Response<Boolean> cancelReservation(ReservationDto reservationDto) {
-        return null;
+
+        Reservation reservation = reservationMapper.reservationDtoToReservation(reservationDto);
+
+        reservationRepository.delete(reservation);
+
+        Appointment appointment = appointmentRepository.findAppointmentByDateAndStartTimeAndEndTimeAndTrainingId(String.valueOf(reservation.getDate()), reservation.getStartTime(), reservation.getEndTime(), reservation.getTraining().getId()).orElse(null);
+
+        if (appointment != null) {
+            appointment.setCurrentClients(appointment.getCurrentClients() - 1);
+            appointment.setOpen(true);
+            appointmentRepository.save(appointment);
+        }
+
+        return new Response<>(200, "Reservation canceled", true);
     }
 
     @Override

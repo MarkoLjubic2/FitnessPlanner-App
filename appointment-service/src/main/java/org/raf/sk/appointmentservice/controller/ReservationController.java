@@ -1,8 +1,10 @@
 package org.raf.sk.appointmentservice.controller;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import lombok.AllArgsConstructor;
 import org.raf.sk.appointmentservice.domain.Schedulable;
+import org.raf.sk.appointmentservice.dto.appointment.AppointmentDto;
 import org.raf.sk.appointmentservice.dto.reservation.CreateReservationDto;
 import org.raf.sk.appointmentservice.dto.reservation.ReservationDto;
 import org.raf.sk.appointmentservice.security.CheckSecurity;
@@ -40,8 +42,8 @@ public class ReservationController {
 
     @ApiOperation(value = "Schedule reservation")
     @GetMapping("/schedule")
-    public ResponseEntity<Response<Boolean>> scheduleReservation(@RequestBody CreateReservationDto createReservationDto) {
-        return new ResponseEntity<>(appointmentService.scheduleReservation(createReservationDto), HttpStatus.OK);
+    public ResponseEntity<Response<Boolean>> scheduleReservation(@RequestHeader("Authorization") String jwt, @RequestBody AppointmentDto appointmentDto) {
+        return new ResponseEntity<>(appointmentService.scheduleReservation(jwt, appointmentDto), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Cancel reservation")

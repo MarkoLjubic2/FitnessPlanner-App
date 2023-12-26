@@ -33,4 +33,10 @@ public class TokenServiceImpl implements TokenService {
         }
         return claims;
     }
+
+    @Override
+    public Long getUserId(String jwt) {
+        Claims claims = parseToken(jwt);
+        return (claims != null) ? (Long) claims.get("userId") : null;
+    }
 }

@@ -3,6 +3,7 @@ package org.raf.sk.appointmentservice.mapper;
 import lombok.NoArgsConstructor;
 import org.raf.sk.appointmentservice.domain.Appointment;
 import org.raf.sk.appointmentservice.dto.appointment.AppointmentDto;
+import org.raf.sk.appointmentservice.dto.appointment.CreateAppointmentDto;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -60,7 +61,7 @@ public class AppointmentMapper {
                 .orElse(null);
     }
 
-    public Appointment createAppointmentDtoToAppointment(AppointmentDto createAppointmentDto) {
+    public Appointment createAppointmentDtoToAppointment(CreateAppointmentDto createAppointmentDto) {
         return Optional.ofNullable(createAppointmentDto)
                 .map(dto -> {
                     Appointment appointment = new Appointment();

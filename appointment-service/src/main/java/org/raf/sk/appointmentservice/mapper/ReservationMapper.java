@@ -1,7 +1,9 @@
 package org.raf.sk.appointmentservice.mapper;
 
 import lombok.NoArgsConstructor;
+import org.raf.sk.appointmentservice.domain.Appointment;
 import org.raf.sk.appointmentservice.domain.Reservation;
+import org.raf.sk.appointmentservice.dto.appointment.AppointmentDto;
 import org.raf.sk.appointmentservice.dto.reservation.CreateReservationDto;
 import org.raf.sk.appointmentservice.dto.reservation.ReservationDto;
 import org.springframework.stereotype.Component;
@@ -64,6 +66,20 @@ public class ReservationMapper {
                     reservation.setEndTime(dto.getEndTime());
                     reservation.setClientId(dto.getClientId());
                     return reservation;
+                })
+                .orElse(null);
+    }
+
+    public CreateReservationDto appointmentDtoToCreateReservationDto(AppointmentDto appointmentDto) {
+        return Optional.ofNullable(appointmentDto)
+                .map(dto -> {
+                    CreateReservationDto createReservationDto = new CreateReservationDto();
+                    createReservationDto.setClientId(dto.getClientId());
+                    createReservationDto.setDate(dto.getDate());
+                    createReservationDto.setStartTime(dto.getStartTime());
+                    createReservationDto.setEndTime(dto.getEndTime());
+                    createReservationDto.setTrainingId(dto.getTrainingId());
+                    return createReservationDto;
                 })
                 .orElse(null);
     }
