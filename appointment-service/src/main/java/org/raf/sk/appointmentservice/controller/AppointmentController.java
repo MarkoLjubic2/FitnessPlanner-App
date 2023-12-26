@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.raf.sk.appointmentservice.domain.Schedulable;
 import org.raf.sk.appointmentservice.dto.appointment.AppointmentDto;
-import org.raf.sk.appointmentservice.dto.reservation.ReservationDto;
 import org.raf.sk.appointmentservice.service.AppointmentService;
 import org.raf.sk.appointmentservice.service.Response;
 import org.raf.sk.appointmentservice.service.combinator.FilterCombinator;
@@ -34,7 +33,7 @@ public class AppointmentController {
         return new ResponseEntity<>(appointmentService.findAllAppointments(pageable), HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Get filtered reservations")
+    @ApiOperation(value = "Get filtered appointments")
     @GetMapping("/filter")
     public ResponseEntity<Response<Page<AppointmentDto>>> findAppointmentByFilter(@ApiIgnore Pageable pageable, @RequestParam("filter") String filter) {
         FilterCombinator<Schedulable> filterCombinator = JSONController.convertFromJson(filter);

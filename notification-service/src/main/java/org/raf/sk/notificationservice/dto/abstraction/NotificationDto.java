@@ -7,7 +7,4 @@ import lombok.Setter;
 @Setter
 public abstract class NotificationDto {
 
-    private Long typeId;
-    private String clientEmail;
-
 }

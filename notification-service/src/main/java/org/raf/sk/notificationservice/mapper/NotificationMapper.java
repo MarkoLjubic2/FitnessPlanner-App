@@ -20,6 +20,7 @@ public class NotificationMapper {
     private final NotificationRepository notificationRepository;
     private final TypeRepository typeRepository;
 
+    /*
     public ActivationDto notificationToActivationDto(Notification notification) {
         return Optional.ofNullable(notification)
                 .map(n -> {
@@ -68,5 +69,6 @@ public class NotificationMapper {
                 })
                 .orElse(null);
     }
+    */
 
 }

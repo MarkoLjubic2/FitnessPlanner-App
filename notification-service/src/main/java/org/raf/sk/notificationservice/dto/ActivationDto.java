@@ -8,8 +8,8 @@ import org.raf.sk.notificationservice.dto.abstraction.NotificationDto;
 @Setter
 public class ActivationDto extends NotificationDto {
 
-    private String link;
-    private String clientFirstName;
-    private String clientLastName;
+        private String email;
+        private String username;
+        private String token;
 
 }

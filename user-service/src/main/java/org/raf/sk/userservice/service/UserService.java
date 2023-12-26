@@ -103,4 +103,12 @@ public interface UserService {
      */
     Response<TokenResponseDto> login(TokenRequestDto tokenRequestDto);
 
+    /**
+     * Performs user registration.
+     *
+     * @param userDto Data for user registration.
+     * @return Response object containing a Boolean indicating the success of the operation.
+     */
+    Response<Boolean> verifyUser(UserDto userDto);
+
 }

@@ -1,6 +1,8 @@
 package org.raf.sk.userservice.service;
 
 import lombok.AllArgsConstructor;
+import org.raf.sk.userservice.client.notification.ActivationDto;
+import org.raf.sk.userservice.client.notification.NotificationMQ;
 import org.raf.sk.userservice.dto.*;
 import org.raf.sk.userservice.dto.abstraction.AbstractUserDto;
 import org.raf.sk.userservice.listener.MessageHelper;
@@ -11,6 +13,7 @@ import org.raf.sk.userservice.repository.UserRepository;
 import org.raf.sk.userservice.security.tokenService.TokenService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private RoleRepository roleRepository;
     private StatusRepository statusRepository;
     private MessageHelper messageHelper;
+    private final JmsTemplate jmsTemplate;
 
     @Override
     public Response<Page<UserDto>> findAll(Pageable pageable) {
@@ -111,6 +115,11 @@ public class UserServiceImpl implements UserService {
                         .orElseGet(() -> {
                             createUserDto.setPassword(encoder.encode(createUserDto.getPassword()));
                             userRepository.save(userMapper.createUserDtoToUser(createUserDto));
+
+                            ActivationDto activationDto = new ActivationDto(createUserDto.getEmail(), createUserDto.getUsername(), tokenService.generate(userMapper.userToClaims(userMapper.createUserDtoToUser(createUserDto))));
+                            NotificationMQ<ActivationDto> msg = new NotificationMQ<>("ACTIVATION", activationDto);
+                            jmsTemplate.convertAndSend("send_emails", messageHelper.createTextMessage(msg));
+
                             return new Response<>(200, "User created", true);
                         }));
     }
@@ -176,6 +185,20 @@ public class UserServiceImpl implements UserService {
                     return new Response<>(200, "User logged in", new TokenResponseDto(tokenService.generate(userMapper.userToClaims(user))));
                 })
                 .orElse(new Response<>(404, "User not found", new TokenResponseDto(null)));
+    }
+
+    @Override
+    public Response<Boolean> verifyUser(UserDto userDto) {
+        return userRepository.findUserByUsername(userDto.getUsername())
+                .map(user -> {
+                    if ("VERIFIED".equals(user.getUserStatus().getName())) {
+                        return new Response<>(409, "User is already verified", false);
+                    }
+                    statusRepository.findStatusByName("VERIFIED").ifPresent(user::setUserStatus);
+                    userRepository.save(user);
+                    return new Response<>(200, "User verified", true);
+                })
+                .orElse(new Response<>(404, "User not found", false));
     }
 
     // Helper

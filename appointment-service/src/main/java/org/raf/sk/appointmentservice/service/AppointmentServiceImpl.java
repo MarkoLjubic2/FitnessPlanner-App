@@ -40,8 +40,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Response<HallDto> findHallById(Long hallId) {
-        return hallRepository
-                .getHallById(hallId)
+        return hallRepository.getHallById(hallId)
                 .map(hallMapper::hallToHallDto)
                 .map(hallDto -> new Response<>(200, "Hall found", hallDto))
                 .orElseGet(() -> new Response<>(404, "Hall not found", null));

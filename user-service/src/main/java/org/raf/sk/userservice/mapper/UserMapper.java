@@ -44,7 +44,8 @@ public class UserMapper {
     public User createUserDtoToUser(CreateUserDto createUserDto) {
         return Optional.of(transferStandardDataToUser(createUserDto))
                 .map(user -> {
-                    roleRepository.findRoleByName("USER").ifPresent(user::setUserRole);
+                    roleRepository.findRoleByName("CLIENT").ifPresent(user::setUserRole);
+                    statusRepository.findStatusByName("UNVERIFIED").ifPresent(user::setUserStatus);
                     user.setLicenseID(createUserDto.getLicenceID());
                     user.setTotalSessions(0);
                     return user;

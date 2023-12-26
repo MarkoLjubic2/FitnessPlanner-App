@@ -78,7 +78,6 @@ public class UserController {
     }
 
     @ApiOperation(value = "Add user")
-    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
     @PostMapping("/addUser")
     public ResponseEntity<Response<Boolean>> addUser(@RequestBody CreateUserDto createUserDto) {
         Response<Boolean> response = userService.addUser(createUserDto);
@@ -113,6 +112,13 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<Response<TokenResponseDto>> login(@RequestBody TokenRequestDto tokenRequestDto) {
         Response<TokenResponseDto> response = userService.login(tokenRequestDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @ApiOperation(value = "Activate")
+    @GetMapping("/activate")
+    public ResponseEntity<Response<Boolean>> verifyUser(@RequestBody UserDto userDto) {
+        Response<Boolean> response = userService.verifyUser(userDto);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
