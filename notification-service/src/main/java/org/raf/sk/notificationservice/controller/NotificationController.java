@@ -3,6 +3,7 @@ package org.raf.sk.notificationservice.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
+import org.raf.sk.notificationservice.dto.MailDto;
 import org.raf.sk.notificationservice.dto.abstraction.NotificationDto;
 import org.raf.sk.notificationservice.security.CheckSecurity;
 import org.raf.sk.notificationservice.service.NotificationService;
@@ -24,15 +25,8 @@ public class NotificationController {
     @ApiOperation(value = "All notifications")
     @GetMapping
     @CheckSecurity(roles = {"ADMIN"})
-    public ResponseEntity<Response<Page<NotificationDto>>> getAllNotifications(Pageable pageable) {
-        Response<Page<NotificationDto>> response = notificationService.findAll(pageable);
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
-    }
-
-    @ApiOperation(value = "Get notification")
-    @GetMapping("/{id}")
-    public ResponseEntity<Response<? extends NotificationDto>> getNotificationById(@ApiParam(value = "id", required = true) @PathVariable Long id) {
-        Response<? extends NotificationDto> response = notificationService.getNotificationById(id);
+    public ResponseEntity<Response<Page<MailDto>>> getAllNotifications(Pageable pageable) {
+        Response<Page<MailDto>> response = notificationService.findAll(pageable);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
@@ -50,6 +44,13 @@ public class NotificationController {
     public ResponseEntity<Boolean> deleteNotification(@RequestHeader("Authorization") String jwt, @ApiParam(value = "id", required = true) @PathVariable Long id) {
         Response<Boolean> response = notificationService.deleteNotification(id);
         return new ResponseEntity<>(response.getData(), HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @ApiOperation(value = "All notifications by user")
+    @GetMapping("/user")
+    public ResponseEntity<Response<Page<MailDto>>> getAllNotificationsByUser(@RequestHeader("Authorization") String jwt, Pageable pageable) {
+        Response<Page<MailDto>> response = notificationService.findAllByUser(pageable, jwt);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
 }

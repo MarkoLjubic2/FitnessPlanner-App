@@ -35,16 +35,10 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public Long getUserId(String jwt) {
+    public String getMailFromToken(String jwt) {
         Claims claims = parseToken(jwt);
-        return (claims != null) ? (Long) claims.get("userId") : null;
+        if (claims == null) return null;
+        return claims.getSubject();
     }
-
-    @Override
-    public String getUserRole(String jwt) {
-        Claims claims = parseToken(jwt);
-        return (claims != null) ? (String) claims.get("role") : null;
-    }
-
 
 }

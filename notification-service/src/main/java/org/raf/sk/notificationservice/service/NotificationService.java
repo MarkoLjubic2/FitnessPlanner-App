@@ -1,5 +1,6 @@
 package org.raf.sk.notificationservice.service;
 
+import org.raf.sk.notificationservice.dto.MailDto;
 import org.raf.sk.notificationservice.dto.abstraction.NotificationDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,12 +9,10 @@ public interface NotificationService {
 
     <T extends NotificationDto> Response<Boolean> sendNotification(String typeName, T dto);
 
+    Response<Page<MailDto>> findAll(Pageable pageable);
+
     Response<Boolean> deleteNotification(Long id);
 
-    <T extends NotificationDto> Response<Page<T>> findAll(Pageable pageable);
-
-    <T extends NotificationDto> Response<Page<T>> findAllByUser(String jwt);
-
-    Response<? extends NotificationDto> getNotificationById(Long id);
+    Response<Page<MailDto>> findAllByUser(Pageable pageable, String jwt);
 
 }

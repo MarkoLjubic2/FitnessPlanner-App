@@ -8,8 +8,6 @@ public interface TokenService {
 
     Claims parseToken(String jwt);
 
-    Long getUserId(String jwt);
-
-    String getUserRole(String jwt);
+    String getMailFromToken(String jwt);
 
 }

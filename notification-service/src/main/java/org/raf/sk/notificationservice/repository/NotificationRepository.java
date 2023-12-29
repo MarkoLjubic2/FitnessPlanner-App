@@ -11,9 +11,7 @@ import java.util.Date;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-    Page<Notification> findAllByClientEmail(String clientEmail, Pageable pageable);
-
-    Page<Notification> findAllByManagerEmail(String managerEmail, Pageable pageable);
+    Page<Notification> findAllByMail(String mail, Pageable pageable);
 
     Page<Notification> findAllByTime(Date startDate, Date endDate, Pageable pageable);
 

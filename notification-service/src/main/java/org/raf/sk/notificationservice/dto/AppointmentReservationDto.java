@@ -11,7 +11,6 @@ import org.raf.sk.notificationservice.dto.abstraction.NotificationDto;
 public class AppointmentReservationDto extends NotificationDto {
 
     private String managerEmail;
-    private String clientEmail;
     private String clientFirstName;
     private String clientLastName;
     private String hallName;

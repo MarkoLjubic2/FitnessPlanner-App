@@ -8,7 +8,6 @@ import org.raf.sk.userservice.client.notification.abstraction.NotificationDto;
 @Setter
 public class ChangePasswordDto extends NotificationDto {
 
-    private String email;
     private String username;
 
 }

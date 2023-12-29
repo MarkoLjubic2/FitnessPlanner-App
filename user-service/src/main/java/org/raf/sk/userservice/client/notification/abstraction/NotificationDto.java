@@ -7,4 +7,6 @@ import lombok.Setter;
 @Setter
 public abstract class NotificationDto {
 
+    protected String mail;
+
 }

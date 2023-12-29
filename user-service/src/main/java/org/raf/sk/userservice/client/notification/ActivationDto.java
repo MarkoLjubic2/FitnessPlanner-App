@@ -10,8 +10,13 @@ import org.raf.sk.userservice.client.notification.abstraction.NotificationDto;
 @AllArgsConstructor
 public class ActivationDto extends NotificationDto {
 
-    private String email;
     private String username;
     private String token;
+
+    public ActivationDto(String mail, String username, String token) {
+        this.mail = mail;
+        this.username = username;
+        this.token = token;
+    }
 
 }
