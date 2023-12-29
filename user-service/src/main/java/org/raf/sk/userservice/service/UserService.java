@@ -1,5 +1,6 @@
 package org.raf.sk.userservice.service;
 
+import org.raf.sk.userservice.client.appointment.AppointmentUserDto;
 import org.raf.sk.userservice.dto.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -106,9 +107,25 @@ public interface UserService {
     /**
      * Performs user registration.
      *
-     * @param userDto Data for user registration.
+     * @param jwt               JWT token for authentication.
      * @return Response object containing a Boolean indicating the success of the operation.
      */
-    Response<Boolean> verifyUser(UserDto userDto);
+    Response<Boolean> verifyUser(String jwt);
+
+    /**
+     * Retrieves user data for the specified user ID.
+     *
+     * @param userId ID of the user to retrieve data for.
+     * @return Response object containing the UserDto for the specified user ID.
+     */
+    Response<AppointmentUserDto> getAppointmentUserData(Long userId);
+
+    /**
+     * Retrieves manager data for the specified user ID.
+     *
+     * @param userId ID of the user to retrieve data for.
+     * @return Response object containing the ManagerDto for the specified user ID.
+     */
+    Response<ManagerDto> getManagerData(Long userId);
 
 }

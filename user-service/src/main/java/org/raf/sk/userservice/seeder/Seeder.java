@@ -32,7 +32,7 @@ public class Seeder implements CommandLineRunner {
     public void run(String... args) {
         Role roleAdmin = new Role(1L, "ADMIN");
         Role roleManager = new Role(2L, "MANAGER");
-        Role roleClient = new Role(3L, "CLIENT");
+        Role roleClient = new Role(3L, "USER");
         roleAdmin = roleRepository.save(roleAdmin);
         roleManager = roleRepository.save(roleManager);
         roleClient = roleRepository.save(roleClient);
@@ -58,7 +58,7 @@ public class Seeder implements CommandLineRunner {
 
     private void insertManagers(Role roleManager, Status statusActive) {
         User manager1 = new User("m1", encoder.encode("m1"), "m1", "m1", "manager1@gmail.com", Date.valueOf("1990-10-10"));
-        manager1.setHall("Gym 1");
+        manager1.setHallId(1L);
         manager1.setHireDate(Date.valueOf("2022-11-10"));
         manager1.setUserRole(roleManager);
         manager1.setUserStatus(statusActive);

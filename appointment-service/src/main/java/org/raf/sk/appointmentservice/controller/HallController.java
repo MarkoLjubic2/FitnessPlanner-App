@@ -1,19 +1,13 @@
 package org.raf.sk.appointmentservice.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
-import org.raf.sk.appointmentservice.domain.Schedulable;
 import org.raf.sk.appointmentservice.dto.hall.CreateHallDto;
 import org.raf.sk.appointmentservice.dto.hall.HallDto;
 import org.raf.sk.appointmentservice.dto.hall.UpdateHallDto;
-import org.raf.sk.appointmentservice.dto.reservation.ReservationDto;
 import org.raf.sk.appointmentservice.security.CheckSecurity;
 import org.raf.sk.appointmentservice.service.AppointmentService;
 import org.raf.sk.appointmentservice.service.Response;
-import org.raf.sk.appointmentservice.service.combinator.FilterCombinator;
-import org.raf.sk.appointmentservice.service.combinator.FilterJSON;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,9 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.time.DayOfWeek;
-import java.util.Optional;
-
+@CrossOrigin
 @RestController
 @RequestMapping("/halls")
 @AllArgsConstructor
@@ -47,7 +39,7 @@ public class HallController {
 
     @ApiOperation(value = "Create hall")
     @PostMapping
-    @CheckSecurity(roles = {"ADMIN", "MANAGER"})
+    @CheckSecurity(roles = {"ADMIN"})
     public ResponseEntity<Response<Boolean>> createHall(@RequestHeader("Authorization") String jwt, @RequestBody CreateHallDto createHallDto) {
         return new ResponseEntity<>(appointmentService.createHall(jwt, createHallDto), HttpStatus.OK);
     }
@@ -61,7 +53,7 @@ public class HallController {
 
     @ApiOperation(value = "Delete hall")
     @DeleteMapping
-    @CheckSecurity(roles = {"ADMIN", "MANAGER"})
+    @CheckSecurity(roles = {"ADMIN"})
     public ResponseEntity<Response<Boolean>> deleteHall(@RequestHeader("Authorization") String jwt, @RequestParam("hallId") Long hallId) {
         return new ResponseEntity<>(appointmentService.deleteHall(jwt, hallId), HttpStatus.OK);
     }

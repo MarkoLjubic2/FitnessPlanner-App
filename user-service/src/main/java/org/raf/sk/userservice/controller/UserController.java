@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.raf.sk.userservice.client.appointment.AppointmentUserDto;
 import org.raf.sk.userservice.dto.*;
 import org.raf.sk.userservice.security.CheckSecurity;
 import org.raf.sk.userservice.service.Response;
@@ -117,10 +118,25 @@ public class UserController {
 
     @ApiOperation(value = "Activate")
     @GetMapping("/activate")
-    public ResponseEntity<Response<Boolean>> verifyUser(@RequestBody UserDto userDto) {
-        Response<Boolean> response = userService.verifyUser(userDto);
+    public ResponseEntity<Response<Boolean>> verifyUser(@RequestParam String token) {
+        Response<Boolean> response = userService.verifyUser(token);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
+
+    @ApiOperation(value = "Get appointment user data")
+    @GetMapping("/getAppointmentUserData/{userId}")
+    public ResponseEntity<Response<AppointmentUserDto>> getAppointmentUserData(@PathVariable("userId") Long userId) {
+        Response<AppointmentUserDto> response = userService.getAppointmentUserData(userId);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
+    @ApiOperation(value = "Get manager data")
+    @GetMapping("/getManagerData/{userId}")
+    public ResponseEntity<Response<ManagerDto>> getManagerData(@PathVariable("userId") Long userId) {
+        Response<ManagerDto> response = userService.getManagerData(userId);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
 
 
 }

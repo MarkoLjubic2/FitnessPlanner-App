@@ -1,18 +1,21 @@
 package org.raf.sk.appointmentservice.mapper;
 
-import lombok.NoArgsConstructor;
-import org.raf.sk.appointmentservice.domain.Appointment;
+import lombok.AllArgsConstructor;
 import org.raf.sk.appointmentservice.domain.Reservation;
 import org.raf.sk.appointmentservice.dto.appointment.AppointmentDto;
 import org.raf.sk.appointmentservice.dto.reservation.CreateReservationDto;
 import org.raf.sk.appointmentservice.dto.reservation.ReservationDto;
+import org.raf.sk.appointmentservice.repository.TrainingRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Component
-@NoArgsConstructor
+@AllArgsConstructor
 public class ReservationMapper {
+
+    private final TrainingRepository trainingRepository;
 
     public ReservationDto reservationToReservationDto(Reservation reservation) {
         return Optional.ofNullable(reservation)
@@ -61,10 +64,11 @@ public class ReservationMapper {
         return Optional.ofNullable(createReservationDto)
                 .map(dto -> {
                     Reservation reservation = new Reservation();
-                    reservation.setDate(dto.getDate());
+                    reservation.setDate(new Date());
                     reservation.setStartTime(dto.getStartTime());
                     reservation.setEndTime(dto.getEndTime());
                     reservation.setClientId(dto.getClientId());
+                    trainingRepository.findById(dto.getTrainingId()).ifPresent(reservation::setTraining);
                     return reservation;
                 })
                 .orElse(null);

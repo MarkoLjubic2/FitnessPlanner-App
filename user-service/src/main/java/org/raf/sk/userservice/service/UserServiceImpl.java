@@ -1,6 +1,7 @@
 package org.raf.sk.userservice.service;
 
 import lombok.AllArgsConstructor;
+import org.raf.sk.userservice.client.appointment.AppointmentUserDto;
 import org.raf.sk.userservice.client.notification.ActivationDto;
 import org.raf.sk.userservice.client.notification.NotificationMQ;
 import org.raf.sk.userservice.dto.*;
@@ -102,7 +103,6 @@ public class UserServiceImpl implements UserService {
                 .orElse(new Response<>(404, "User not found", false));
     }
 
-    // TODO: Ubaciti verifikaciju i notifikaciju
     @Override
     public Response<Boolean> addUser(CreateUserDto createUserDto) {
         if (!isEmailValid(createUserDto.getEmail()))
@@ -124,7 +124,6 @@ public class UserServiceImpl implements UserService {
                         }));
     }
 
-    // TODO: Ubaciti verifikaciju i notifikaciju
     @Override
     public Response<Boolean> addManager(CreateManagerDto createManagerDto) {
         return userRepository.findUserByEmail(createManagerDto.getEmail())
@@ -164,7 +163,7 @@ public class UserServiceImpl implements UserService {
                     Optional.ofNullable(updateManagerDto.getFirstName()).ifPresent(user::setFirstName);
                     Optional.ofNullable(updateManagerDto.getLastName()).ifPresent(user::setLastName);
                     Optional.ofNullable(updateManagerDto.getEmail()).ifPresent(user::setEmail);
-                    Optional.ofNullable(updateManagerDto.getHall()).ifPresent(user::setHall);
+                    Optional.ofNullable(updateManagerDto.getHallId()).ifPresent(user::setHallId);
                     Optional.ofNullable(updateManagerDto.getHireDate()).ifPresent(user::setHireDate);
                     userRepository.save(user);
                     return new Response<>(200, "Manager updated", true);
@@ -188,8 +187,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response<Boolean> verifyUser(UserDto userDto) {
-        return userRepository.findUserByUsername(userDto.getUsername())
+    public Response<AppointmentUserDto> getAppointmentUserData(Long userId) {
+        return userRepository.findById(userId)
+                .map(user -> new Response<>(200, "User found", userMapper.userToAppointmentUserDto(user)))
+                .orElse(new Response<>(404, "User not found", null));
+    }
+
+    @Override
+    public Response<ManagerDto> getManagerData(Long userId) {
+        return userRepository.findById(userId)
+                .map(user -> new Response<>(200, "Manager found", userMapper.userToManagerDto(user)))
+                .orElse(new Response<>(404, "Manager not found", null));
+    }
+
+    @Override
+    public Response<Boolean> verifyUser(String jwt) {
+        String username = tokenService.getUsername(jwt);
+        return userRepository.findUserByUsername(username)
                 .map(user -> {
                     if ("VERIFIED".equals(user.getUserStatus().getName())) {
                         return new Response<>(409, "User is already verified", false);

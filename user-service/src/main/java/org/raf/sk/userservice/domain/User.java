@@ -31,7 +31,7 @@ public class User {
     private Status userStatus;
     private String licenseID;
     private int totalSessions;
-    private String hall;
+    private Long hallId;
     private Date hireDate;
     @CreationTimestamp
     @Column(updatable = false)

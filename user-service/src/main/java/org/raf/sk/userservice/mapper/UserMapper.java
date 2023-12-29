@@ -3,11 +3,9 @@ package org.raf.sk.userservice.mapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.AllArgsConstructor;
+import org.raf.sk.userservice.client.appointment.AppointmentUserDto;
 import org.raf.sk.userservice.domain.User;
-import org.raf.sk.userservice.dto.CreateManagerDto;
-import org.raf.sk.userservice.dto.CreateUserDto;
-import org.raf.sk.userservice.dto.UpdateUserDto;
-import org.raf.sk.userservice.dto.UserDto;
+import org.raf.sk.userservice.dto.*;
 import org.raf.sk.userservice.dto.abstraction.AbstractUserDto;
 import org.raf.sk.userservice.repository.RoleRepository;
 import org.raf.sk.userservice.repository.StatusRepository;
@@ -44,7 +42,7 @@ public class UserMapper {
     public User createUserDtoToUser(CreateUserDto createUserDto) {
         return Optional.of(transferStandardDataToUser(createUserDto))
                 .map(user -> {
-                    roleRepository.findRoleByName("CLIENT").ifPresent(user::setUserRole);
+                    roleRepository.findRoleByName("USER").ifPresent(user::setUserRole);
                     statusRepository.findStatusByName("UNVERIFIED").ifPresent(user::setUserStatus);
                     user.setLicenseID(createUserDto.getLicenceID());
                     user.setTotalSessions(0);
@@ -103,7 +101,25 @@ public class UserMapper {
                     roleRepository.findRoleByName("MANAGER").ifPresent(manager::setUserRole);
                     manager.setLicenseID("-1");
                     manager.setTotalSessions(-1);
+                    manager.setHallId(createManagerDto.getHallId());
+                    manager.setHireDate(createManagerDto.getHireDate());
                     return manager;
+                })
+                .orElse(null);
+    }
+
+    public ManagerDto userToManagerDto(User user){
+        return Optional.ofNullable(user)
+                .map(u -> {
+                    ManagerDto managerDto = new ManagerDto();
+                    managerDto.setId(u.getId());
+                    managerDto.setEmail(u.getEmail());
+                    managerDto.setFirstName(u.getFirstName());
+                    managerDto.setLastName(u.getLastName());
+                    managerDto.setUsername(u.getUsername());
+                    managerDto.setHallId(u.getHallId());
+                    managerDto.setHireDate(u.getHireDate());
+                    return managerDto;
                 })
                 .orElse(null);
     }
@@ -117,7 +133,24 @@ public class UserMapper {
                     createManagerDto.setLastName(m.getLastName());
                     createManagerDto.setUsername(m.getUsername());
                     createManagerDto.setPassword(m.getPassword());
+                    createManagerDto.setHallId(m.getHallId());
+                    createManagerDto.setHireDate(m.getHireDate());
                     return createManagerDto;
+                })
+                .orElse(null);
+    }
+
+    public AppointmentUserDto userToAppointmentUserDto(User user) {
+        return Optional.ofNullable(user)
+                .map(u -> {
+                    AppointmentUserDto appointmentUserDto = new AppointmentUserDto();
+                    appointmentUserDto.setId(u.getId());
+                    appointmentUserDto.setEmail(u.getEmail());
+                    appointmentUserDto.setFirstName(u.getFirstName());
+                    appointmentUserDto.setLastName(u.getLastName());
+                    appointmentUserDto.setUsername(u.getUsername());
+                    appointmentUserDto.setTotalSessions(u.getTotalSessions());
+                    return appointmentUserDto;
                 })
                 .orElse(null);
     }

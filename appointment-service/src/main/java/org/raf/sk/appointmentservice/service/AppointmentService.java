@@ -23,7 +23,7 @@ public interface AppointmentService {
 
     Response<Boolean> deleteHall(String jwt, Long hallId);
 
-    Response<Boolean> scheduleReservation(String jwt, AppointmentDto appointmentDto);
+    Response<Boolean> scheduleReservation(AppointmentDto appointmentDto);
 
     Response<Boolean> cancelReservation(ReservationDto reservationDto);
 

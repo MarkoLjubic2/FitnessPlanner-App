@@ -1,13 +1,10 @@
 package org.raf.sk.appointmentservice.controller;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.Authorization;
 import lombok.AllArgsConstructor;
 import org.raf.sk.appointmentservice.domain.Schedulable;
 import org.raf.sk.appointmentservice.dto.appointment.AppointmentDto;
-import org.raf.sk.appointmentservice.dto.reservation.CreateReservationDto;
 import org.raf.sk.appointmentservice.dto.reservation.ReservationDto;
-import org.raf.sk.appointmentservice.security.CheckSecurity;
 import org.raf.sk.appointmentservice.service.AppointmentService;
 import org.raf.sk.appointmentservice.service.Response;
 import org.raf.sk.appointmentservice.service.combinator.FilterCombinator;
@@ -19,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/reservations")
 @AllArgsConstructor
@@ -41,13 +39,13 @@ public class ReservationController {
     }
 
     @ApiOperation(value = "Schedule reservation")
-    @GetMapping("/schedule")
-    public ResponseEntity<Response<Boolean>> scheduleReservation(@RequestHeader("Authorization") String jwt, @RequestBody AppointmentDto appointmentDto) {
-        return new ResponseEntity<>(appointmentService.scheduleReservation(jwt, appointmentDto), HttpStatus.OK);
+    @PostMapping("/schedule")
+    public ResponseEntity<Response<Boolean>> scheduleReservation(@RequestBody AppointmentDto appointmentDto) {
+        return new ResponseEntity<>(appointmentService.scheduleReservation(appointmentDto), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Cancel reservation")
-    @GetMapping("/cancel")
+    @PostMapping("/cancel")
     public ResponseEntity<Response<Boolean>> cancelReservation(@RequestBody ReservationDto reservationDto) {
         return new ResponseEntity<>(appointmentService.cancelReservation(reservationDto), HttpStatus.OK);
     }

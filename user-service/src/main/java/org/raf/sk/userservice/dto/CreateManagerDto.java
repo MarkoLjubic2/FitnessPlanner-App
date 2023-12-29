@@ -10,7 +10,7 @@ import java.util.Date;
 @Setter
 public class CreateManagerDto extends AbstractUserDto {
 
-    private String hall;
+    private Long hallId;
     private Date hireDate;
 
 }

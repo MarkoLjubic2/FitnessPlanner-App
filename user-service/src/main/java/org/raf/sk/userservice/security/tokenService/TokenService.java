@@ -12,4 +12,6 @@ public interface TokenService {
 
     String getRole(String jwt);
 
+    String getUsername(String jwt);
+
 }

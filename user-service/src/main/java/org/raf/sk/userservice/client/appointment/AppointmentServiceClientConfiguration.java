@@ -13,7 +13,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.io.IOException;
 import java.util.Collections;
-/*
+
 @Configuration
 public class AppointmentServiceClientConfiguration {
 
@@ -21,9 +21,9 @@ public class AppointmentServiceClientConfiguration {
     private String superToken;
 
     @Bean
-    public RestTemplate rentServiceRestTemplate() {
+    public RestTemplate appointmentServiceRestTemplate() {
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory("http://localhost:8081/appointment-service"));
+        restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory("http://localhost:8081"));
         restTemplate.setInterceptors(Collections.singletonList(new TokenInterceptor()));
         return restTemplate;
     }
@@ -40,4 +40,3 @@ public class AppointmentServiceClientConfiguration {
 
     }
 }
-*/

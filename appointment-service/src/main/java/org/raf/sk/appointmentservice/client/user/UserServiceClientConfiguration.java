@@ -13,7 +13,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.io.IOException;
 import java.util.Collections;
-/*
+
 @Configuration
 public class UserServiceClientConfiguration {
 
@@ -23,7 +23,7 @@ public class UserServiceClientConfiguration {
     @Bean
     public RestTemplate userServiceRestTemplate() {
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory("http://localhost:8080/user-service"));
+        restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory("http://localhost:8080"));
         restTemplate.setInterceptors(Collections.singletonList(new TokenInterceptor()));
         return restTemplate;
     }
@@ -41,4 +41,3 @@ public class UserServiceClientConfiguration {
     }
 
 }
-*/
