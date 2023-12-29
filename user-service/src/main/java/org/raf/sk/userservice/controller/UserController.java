@@ -33,16 +33,16 @@ public class UserController {
                             "Multiple sort criteria are supported.")})
     @GetMapping
     @CheckSecurity(roles = {"ADMIN"})
-    public ResponseEntity<Response<Page<UserDto>>> getAllUsers(@RequestHeader("Authorization") String authorization, Pageable pageable) {
-        Response<Page<UserDto>> response = userService.findAll(pageable);
+    public ResponseEntity<Response<Page<UserDto>>> getAllUsers(@RequestHeader("Authorization") String jwt, Pageable pageable) {
+        Response<Page<UserDto>> response = userService.findAll(jwt, pageable);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
-    @ApiOperation(value = "Find user by id")
-    @GetMapping("/findUser/{userId}")
+    @ApiOperation(value = "Check if user exists")
+    @GetMapping("/userExists/{userId}")
     @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
-    public ResponseEntity<Response<Boolean>> findUser(@PathVariable Long userId) {
-        Response<Boolean> response = userService.findUser(userId);
+    public ResponseEntity<Response<Boolean>> userExists(@PathVariable Long userId) {
+        Response<Boolean> response = userService.userExists(userId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
@@ -122,6 +122,8 @@ public class UserController {
         Response<Boolean> response = userService.verifyUser(token);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
+
+    // Routes for communication with other services
 
     @ApiOperation(value = "Get appointment user data")
     @GetMapping("/getAppointmentUserData/{userId}")

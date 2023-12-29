@@ -33,6 +33,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+import static org.raf.sk.userservice.constants.Constants.*;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
@@ -72,11 +73,14 @@ public class UserServiceTest {
         Page<User> usersPage = new PageImpl<>(List.of());
         when(userRepository.findAll(any(Pageable.class))).thenReturn(usersPage);
 
+        when(tokenService.isTokenValid(any())).thenReturn(true);
+        when(tokenService.getRole(any())).thenReturn("ADMIN");
+
         // Act
-        Response<Page<UserDto>> response = userService.findAll(PageRequest.of(0, 10));
+        Response<Page<UserDto>> response = userService.findAll("valid_jwt", PageRequest.of(0, 10));
 
         // Assert
-        assertUserResponse(response, 200, "All users", usersPage);
+        assertUserResponse(response, STATUS_OK, "All users", usersPage);
     }
 
     @Test
@@ -91,11 +95,14 @@ public class UserServiceTest {
         when(userMapper.userToUserDto(user1)).thenReturn(userDto1);
         when(userMapper.userToUserDto(user2)).thenReturn(userDto2);
 
+        when(tokenService.isTokenValid(any())).thenReturn(true);
+        when(tokenService.getRole(any())).thenReturn("ADMIN");
+
         // Act
-        Response<Page<UserDto>> response = userService.findAll(PageRequest.of(0, 10));
+        Response<Page<UserDto>> response = userService.findAll("valid_jwt", PageRequest.of(0, 10));
 
         // Assert
-        assertThat(response.getStatusCode()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(STATUS_OK);
         assertThat(response.getMessage()).isEqualTo("All users");
         assertThat(response.getData().getContent()).containsExactly(userDto1, userDto2);
     }
@@ -106,10 +113,10 @@ public class UserServiceTest {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // Act
-        Response<Boolean> response = userService.findUser(1L);
+        Response<Boolean> response = userService.userExists(1L);
 
         // Assert
-        assertUserResponse(response, 404, "User not found", false);
+        assertUserResponse(response, STATUS_NOT_FOUND, "User not found", false);
     }
 
     @Test
@@ -118,10 +125,10 @@ public class UserServiceTest {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
 
         // Act
-        Response<Boolean> response = userService.findUser(1L);
+        Response<Boolean> response = userService.userExists(1L);
 
         // Assert
-        assertThat(response.getStatusCode()).isEqualTo(200);
+        assertThat(response.getStatusCode()).isEqualTo(STATUS_OK);
         assertThat(response.getMessage()).isEqualTo("User found");
         assertThat(response.getData()).isTrue();
     }
@@ -139,7 +146,7 @@ public class UserServiceTest {
         Response<Boolean> response = userService.updateUser("valid_jwt", dto);
 
         // Assert
-        assertUserResponse(response, 404, "User not found", false);
+        assertUserResponse(response, STATUS_NOT_FOUND, "User not found", false);
     }
 
     @Test
@@ -154,7 +161,7 @@ public class UserServiceTest {
         Response<Boolean> response = userService.updateUser("invalid_jwt", dto);
 
         // Assert
-        assertUserResponse(response, 401, "Invalid or expired token", false);
+        assertUserResponse(response, STATUS_UNAUTHORIZED, "Invalid or expired token", false);
     }
 
     @Test
@@ -170,7 +177,7 @@ public class UserServiceTest {
         Response<Boolean> response = userService.updateUser("valid_jwt", dto);
 
         // Assert
-        assertUserResponse(response, 401, "Unauthorized", false);
+        assertUserResponse(response, STATUS_UNAUTHORIZED, "Unauthorized", false);
     }
 
     @Test
@@ -187,7 +194,7 @@ public class UserServiceTest {
         Response<Boolean> response = userService.updateUser("valid_jwt", dto);
 
         // Assert
-        assertUserResponse(response, 200, "User updated", true);
+        assertUserResponse(response, STATUS_OK, "User updated", true);
     }
 
     @Test
@@ -199,7 +206,7 @@ public class UserServiceTest {
         Response<UserDto> response = userService.getUserData(1L);
 
         // Assert
-        assertUserResponse(response, 404, "User not found", null);
+        assertUserResponse(response, STATUS_NOT_FOUND, "User not found", null);
     }
 
     @Test
@@ -214,7 +221,7 @@ public class UserServiceTest {
         Response<UserDto> response = userService.getUserData(1L);
 
         // Assert
-        assertUserResponse(response, 200, "User found", userDto);
+        assertUserResponse(response, STATUS_OK, "User found", userDto);
     }
 
 
@@ -231,7 +238,7 @@ public class UserServiceTest {
         Response<Boolean> response = userService.changeTotalSessions("valid_jwt", 1L, change);
 
         // Assert
-        assertUserResponse(response, 200, "Total sessions changed", true);
+        assertUserResponse(response, STATUS_OK, "Total sessions changed", true);
         assertThat(user.getTotalSessions()).isEqualTo(expectedSessions);
     }
 
@@ -271,7 +278,7 @@ public class UserServiceTest {
         Response<Boolean> response = userService.banUser("valid_jwt","username");
 
         // Assert
-        assertUserResponse(response, 404, "User not found", false);
+        assertUserResponse(response, STATUS_NOT_FOUND, "User not found", false);
     }
 
     @Test
@@ -290,7 +297,7 @@ public class UserServiceTest {
         Response<Boolean> response = userService.banUser("valid_jwt", "username");
 
         // Assert
-        assertUserResponse(response, 409, "User is already banned", false);
+        assertUserResponse(response, STATUS_CONFLICT, "User is already banned", false);
     }
 
     @Test
@@ -309,7 +316,7 @@ public class UserServiceTest {
         Response<Boolean> response = userService.banUser("valid_jwt","username");
 
         // Assert
-        assertUserResponse(response, 200, "User banned", true);
+        assertUserResponse(response, STATUS_OK, "User banned", true);
         assertThat(user.getUserStatus().getName()).isEqualTo("BANNED");
     }
 
@@ -324,7 +331,7 @@ public class UserServiceTest {
         Response<Boolean> response = userService.unbanUser("valid_jwt", "username");
 
         // Assert
-        assertUserResponse(response, 404, "User not found", false);
+        assertUserResponse(response, STATUS_NOT_FOUND, "User not found", false);
     }
 
     @Test
@@ -343,7 +350,7 @@ public class UserServiceTest {
         Response<Boolean> response = userService.unbanUser("valid_jwt", "username");
 
         // Assert
-        assertUserResponse(response, 409, "User is not banned", false);
+        assertUserResponse(response, STATUS_CONFLICT, "User is not banned", false);
     }
 
     @Test
@@ -362,7 +369,7 @@ public class UserServiceTest {
         Response<Boolean> response = userService.unbanUser("valid_jwt", "username");
 
         // Assert
-        assertUserResponse(response, 200, "User unbanned", true);
+        assertUserResponse(response, STATUS_OK, "User unbanned", true);
         assertThat(user.getUserStatus().getName()).isEqualTo("VERIFIED");
     }
 
@@ -376,7 +383,7 @@ public class UserServiceTest {
         Response<Boolean> response = userService.banUser("invalid_jwt", "username");
 
         // Assert
-        assertUserResponse(response, 401, "Invalid or expired token", false);
+        assertUserResponse(response, STATUS_UNAUTHORIZED, "Invalid or expired token", false);
     }
 
     @Test
@@ -389,7 +396,7 @@ public class UserServiceTest {
         Response<Boolean> response = userService.unbanUser("invalid_jwt", "username");
 
         // Assert
-        assertUserResponse(response, 401, "Invalid or expired token", false);
+        assertUserResponse(response, STATUS_UNAUTHORIZED, "Invalid or expired token", false);
     }
 
     @Test
@@ -402,7 +409,7 @@ public class UserServiceTest {
         Response<Boolean> response = userService.banUser("valid_jwt", "username");
 
         // Assert
-        assertUserResponse(response, 401, "Unauthorized", false);
+        assertUserResponse(response, STATUS_UNAUTHORIZED, "Unauthorized", false);
     }
 
     @Test
@@ -415,7 +422,7 @@ public class UserServiceTest {
         Response<Boolean> response = userService.unbanUser("valid_jwt", "username");
 
         // Assert
-        assertUserResponse(response, 401, "Unauthorized", false);
+        assertUserResponse(response, STATUS_UNAUTHORIZED, "Unauthorized", false);
     }
 
 }

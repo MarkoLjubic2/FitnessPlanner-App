@@ -13,10 +13,11 @@ public interface UserService {
     /**
      * Retrieves a paginated list of users.
      *
+     * @param jwt      JWT token for authentication.
      * @param pageable Pageable object containing pagination information.
      * @return Response object containing a Page of UserDto.
      */
-    Response<Page<UserDto>> findAll(Pageable pageable);
+    Response<Page<UserDto>> findAll(String jwt, Pageable pageable);
 
     /**
      * Checks if a user with the specified ID exists.
@@ -24,7 +25,7 @@ public interface UserService {
      * @param userId ID of the user to check.
      * @return Response object containing a Boolean indicating the existence of the user.
      */
-    Response<Boolean> findUser(Long userId);
+    Response<Boolean> userExists(Long userId);
 
     /**
      * Retrieves user data for the specified user ID.

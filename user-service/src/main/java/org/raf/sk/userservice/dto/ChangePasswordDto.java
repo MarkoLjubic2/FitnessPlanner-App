@@ -7,7 +7,7 @@ import javax.validation.constraints.Size;
 
 @Getter
 @Setter
-public class ChangePassword {
+public class ChangePasswordDto {
 
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String oldPassword;
