@@ -6,9 +6,9 @@ import org.springframework.data.domain.Pageable;
 
 public interface NotificationService {
 
-    <T extends NotificationDto> Response<Boolean> sendNotification(T dto);
+    <T extends NotificationDto> Response<Boolean> sendNotification(String typeName, T dto);
 
-    Response<Boolean> deleteNotification(String jwt, Long id);
+    Response<Boolean> deleteNotification(Long id);
 
     <T extends NotificationDto> Response<Page<T>> findAll(Pageable pageable);
 

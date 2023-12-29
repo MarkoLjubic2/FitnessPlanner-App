@@ -20,11 +20,11 @@ public class Seeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        Type type1 = new Type("Activation Mail", "Greetings %first_name %last_name, to verify go to %link", "Activation");
-        Type type2 = new Type("Change Password Mail", "Greetings %first_name %last_name, to change password go to %link", "Change Password");
-        Type type3 = new Type("Reservation", "Hello %first_name %last_name, a reservation for %hall has been made successfully!", "Reservation");
-        Type type4 = new Type("Reservation Cancellation", "Hello %first_name %last_name, a reservation for %hall has been cancelled!", "Reservation");
-        Type type5 = new Type("Reservation Reminder", "Hello %first_name %last_name, a reservation for %hall is coming up!", "Reservation");
+        Type type1 = new Type("ACTIVATION", "Greetings %USERNAME! Please click the following link to activate your account: %LINK", "Activation");
+        Type type2 = new Type("CHANGE_PASSWORD", "Greetings  %USERNAME! Your password has been changed successfully.", "Change Password");
+        Type type3 = new Type("RESERVATION", "Hello %FIRST_NAME %LAST_NAME, a reservation for %HALL has been made successfully!", "Reservation");
+        Type type4 = new Type("RESERVATION_CANCEL", "Hello %FIRST_NAME %LAST_NAME, a reservation for %HALL has been cancelled!", "Reservation");
+        Type type5 = new Type("REMINDER", "Hello %FIRST_NAME %LAST_NAME, a reservation for %HALL is coming up!", "Reservation");
 
         typeRepository.save(type1);
         typeRepository.save(type2);

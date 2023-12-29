@@ -38,8 +38,9 @@ public class NotificationController {
 
     @ApiOperation(value = "Send notification")
     @PostMapping
-    public ResponseEntity<Response<Boolean>> sendNotification(@ApiParam(value = "Notification to send", required = true) @RequestBody NotificationDto notificationDto) {
-        Response<Boolean> response = notificationService.sendNotification(notificationDto);
+    public ResponseEntity<Response<Boolean>> sendNotification(@ApiParam(value = "Notification to send", required = true)
+                                                                  @RequestBody NotificationDto notificationDto, @RequestParam String typeName) {
+        Response<Boolean> response = notificationService.sendNotification(typeName, notificationDto);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
@@ -47,7 +48,7 @@ public class NotificationController {
     @DeleteMapping("/{id}")
     @CheckSecurity(roles = {"ADMIN"})
     public ResponseEntity<Boolean> deleteNotification(@RequestHeader("Authorization") String jwt, @ApiParam(value = "id", required = true) @PathVariable Long id) {
-        Response<Boolean> response = notificationService.deleteNotification(jwt, id);
+        Response<Boolean> response = notificationService.deleteNotification(id);
         return new ResponseEntity<>(response.getData(), HttpStatus.valueOf(response.getStatusCode()));
     }
 
