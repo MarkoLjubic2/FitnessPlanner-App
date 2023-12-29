@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import org.raf.sk.notificationservice.dto.abstraction.NotificationDto;
+import org.raf.sk.notificationservice.security.CheckSecurity;
 import org.raf.sk.notificationservice.service.NotificationService;
 import org.raf.sk.notificationservice.service.Response;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ public class NotificationController {
 
     @ApiOperation(value = "All notifications")
     @GetMapping
+    @CheckSecurity(roles = {"ADMIN"})
     public ResponseEntity<Response<Page<NotificationDto>>> getAllNotifications(Pageable pageable) {
         Response<Page<NotificationDto>> response = notificationService.findAll(pageable);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
@@ -29,7 +31,7 @@ public class NotificationController {
 
     @ApiOperation(value = "Get notification")
     @GetMapping("/{id}")
-    public ResponseEntity<Response<? extends NotificationDto>> getNotificationById(@ApiParam(value = "ID of the notification to retrieve", required = true) @PathVariable Long id) {
+    public ResponseEntity<Response<? extends NotificationDto>> getNotificationById(@ApiParam(value = "id", required = true) @PathVariable Long id) {
         Response<? extends NotificationDto> response = notificationService.getNotificationById(id);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
@@ -43,9 +45,10 @@ public class NotificationController {
 
     @ApiOperation(value = "Delete notification")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteNotification(@ApiParam(value = "ID of the notification to delete", required = true) @PathVariable Long id) {
-        notificationService.deleteNotification(id);
-        return ResponseEntity.noContent().build();
+    @CheckSecurity(roles = {"ADMIN"})
+    public ResponseEntity<Boolean> deleteNotification(@RequestHeader("Authorization") String jwt, @ApiParam(value = "id", required = true) @PathVariable Long id) {
+        Response<Boolean> response = notificationService.deleteNotification(jwt, id);
+        return new ResponseEntity<>(response.getData(), HttpStatus.valueOf(response.getStatusCode()));
     }
 
 }

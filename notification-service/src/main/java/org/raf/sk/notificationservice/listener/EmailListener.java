@@ -3,6 +3,7 @@ package org.raf.sk.notificationservice.listener;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.raf.sk.notificationservice.dto.ActivationDto;
+import org.raf.sk.notificationservice.dto.AppointmentReservationDto;
 import org.raf.sk.notificationservice.dto.ChangePasswordDto;
 import org.raf.sk.notificationservice.dto.NotificationMQ;
 import org.raf.sk.notificationservice.service.NotificationService;
@@ -32,6 +33,10 @@ public class EmailListener {
             case "CHANGE_PASSWORD":
                 ChangePasswordDto changePasswordDto = objectMapper.convertValue(notificationMQ.getData(), ChangePasswordDto.class);
                 notificationService.sendNotification(changePasswordDto);
+                break;
+            case "RESERVATION":
+                AppointmentReservationDto reservationDto = objectMapper.convertValue(notificationMQ.getData(), AppointmentReservationDto.class);
+                notificationService.sendNotification(reservationDto);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown message type: " + notificationMQ.getType());

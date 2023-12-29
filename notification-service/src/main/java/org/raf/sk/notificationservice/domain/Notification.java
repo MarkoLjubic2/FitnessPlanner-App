@@ -21,7 +21,7 @@ public class Notification {
     private String clientEmail;
     @Email
     private String managerEmail;
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Type type;
     private Date time;
     private String clientFirstName;

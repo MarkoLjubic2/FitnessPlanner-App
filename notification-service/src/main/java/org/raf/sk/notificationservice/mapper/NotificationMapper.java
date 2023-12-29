@@ -2,16 +2,10 @@ package org.raf.sk.notificationservice.mapper;
 
 
 import lombok.AllArgsConstructor;
-import org.raf.sk.notificationservice.domain.Notification;
-import org.raf.sk.notificationservice.dto.ActivationDto;
-import org.raf.sk.notificationservice.dto.ChangePasswordDto;
-import org.raf.sk.notificationservice.dto.ReminderDto;
-import org.raf.sk.notificationservice.dto.ReservationDto;
 import org.raf.sk.notificationservice.repository.NotificationRepository;
 import org.raf.sk.notificationservice.repository.TypeRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
 
 @Component
 @AllArgsConstructor

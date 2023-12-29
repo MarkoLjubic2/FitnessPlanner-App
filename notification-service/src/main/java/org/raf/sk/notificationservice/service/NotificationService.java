@@ -6,11 +6,13 @@ import org.springframework.data.domain.Pageable;
 
 public interface NotificationService {
 
-    <T> Response<Boolean> sendNotification(T dto);
+    <T extends NotificationDto> Response<Boolean> sendNotification(T dto);
 
-    Response<Boolean> deleteNotification(Long id);
+    Response<Boolean> deleteNotification(String jwt, Long id);
 
     <T extends NotificationDto> Response<Page<T>> findAll(Pageable pageable);
+
+    <T extends NotificationDto> Response<Page<T>> findAllByUser(String jwt);
 
     Response<? extends NotificationDto> getNotificationById(Long id);
 
