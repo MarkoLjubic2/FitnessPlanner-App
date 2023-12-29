@@ -24,15 +24,17 @@ public class Hall {
     private String name;
     private String description;
     private int coaches;
+    private Long managerId;
     @CreationTimestamp
     @Column(updatable = false)
     private Date createdAt;
     @UpdateTimestamp
     private Date updatedAt;
 
-    public Hall(String name, String description, int coaches) {
+    public Hall(String name, String description, int coaches, Long managerId) {
         this.name = name;
         this.description = description;
         this.coaches = coaches;
+        this.managerId = managerId;
     }
 }

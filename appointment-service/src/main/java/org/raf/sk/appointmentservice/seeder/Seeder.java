@@ -34,10 +34,10 @@ public class Seeder implements CommandLineRunner {
     }
 
     private void insertHalls() {
-        Hall hall1 = new Hall("Hall 1", "/", 2);
-        Hall hall2 = new Hall("Hall 2", "/", 1);
-        Hall hall3 = new Hall("Hall 3", "/", 2);
-        Hall hall4 = new Hall("Hall 4", "/", 1);
+        Hall hall1 = new Hall("Ahiley 1", "/", 2, 1L);
+        Hall hall2 = new Hall("RAF Fitness", "/", 1, 1L);
+        Hall hall3 = new Hall("TryCatch Gym", "/", 2, 1L);
+        Hall hall4 = new Hall("Lambda Gym 2", "/", 1, 1L);
 
         hallRepository.save(hall1);
         hallRepository.save(hall2);
@@ -47,11 +47,11 @@ public class Seeder implements CommandLineRunner {
 
     private void insertTrainings() {
         Training training1 = new Training("Calisthenics", true, 1600);
-        hallRepository.findHallByName("Hall 1").ifPresent(training1::setHall);
+        hallRepository.findHallByName("Ahiley 1").ifPresent(training1::setHall);
         Training training2 = new Training("Pilates", false, 1000);
-        hallRepository.findHallByName("Hall 2").ifPresent(training2::setHall);
+        hallRepository.findHallByName("RAF Fitness").ifPresent(training2::setHall);
         Training training3 = new Training("Box", true, 2000);
-        hallRepository.findHallByName("Hall 3").ifPresent(training3::setHall);
+        hallRepository.findHallByName("TryCatch Gym").ifPresent(training3::setHall);
 
         trainingRepository.save(training1);
         trainingRepository.save(training2);

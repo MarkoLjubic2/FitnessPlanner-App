@@ -20,6 +20,7 @@ public class HallMapper {
                     hallDto.setName(h.getName());
                     hallDto.setDescription(h.getDescription());
                     hallDto.setCoaches(h.getCoaches());
+                    hallDto.setManagerId(h.getManagerId());
                     return hallDto;
                 })
                 .orElse(null);
@@ -33,6 +34,7 @@ public class HallMapper {
                     hall.setName(dto.getName());
                     hall.setDescription(dto.getDescription());
                     hall.setCoaches(dto.getCoaches());
+                    hall.setManagerId(dto.getManagerId());
                     return hall;
                 })
                 .orElse(null);
@@ -45,6 +47,7 @@ public class HallMapper {
                     createHallDto.setName(h.getName());
                     createHallDto.setDescription(h.getDescription());
                     createHallDto.setCoaches(h.getCoaches());
+                    createHallDto.setManagerId(h.getManagerId());
                     return createHallDto;
                 })
                 .orElse(null);
@@ -57,6 +60,7 @@ public class HallMapper {
                     hall.setName(dto.getName());
                     hall.setDescription(dto.getDescription());
                     hall.setCoaches(dto.getCoaches());
+                    hall.setManagerId(dto.getManagerId());
                     return hall;
                 })
                 .orElse(null);

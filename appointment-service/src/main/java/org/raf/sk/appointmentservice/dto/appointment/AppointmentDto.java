@@ -10,7 +10,6 @@ import java.util.Date;
 @Setter
 public class AppointmentDto {
 
-    private Long id;
     private Date date;
     private Integer startTime;
     private Integer endTime;

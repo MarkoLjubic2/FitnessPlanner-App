@@ -10,5 +10,6 @@ public class UpdateHallDto {
     private String name;
     private String description;
     private int coaches;
+    private Long managerId;
 
 }

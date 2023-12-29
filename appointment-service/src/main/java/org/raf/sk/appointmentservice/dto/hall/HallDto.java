@@ -11,5 +11,6 @@ public class HallDto {
     private String name;
     private String description;
     private int coaches;
+    private Long managerId;
 
 }
