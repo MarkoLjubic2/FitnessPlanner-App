@@ -9,10 +9,10 @@ public interface NotificationService {
 
     <T extends NotificationDto> Response<Boolean> sendNotification(String typeName, T dto);
 
-    Response<Page<MailDto>> findAll(Pageable pageable);
+    Response<Page<MailDto>> findAll(String jwt, Pageable pageable);
 
-    Response<Boolean> deleteNotification(Long id);
+    Response<Boolean> deleteNotification(String jwt, Long id);
 
-    Response<Page<MailDto>> findAllByUser(Pageable pageable, String jwt);
+    Response<Page<MailDto>> findAllByUser(String jwt, Pageable pageable);
 
 }

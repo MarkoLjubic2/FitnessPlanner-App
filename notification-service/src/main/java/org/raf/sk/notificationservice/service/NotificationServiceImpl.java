@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.raf.sk.notificationservice.constants.Constants.*;
+
 @Service
 @Transactional
 @AllArgsConstructor
@@ -50,29 +52,35 @@ public class NotificationServiceImpl implements NotificationService {
             try {
                 emailSender.send(message);
                 archiveNotification(dto, t, body);
-                return new Response<>(200, "Email sent successfully", true);
+                return new Response<>(STATUS_OK, "Email sent successfully", true);
             }
             catch (MailException e) {
-                return new Response<>(500, "Failed to send email", false);
+                return new Response<>(STATUS_INTERNAL_SERVER_ERROR, "Failed to send email", false);
             }
-        }).orElseGet(() -> new Response<>(404, "Type not found", false));
+        }).orElseGet(() -> new Response<>(STATUS_NOT_FOUND, "Type not found", false));
     }
 
     @Override
-    public Response<Boolean> deleteNotification(Long id) {
+    public Response<Boolean> deleteNotification(String jwt, Long id) {
+        if (!tokenService.getRoleFromToken(jwt).equals("ADMIN")) {
+            return new Response<>(STATUS_FORBIDDEN, "You are not authorized", false);
+        }
         notificationRepository.deleteById(id);
-        return new Response<>(200, "Notification deleted successfully", true);
+        return new Response<>(STATUS_OK, "Notification deleted successfully", true);
     }
 
     @Override
-    public Response<Page<MailDto>> findAll(Pageable pageable) {
-        return new Response<>(200, "All notifications", notificationRepository.findAll(pageable).map(notificationMapper::notificationToMailDto));
+    public Response<Page<MailDto>> findAll(String jwt, Pageable pageable) {
+        if (!tokenService.getRoleFromToken(jwt).equals("ADMIN")) {
+            return new Response<>(STATUS_FORBIDDEN, "You are not authorized", null);
+        }
+        return new Response<>(STATUS_OK, "All notifications", notificationRepository.findAll(pageable).map(notificationMapper::notificationToMailDto));
     }
 
     @Override
-    public Response<Page<MailDto>> findAllByUser(Pageable pageable, String jwt) {
+    public Response<Page<MailDto>> findAllByUser(String jwt, Pageable pageable) {
         String mail = tokenService.getMailFromToken(jwt);
-        return new Response<>(200, "All notifications",
+        return new Response<>(STATUS_OK, "All notifications",
                 notificationRepository.findAllByMail(mail, pageable).map(notificationMapper::notificationToMailDto)
         );
     }

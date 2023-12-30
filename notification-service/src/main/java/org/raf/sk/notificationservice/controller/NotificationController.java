@@ -25,8 +25,8 @@ public class NotificationController {
     @ApiOperation(value = "All notifications")
     @GetMapping
     @CheckSecurity(roles = {"ADMIN"})
-    public ResponseEntity<Response<Page<MailDto>>> getAllNotifications(Pageable pageable) {
-        Response<Page<MailDto>> response = notificationService.findAll(pageable);
+    public ResponseEntity<Response<Page<MailDto>>> getAllNotifications(String jwt, Pageable pageable) {
+        Response<Page<MailDto>> response = notificationService.findAll(jwt, pageable);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
@@ -42,14 +42,14 @@ public class NotificationController {
     @DeleteMapping("/{id}")
     @CheckSecurity(roles = {"ADMIN"})
     public ResponseEntity<Boolean> deleteNotification(@RequestHeader("Authorization") String jwt, @ApiParam(value = "id", required = true) @PathVariable Long id) {
-        Response<Boolean> response = notificationService.deleteNotification(id);
+        Response<Boolean> response = notificationService.deleteNotification(jwt, id);
         return new ResponseEntity<>(response.getData(), HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @ApiOperation(value = "All notifications by user")
     @GetMapping("/user")
     public ResponseEntity<Response<Page<MailDto>>> getAllNotificationsByUser(@RequestHeader("Authorization") String jwt, Pageable pageable) {
-        Response<Page<MailDto>> response = notificationService.findAllByUser(pageable, jwt);
+        Response<Page<MailDto>> response = notificationService.findAllByUser(jwt, pageable);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 

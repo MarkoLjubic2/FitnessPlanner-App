@@ -12,5 +12,8 @@ public class ReservationNotificationHandler implements NotificationHandler<Appoi
     @Override
     public void handle(AppointmentReservationDto notificationDto) {
         notificationService.sendNotification("RESERVATION", notificationDto);
+        // TODO
+        // notificationDto.setMail(dto.getManagerEmail());
+        // notificationService.sendNotification("RESERVATION", notificationDto);
     }
 }
