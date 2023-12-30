@@ -179,8 +179,8 @@ public class UserServiceImpl implements UserService {
     public Response<TokenResponseDto> login(TokenRequestDto tokenRequestDto) {
         return userRepository.findUserByUsername(tokenRequestDto.getUsername())
                 .map(user -> {
-                    if ("BANNED".equals(user.getUserStatus().getName())) {
-                        return new Response<>(STATUS_FORBIDDEN, "User is banned", new TokenResponseDto(null));
+                    if ("BANNED".equals(user.getUserStatus().getName()) || "UNVERIFIED".equals(user.getUserStatus().getName())) {
+                        return new Response<>(STATUS_FORBIDDEN, "Status forbidden", new TokenResponseDto(null));
                     }
                     if (!encoder.matches(tokenRequestDto.getPassword(), user.getPassword())) {
                         return new Response<>(STATUS_FORBIDDEN, "Invalid credentials", new TokenResponseDto(null));
