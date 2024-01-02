@@ -12,7 +12,7 @@ import java.time.DayOfWeek;
 @Component
 public class JSONController {
 
-    public FilterCombinator<Schedulable> convertFromJson(String json) {
+    public static FilterCombinator<Schedulable> convertFromJson(String json) {
         ObjectMapper objectMapper = new ObjectMapper();
         FilterJSON filterJSON;
         try {

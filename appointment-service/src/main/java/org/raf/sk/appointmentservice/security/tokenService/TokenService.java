@@ -10,4 +10,6 @@ public interface TokenService {
 
     Long getUserId(String jwt);
 
+    String getRole(String jwt);
+
 }

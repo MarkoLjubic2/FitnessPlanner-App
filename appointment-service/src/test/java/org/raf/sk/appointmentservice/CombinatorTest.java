@@ -19,8 +19,8 @@ public class CombinatorTest {
     @Test
     public void single_filter_test() {
         // Arrange
-        Hall hall1 = new Hall("Hall 1", "/", 2);
-        Hall hall2 = new Hall("Hall 2", "/", 1);
+        Hall hall1 = new Hall("Hall 1", "/", 2, 1L);
+        Hall hall2 = new Hall("Hall 2", "/", 1, 1L);
 
         Training training1 = new Training("Calisthenics", true, 1600);
         training1.setHall(hall1);
@@ -47,8 +47,8 @@ public class CombinatorTest {
     @Test
     public void multiple_filter_test() {
         // Arrange
-        Hall hall1 = new Hall("Hall 1", "/", 2);
-        Hall hall2 = new Hall("Hall 2", "/", 1);
+        Hall hall1 = new Hall("Hall 1", "/", 2, 1L);
+        Hall hall2 = new Hall("Hall 2", "/", 1, 1L);
 
         Training training1 = new Training("Calisthenics", true, 1600);
         training1.setHall(hall1);

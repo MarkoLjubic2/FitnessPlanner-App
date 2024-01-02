@@ -20,6 +20,7 @@ import org.raf.sk.appointmentservice.repository.AppointmentRepository;
 import org.raf.sk.appointmentservice.repository.HallRepository;
 import org.raf.sk.appointmentservice.repository.ReservationRepository;
 import org.raf.sk.appointmentservice.repository.TrainingRepository;
+import org.raf.sk.appointmentservice.security.tokenService.TokenService;
 import org.raf.sk.appointmentservice.service.combinator.FilterCombinator;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
@@ -37,7 +38,10 @@ import org.springframework.web.client.RestTemplate;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.raf.sk.appointmentservice.constants.Constants.*;
 
 @Service
 @Transactional
@@ -51,55 +55,87 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final HallMapper hallMapper;
     private final ReservationMapper reservationMapper;
     private final AppointmentMapper appointmentMapper;
+    private final TokenService tokenService;
     private RestTemplate userServiceRestTemplate;
     private final JmsTemplate jmsTemplate;
     private final MessageHelper messageHelper;
 
     @Override
     public Response<Page<HallDto>> findAllHalls(Pageable pageable) {
-        return new Response<>(200, "All halls", hallRepository.findAll(pageable).map(hallMapper::hallToHallDto));
+        return new Response<>(STATUS_OK, "All halls", hallRepository.findAll(pageable).map(hallMapper::hallToHallDto));
     }
 
     @Override
     public Response<HallDto> findHallById(Long hallId) {
         return hallRepository.getHallById(hallId)
-                .map(hallMapper::hallToHallDto)
-                .map(hallDto -> new Response<>(200, "Hall found", hallDto))
-                .orElseGet(() -> new Response<>(404, "Hall not found", null));
+                .map(hall -> new Response<>(STATUS_OK, "Hall found", hallMapper.hallToHallDto(hall)))
+                .orElse(new Response<>(STATUS_NOT_FOUND, "Hall not found", null));
     }
 
     @Override
     public Response<Boolean> createHall(String jwt, CreateHallDto createHallDto) {
-        return null;
+        if (tokenService.getRole(jwt).equals("MANAGER")) {
+            Hall hall = hallMapper.createHallDtoToHall(createHallDto);
+            hallRepository.save(hall);
+            return new Response<>(STATUS_OK, "Hall created", true);
+        }
+        return new Response<>(STATUS_FORBIDDEN, "Forbidden", false);
     }
 
     @Override
     public Response<Boolean> updateHall(String jwt, UpdateHallDto updateHallDto) {
-        return null;
+        if (tokenService.getRole(jwt).equals("MANAGER")) {
+            return hallRepository.getHallById(updateHallDto.getId())
+                    .map(hall -> {
+                        Optional.ofNullable(updateHallDto.getName()).ifPresent(hall::setName);
+                        Optional.ofNullable(updateHallDto.getDescription()).ifPresent(hall::setDescription);
+                        Optional.of(updateHallDto.getCoaches()).ifPresent(hall::setCoaches);
+                        hallRepository.save(hall);
+                        return new Response<>(STATUS_OK, "Hall updated", true);
+                    })
+                    .orElse(new Response<>(STATUS_NOT_FOUND, "Hall not found", false));
+        }
+        return new Response<>(STATUS_FORBIDDEN, "Forbidden", false);
     }
 
     @Override
     public Response<Boolean> deleteHall(String jwt, Long hallId) {
-        return null;
+        if (tokenService.getRole(jwt).equals("MANAGER")) {
+            hallRepository.deleteById(hallId);
+            return new Response<>(STATUS_OK, "Hall deleted", true);
+        }
+        return new Response<>(STATUS_FORBIDDEN, "Forbidden", false);
     }
 
     @Override
     @Retryable(value = {HttpServerErrorException.class}, maxAttempts = 3, backoff = @Backoff(delay = 2000))
     public Response<Boolean> scheduleReservation(AppointmentDto appointmentDto) {
+        return Optional.ofNullable(fetchUserData(appointmentDto.getClientId()))
+                .map(user -> {
+                    Training training = trainingRepository.findById(appointmentDto.getTrainingId()).orElse(null);
+                    Hall hall = training.getHall();
+
+                    sendNotification(user, hall, training);
+                    createReservation(appointmentDto, user, training);
+                    updateAppointment(appointmentDto);
+
+                    return new Response<>(STATUS_OK, "Reservation created", true);
+                })
+                .orElse(new Response<>(STATUS_NOT_FOUND, "User not found", false));
+    }
+
+    private AppointmentUserDto fetchUserData(Long clientId) {
         ResponseEntity<Response<AppointmentUserDto>> response;
-        AppointmentUserDto user;
-
         try {
-            response = userServiceRestTemplate.exchange("user/getAppointmentUserData/" + appointmentDto.getClientId(),
+            response = userServiceRestTemplate.exchange("user/getAppointmentUserData/" + clientId,
                     HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
-            user = Objects.requireNonNull(response.getBody()).getData();
+            return Objects.requireNonNull(response.getBody()).getData();
         } catch (Exception ignored) {
-            return new Response<>(404, "User not found", false);
+            return null;
         }
+    }
 
-        Training training = trainingRepository.findById(appointmentDto.getTrainingId()).orElse(null);
-        Hall hall = training.getHall();
-
+    private void sendNotification(AppointmentUserDto user, Hall hall, Training training) {
         String hallName = hall.getName();
         int price = user.getTotalSessions() % 10 == 0 ? 0 : (int) training.getPrice();
         String managerEmail = getManagerEmail(hall.getManagerId());
@@ -107,16 +143,20 @@ public class AppointmentServiceImpl implements AppointmentService {
         AppointmentReservationDto reservationDto = new AppointmentReservationDto(managerEmail, user.getEmail(), user.getFirstName(), user.getLastName(), hallName, price);
         NotificationMQ<AppointmentReservationDto> msg = new NotificationMQ<>("RESERVATION", reservationDto);
         jmsTemplate.convertAndSend("send_emails", messageHelper.createTextMessage(msg));
+    }
 
+    private void createReservation(AppointmentDto appointmentDto, AppointmentUserDto user, Training training) {
         CreateReservationDto createReservationDto = reservationMapper.appointmentDtoToCreateReservationDto(appointmentDto);
         Reservation reservation = reservationMapper.createReservationDtoToReservation(createReservationDto);
         reservationRepository.save(reservation);
+    }
 
+    private void updateAppointment(AppointmentDto appointmentDto) {
         Appointment appointment = appointmentRepository.findAppointmentByDateAndStartTimeAndEndTimeAndTrainingId(
-                        reservation.getDate(),
-                        reservation.getStartTime(),
-                        reservation.getEndTime(),
-                        reservation.getTraining().getId())
+                        appointmentDto.getDate(),
+                        appointmentDto.getStartTime(),
+                        appointmentDto.getEndTime(),
+                        appointmentDto.getTrainingId())
                 .orElse(null);
 
         if (appointment != null) {
@@ -126,8 +166,6 @@ public class AppointmentServiceImpl implements AppointmentService {
             }
             appointmentRepository.save(appointment);
         }
-
-        return new Response<>(200, "Reservation created", true);
     }
 
     @Override
@@ -147,12 +185,11 @@ public class AppointmentServiceImpl implements AppointmentService {
             appointmentRepository.save(appointment);
         }
 
-        return new Response<>(200, "Reservation canceled", true);
+        return new Response<>(STATUS_OK, "Reservation canceled", true);
     }
 
-    public String getManagerEmail(Long managerId) {
+    private String getManagerEmail(Long managerId) {
         ResponseEntity<Response<ManagerDto>> response;
-
         try {
             response = userServiceRestTemplate.exchange("user/getManagerData/" + managerId,
                     HttpMethod.GET, null, new ParameterizedTypeReference<>() {});
@@ -165,7 +202,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Response<Page<AppointmentDto>> findAllAppointments(Pageable pageable) {
-        return new Response<>(200, "All appointments", appointmentRepository.findAll(pageable).map(appointmentMapper::appointmentToAppointmentDto));
+        return new Response<>(STATUS_OK, "All appointments", appointmentRepository.findAll(pageable).map(appointmentMapper::appointmentToAppointmentDto));
     }
 
     @Override
@@ -178,14 +215,14 @@ public class AppointmentServiceImpl implements AppointmentService {
         Page<Appointment> filteredPage = new PageImpl<>(filteredAppointments, pageable, filteredAppointments.size());
 
         if (filteredAppointments.isEmpty())
-            return new Response<>(404, "Appointments not found", null);
+            return new Response<>(STATUS_NOT_FOUND, "Appointments not found", null);
 
-        return new Response<>(200, "Appointments found", filteredPage.map(appointmentMapper::appointmentToAppointmentDto));
+        return new Response<>(STATUS_OK, "Appointments found", filteredPage.map(appointmentMapper::appointmentToAppointmentDto));
     }
 
     @Override
     public Response<Page<ReservationDto>> findAllReservations(Pageable pageable) {
-        return new Response<>(200, "All reservations", reservationRepository.findAll(pageable).map(reservationMapper::reservationToReservationDto));
+        return new Response<>(STATUS_OK, "All reservations", reservationRepository.findAll(pageable).map(reservationMapper::reservationToReservationDto));
     }
 
     @Override
@@ -198,9 +235,9 @@ public class AppointmentServiceImpl implements AppointmentService {
         Page<Reservation> filteredPage = new PageImpl<>(filteredReservations, pageable, filteredReservations.size());
 
         if (filteredReservations.isEmpty())
-            return new Response<>(404, "Reservations not found", null);
+            return new Response<>(STATUS_NOT_FOUND, "Reservations not found", null);
 
-        return new Response<>(200, "Reservations found", filteredPage.map(reservationMapper::reservationToReservationDto));
+        return new Response<>(STATUS_OK, "Reservations found", filteredPage.map(reservationMapper::reservationToReservationDto));
     }
 
 

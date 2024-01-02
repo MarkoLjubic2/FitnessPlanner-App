@@ -26,33 +26,6 @@ public class HallMapper {
                 .orElse(null);
     }
 
-    public Hall hallDtoToHall(HallDto hallDto) {
-        return Optional.ofNullable(hallDto)
-                .map(dto -> {
-                    Hall hall = new Hall();
-                    hall.setId(dto.getId());
-                    hall.setName(dto.getName());
-                    hall.setDescription(dto.getDescription());
-                    hall.setCoaches(dto.getCoaches());
-                    hall.setManagerId(dto.getManagerId());
-                    return hall;
-                })
-                .orElse(null);
-    }
-
-    public CreateHallDto hallToCreateHallDto(Hall hall) {
-        return Optional.ofNullable(hall)
-                .map(h -> {
-                    CreateHallDto createHallDto = new CreateHallDto();
-                    createHallDto.setName(h.getName());
-                    createHallDto.setDescription(h.getDescription());
-                    createHallDto.setCoaches(h.getCoaches());
-                    createHallDto.setManagerId(h.getManagerId());
-                    return createHallDto;
-                })
-                .orElse(null);
-    }
-
     public Hall createHallDtoToHall(CreateHallDto createHallDto) {
         return Optional.ofNullable(createHallDto)
                 .map(dto -> {

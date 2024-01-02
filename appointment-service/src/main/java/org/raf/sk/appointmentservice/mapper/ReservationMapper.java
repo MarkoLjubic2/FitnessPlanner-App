@@ -46,20 +46,6 @@ public class ReservationMapper {
                 .orElse(null);
     }
 
-    public CreateReservationDto reservationToCreateReservationDto(Reservation reservation) {
-        return Optional.ofNullable(reservation)
-                .map(r -> {
-                    CreateReservationDto createReservationDto = new CreateReservationDto();
-                    createReservationDto.setDate(r.getDate());
-                    createReservationDto.setStartTime(r.getStartTime());
-                    createReservationDto.setEndTime(r.getEndTime());
-                    createReservationDto.setTrainingId(r.getTraining().getId());
-                    createReservationDto.setClientId(r.getClientId());
-                    return createReservationDto;
-                })
-                .orElse(null);
-    }
-
     public Reservation createReservationDtoToReservation(CreateReservationDto createReservationDto) {
         return Optional.ofNullable(createReservationDto)
                 .map(dto -> {

@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class UpdateHallDto {
 
+    private Long id;
     private String name;
     private String description;
     private int coaches;

@@ -18,14 +18,4 @@ public class AppointmentUserDto {
     private String username;
     private int totalSessions;
 
-    @Override
-    public String toString() {
-        return "RentUserDto{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", username='" + username + '\'' +
-                '}';
-    }
 }
