@@ -5,14 +5,12 @@ import org.raf.sk.notificationservice.dto.AppointmentReservationDto;
 import org.raf.sk.notificationservice.service.NotificationService;
 
 @AllArgsConstructor
-public class ReservationNotificationHandler implements NotificationHandler<AppointmentReservationDto> {
+public class CancelReservationNotificationHandler implements NotificationHandler<AppointmentReservationDto> {
 
     private final NotificationService notificationService;
 
     @Override
     public void handle(AppointmentReservationDto notificationDto) {
-        notificationService.sendNotification("RESERVATION", notificationDto);
-        notificationDto.setMail("mljubic9422rn@raf.rs");
-        notificationService.sendNotification("RESERVATION", notificationDto);
+        notificationService.sendNotification("RESERVATION_CANCEL", notificationDto);
     }
 }

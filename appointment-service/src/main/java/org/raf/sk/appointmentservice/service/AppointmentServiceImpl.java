@@ -145,6 +145,14 @@ public class AppointmentServiceImpl implements AppointmentService {
         jmsTemplate.convertAndSend("send_emails", messageHelper.createTextMessage(msg));
     }
 
+    private void sendCancelNotification(AppointmentUserDto user, Hall hall, Training training) {
+        String hallName = hall.getName();
+
+        AppointmentReservationDto reservationDto = new AppointmentReservationDto("", user.getEmail(), user.getFirstName(), user.getLastName(), hallName, 0);
+        NotificationMQ<AppointmentReservationDto> msg = new NotificationMQ<>("RESERVATION_CANCEL", reservationDto);
+        jmsTemplate.convertAndSend("send_emails", messageHelper.createTextMessage(msg));
+    }
+
     private void createReservation(AppointmentDto appointmentDto, AppointmentUserDto user, Training training) {
         CreateReservationDto createReservationDto = reservationMapper.appointmentDtoToCreateReservationDto(appointmentDto);
         Reservation reservation = reservationMapper.createReservationDtoToReservation(createReservationDto);
@@ -169,9 +177,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public Response<Boolean> cancelReservation(ReservationDto reservationDto) {
+    public Response<Boolean> cancelReservation(String jwt, ReservationDto reservationDto) {
         Reservation reservation = reservationMapper.reservationDtoToReservation(reservationDto);
-        reservationRepository.delete(reservation);
+
         Appointment appointment = appointmentRepository.findAppointmentByDateAndStartTimeAndEndTimeAndTrainingId(
                 reservation.getDate(),
                 reservation.getStartTime(),
@@ -179,10 +187,33 @@ public class AppointmentServiceImpl implements AppointmentService {
                 reservation.getTraining().getId())
                 .orElse(null);
 
-        if (appointment != null) {
-            appointment.setCurrentClients(appointment.getCurrentClients() - 1);
-            appointment.setOpen(true);
-            appointmentRepository.save(appointment);
+        if (tokenService.getRole(jwt).equals("MANAGER")) {
+            if (appointment != null) {
+                appointment.setOpen(false);
+                appointmentRepository.save(appointment);
+                for (Reservation r : reservationRepository.findAll()) {
+                    if (r.getClientId().equals(reservation.getClientId()) &&
+                            r.getDate().equals(reservation.getDate()) &&
+                            r.getStartTime().equals(reservation.getStartTime()) &&
+                            r.getEndTime().equals(reservation.getEndTime()) &&
+                            r.getTraining().getId().equals(reservation.getTraining().getId())) {
+                        reservationRepository.delete(r);
+                        AppointmentUserDto user = fetchUserData(reservation.getClientId());
+                        sendCancelNotification(user, appointment.getTraining().getHall(), appointment.getTraining());
+                    }
+                }
+            }
+            return new Response<>(STATUS_OK, "Reservation canceled", true);
+        }
+        else{
+            if (appointment != null) {
+                AppointmentUserDto user = fetchUserData(reservation.getClientId());
+                sendCancelNotification(user, appointment.getTraining().getHall(), appointment.getTraining());
+                appointment.setCurrentClients(appointment.getCurrentClients() - 1);
+                appointment.setOpen(true);
+                appointmentRepository.save(appointment);
+                reservationRepository.delete(reservation);
+            }
         }
 
         return new Response<>(STATUS_OK, "Reservation canceled", true);

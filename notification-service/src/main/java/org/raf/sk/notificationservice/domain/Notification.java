@@ -18,6 +18,7 @@ import java.util.Date;
 public class Notification {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Email
     private String mail;

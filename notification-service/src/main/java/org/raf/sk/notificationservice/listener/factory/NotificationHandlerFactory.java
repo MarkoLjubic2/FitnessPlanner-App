@@ -17,6 +17,7 @@ public class NotificationHandlerFactory {
         handlers.put("ACTIVATION", new ActivationNotificationHandler(notificationService));
         handlers.put("CHANGE_PASSWORD", new ChangePasswordNotificationHandler(notificationService));
         handlers.put("RESERVATION", new ReservationNotificationHandler(notificationService));
+        handlers.put("RESERVATION_CANCEL", new CancelReservationNotificationHandler(notificationService));
     }
 
     public <T extends NotificationDto> NotificationHandler<T> getHandler(String type) {

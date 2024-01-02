@@ -69,6 +69,7 @@ public class ReservationMapper {
                     createReservationDto.setStartTime(dto.getStartTime());
                     createReservationDto.setEndTime(dto.getEndTime());
                     createReservationDto.setTrainingId(dto.getTrainingId());
+                    createReservationDto.setDayOfWeek(dto.getDayOfWeek());
                     return createReservationDto;
                 })
                 .orElse(null);

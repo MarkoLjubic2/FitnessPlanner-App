@@ -46,7 +46,7 @@ public class ReservationController {
 
     @ApiOperation(value = "Cancel reservation")
     @PostMapping("/cancel")
-    public ResponseEntity<Response<Boolean>> cancelReservation(@RequestBody ReservationDto reservationDto) {
-        return new ResponseEntity<>(appointmentService.cancelReservation(reservationDto), HttpStatus.OK);
+    public ResponseEntity<Response<Boolean>> cancelReservation(@RequestHeader("Authorization") String jwt, @RequestBody ReservationDto reservationDto) {
+        return new ResponseEntity<>(appointmentService.cancelReservation(jwt, reservationDto), HttpStatus.OK);
     }
 }

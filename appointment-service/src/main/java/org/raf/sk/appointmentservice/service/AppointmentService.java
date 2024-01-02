@@ -25,7 +25,7 @@ public interface AppointmentService {
 
     Response<Boolean> scheduleReservation(AppointmentDto appointmentDto);
 
-    Response<Boolean> cancelReservation(ReservationDto reservationDto);
+    Response<Boolean> cancelReservation(String jwt, ReservationDto reservationDto);
 
     Response<Page<AppointmentDto>> findAllAppointments(Pageable pageable);
 
