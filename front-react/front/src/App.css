@@ -28,6 +28,14 @@
   color: #61dafb;
 }
 
+body {
+  background: url('./images/background.jpg') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -35,4 +43,5 @@
   to {
     transform: rotate(360deg);
   }
+
 }

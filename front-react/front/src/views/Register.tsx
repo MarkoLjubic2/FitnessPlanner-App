@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Button from 'react-bootstrap/Button';
+import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
 
 function Register() {
     const [username, setUsername] = useState('');
@@ -8,8 +12,6 @@ function Register() {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
-    const [licenceID, setLicenceID] = useState(Math.floor(Math.random() * (999999999999 - 100000000000 + 1) + 100000000000).toString());
-    const [totalSessions, setTotalSessions] = useState(0);
     const navigate = useNavigate();
 
     const handleSubmit = (e: { preventDefault: () => void; }) => {
@@ -26,9 +28,7 @@ function Register() {
                 "email": email,
                 "firstName": firstName,
                 "lastName": lastName,
-                "dateOfBirth": dateOfBirth,
-                "licenceID": licenceID,
-                "totalSessions": totalSessions
+                "dateOfBirth": dateOfBirth
             })
         }).then(res => res.json())
             .then(res => {
@@ -44,42 +44,41 @@ function Register() {
     }
 
     return (
-        <div>
-            <h1>Register</h1>
-            <form onSubmit = {handleSubmit}>
-                <label>
-                    Username:
-                    <input type="text" name="username" required value={username}
-                           onChange={(e) => setUsername(e.target.value)}/>
-                </label>
-                <label>
-                    Email:
-                    <input type="email" name="email" required value={email}
-                           onChange={(e) => setEmail(e.target.value)}/>
-                </label>
-                <label>
-                    Password:
-                    <input type="password" name="password" required value={password}
-                           onChange={(e) => setPassword(e.target.value)}/>
-                </label>
-                <label>
-                    First Name:
-                    <input type="text" name="firstName" required value={firstName}
-                           onChange={(e) => setFirstName(e.target.value)}/>
-                </label>
-                <label>
-                    Last Name:
-                    <input type="text" name="lastName" required value={lastName}
-                           onChange={(e) => setLastName(e.target.value)}/>
-                </label>
-                <label>
-                    Date of Birth:
-                    <input type="date" name="dateOfBirth" required value={dateOfBirth}
-                           onChange={(e) => setDateOfBirth(e.target.value)}/>
-                </label>
-                <input type="submit" value="Register" />
-            </form>
-        </div>
+        <Form onSubmit={handleSubmit}>
+            <Form.Group as={Row} className="mb-3" controlId="formHorizontalEmail">
+                <Form.Label column sm={2}>Username</Form.Label>
+                <Col sm={10}><Form.Control type="text" placeholder="Username" onChange={e => setUsername(e.target.value)} /></Col>
+            </Form.Group>
+
+            <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
+                <Form.Label column sm={2}>Password</Form.Label>
+                <Col sm={10}><Form.Control type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} /></Col>
+            </Form.Group>
+
+            <Form.Group as={Row} className="mb-3" controlId="formHorizontalEmail">
+                <Form.Label column sm={2}>Email</Form.Label>
+                <Col sm={10}><Form.Control type="email" placeholder="Email" onChange={e => setEmail(e.target.value)} /></Col>
+            </Form.Group>
+
+            <Form.Group as={Row} className="mb-3" controlId="formHorizontalFirstName">
+                <Form.Label column sm={2}>First name</Form.Label>
+                <Col sm={10}><Form.Control type="text" placeholder="First Name" onChange={e => setFirstName(e.target.value)} /></Col>
+            </Form.Group>
+
+            <Form.Group as={Row} className="mb-3" controlId="formHorizontalLastName">
+                <Form.Label column sm={2}>Last name</Form.Label>
+                <Col sm={10}><Form.Control type="text" placeholder="Last Name" onChange={e => setLastName(e.target.value)} /></Col>
+            </Form.Group>
+
+            <Form.Group as={Row} className="mb-3" controlId="formHorizontalDateOfBirth">
+                <Form.Label column sm={2}>Date of Birth</Form.Label>
+                <Col sm={10}><Form.Control type="date" placeholder="Date of Birth" onChange={e => setDateOfBirth(e.target.value)} /></Col>
+            </Form.Group>
+
+            <Form.Group as={Row} className="mb-3">
+                <Col sm={{ span: 10, offset: 2 }}><Button type="submit">Register</Button></Col>
+            </Form.Group>
+        </Form>
     );
 }
 

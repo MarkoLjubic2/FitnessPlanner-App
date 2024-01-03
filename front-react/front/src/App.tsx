@@ -16,7 +16,6 @@ function App() {
     return (
         <RecoilRoot>
             <Router>
-                <div className="App">
                     <Navbar />
                     <Content>
                         <Routes>
@@ -24,7 +23,6 @@ function App() {
                             <Route path="/register" element={<Register />} />
                         </Routes>
                     </Content>
-                </div>
             </Router>
         </RecoilRoot>
     );

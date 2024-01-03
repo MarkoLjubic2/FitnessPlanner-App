@@ -15,7 +15,7 @@ function Login() {
     const handleSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
 
-        fetch(process.env.REACT_USER_SERVICE_URL + '/login', {
+        fetch(process.env.REACT_APP_USER_SERVICE_URL + '/login', {
           'method': 'POST',
           headers: {
             'Content-Type': 'application/json',
