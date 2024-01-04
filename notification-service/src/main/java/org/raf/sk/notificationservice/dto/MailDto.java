@@ -12,6 +12,6 @@ public class MailDto {
     private String mail;
     private Long typeId;
     private String body;
-    private Date time;
+    private String time;
 
 }

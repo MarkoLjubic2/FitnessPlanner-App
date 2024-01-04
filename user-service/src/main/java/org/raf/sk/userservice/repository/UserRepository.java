@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.Optional;
 
 @Repository
@@ -22,11 +21,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Modifying
     @Query("update User u set u.email = :email, u.username = :username, u.firstName = :firstName, u.lastName = :lastName, u.password = :password, u.dateOfBirth = :dateOfBirth, u.licenseID = :licenceID where u.id = :id")
-    void updateUser(Long id, String email, String username, String firstName, String lastName, String password, Date dateOfBirth, String licenceID);
+    void updateUser(Long id, String email, String username, String firstName, String lastName, String password, String dateOfBirth, String licenceID);
 
     @Modifying
     @Query("update User u set u.email = :email, u.username = :username, u.firstName = :firstName, u.lastName = :lastName, u.password = :password, u.dateOfBirth = :dateOfBirth, u.hallId = :hallId, u.hireDate = :hireDate where u.id = :id")
-    void updateManager(Long id, String email, String username, String firstName, String lastName, String password, Date dateOfBirth, Long hallId, Date hireDate);
+    void updateManager(Long id, String email, String username, String firstName, String lastName, String password, String dateOfBirth, Long hallId, String hireDate);
 
     @Modifying
     @Query("update User u set u.userStatus = :userStatus where u.id = :id")

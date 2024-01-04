@@ -20,6 +20,6 @@ public class ManagerDto {
     private String firstName;
     private String lastName;
     private Long hallId;
-    private Date hireDate;
+    private String hireDate;
 
 }

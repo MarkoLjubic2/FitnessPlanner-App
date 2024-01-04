@@ -22,7 +22,7 @@ public class User {
     private String username;
     private String password;
     private String email;
-    private Date dateOfBirth;
+    private String dateOfBirth;
     private String firstName;
     private String lastName;
     @ManyToOne(optional = false)
@@ -32,14 +32,14 @@ public class User {
     private String licenseID;
     private int totalSessions;
     private Long hallId;
-    private Date hireDate;
+    private String hireDate;
     @CreationTimestamp
     @Column(updatable = false)
     private Date createdAt;
     @UpdateTimestamp
     private Date updatedAt;
 
-    public User(String username, String password, String firstName, String lastName, String email, Date dateOfBirth) {
+    public User(String username, String password, String firstName, String lastName, String email, String dateOfBirth) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;

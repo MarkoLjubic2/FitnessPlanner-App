@@ -4,13 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.raf.sk.userservice.dto.abstraction.AbstractUserDto;
 
-import java.util.Date;
-
 @Getter
 @Setter
 public class CreateManagerDto extends AbstractUserDto {
 
     private Long hallId;
-    private Date hireDate;
+    private String hireDate;
 
 }

@@ -18,7 +18,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 
@@ -90,7 +90,7 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setMail(dto.getMail());
         notification.setType(t);
         notification.setBody(body);
-        notification.setTime(new Date());
+        notification.setTime(LocalDate.now().toString());
         notificationRepository.save(notification);
     }
 

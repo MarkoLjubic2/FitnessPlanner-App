@@ -6,13 +6,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
-
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
     Page<Notification> findAllByMail(String mail, Pageable pageable);
 
-    Page<Notification> findAllByTime(Date startDate, Date endDate, Pageable pageable);
+    Page<Notification> findAllByTime(String startDate, String endDate, Pageable pageable);
 
 }

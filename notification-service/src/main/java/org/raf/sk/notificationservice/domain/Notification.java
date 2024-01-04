@@ -25,14 +25,14 @@ public class Notification {
     @ManyToOne(optional = false)
     private Type type;
     private String body;
-    private Date time;
+    private String time;
     @CreationTimestamp
     @Column(updatable = false)
     private Date createdAt;
     @UpdateTimestamp
     private Date updatedAt;
 
-    public Notification(String mail, Type type, String body, Date time) {
+    public Notification(String mail, Type type, String body, String time) {
         this.mail = mail;
         this.type = type;
         this.body = body;
