@@ -1,12 +1,13 @@
 package org.raf.sk.appointmentservice.service;
 
 import org.raf.sk.appointmentservice.domain.Schedulable;
+import org.raf.sk.appointmentservice.domain.Training;
 import org.raf.sk.appointmentservice.dto.appointment.AppointmentDto;
 import org.raf.sk.appointmentservice.dto.hall.CreateHallDto;
 import org.raf.sk.appointmentservice.dto.hall.HallDto;
 import org.raf.sk.appointmentservice.dto.hall.UpdateHallDto;
-import org.raf.sk.appointmentservice.dto.reservation.CreateReservationDto;
 import org.raf.sk.appointmentservice.dto.reservation.ReservationDto;
+import org.raf.sk.appointmentservice.dto.training.TrainingDto;
 import org.raf.sk.appointmentservice.service.combinator.FilterCombinator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,5 +35,7 @@ public interface AppointmentService {
     Response<Page<ReservationDto>> findAllReservations(Pageable pageable);
 
     Response<Page<ReservationDto>> findReservationByFilter(FilterCombinator<Schedulable> filter, Pageable pageable);
+
+    Response<TrainingDto> findTrainingById(Long trainingId);
 
 }

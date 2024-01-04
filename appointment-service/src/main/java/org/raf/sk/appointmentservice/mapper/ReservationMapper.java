@@ -8,7 +8,7 @@ import org.raf.sk.appointmentservice.dto.reservation.ReservationDto;
 import org.raf.sk.appointmentservice.repository.TrainingRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Component
@@ -50,7 +50,7 @@ public class ReservationMapper {
         return Optional.ofNullable(createReservationDto)
                 .map(dto -> {
                     Reservation reservation = new Reservation();
-                    reservation.setDate(new Date());
+                    reservation.setDate(LocalDate.now().toString());
                     reservation.setStartTime(dto.getStartTime());
                     reservation.setEndTime(dto.getEndTime());
                     reservation.setClientId(dto.getClientId());
@@ -69,7 +69,7 @@ public class ReservationMapper {
                     createReservationDto.setStartTime(dto.getStartTime());
                     createReservationDto.setEndTime(dto.getEndTime());
                     createReservationDto.setTrainingId(dto.getTrainingId());
-                    createReservationDto.setDayOfWeek(dto.getDayOfWeek());
+                    createReservationDto.setDay(dto.getDay());
                     return createReservationDto;
                 })
                 .orElse(null);

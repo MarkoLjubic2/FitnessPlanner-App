@@ -8,10 +8,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
-import java.time.DayOfWeek;
-
-
 @Profile({"default"})
 @Component
 @AllArgsConstructor
@@ -59,9 +55,9 @@ public class Seeder implements CommandLineRunner {
     }
 
     private void insertReservations() {
-        Reservation reservation1 = new Reservation(new Date(2021, 1, 1), 12, 14, DayOfWeek.MONDAY, 1L);
+        Reservation reservation1 = new Reservation("2022-12-09", 12, 14, "MONDAY", 1L);
         reservation1.setTraining(trainingRepository.findTrainingByName("Calisthenics").orElseThrow());
-        Reservation reservation2 = new Reservation(new Date(2021, 1, 3), 14, 16, DayOfWeek.WEDNESDAY, 1L);
+        Reservation reservation2 = new Reservation("2022-12-19", 14, 16, "WEDNESDAY", 1L);
         reservation2.setTraining(trainingRepository.findTrainingByName("Box").orElseThrow());
 
         reservationRepository.save(reservation1);
@@ -79,9 +75,9 @@ public class Seeder implements CommandLineRunner {
     }
 
     private void insertAppointments() {
-        Appointment appointment1 = new Appointment(new Date(2021, 1, 1), 12, 14, 10, 0, DayOfWeek.MONDAY);
+        Appointment appointment1 = new Appointment("2022-12-09", 12, 14, 1, 0, "MONDAY");
         appointment1.setTraining(trainingRepository.findTrainingByName("Calisthenics").orElseThrow());
-        Appointment appointment2 = new Appointment(new Date(2021, 1, 3), 14, 16,10, 0, DayOfWeek.MONDAY);
+        Appointment appointment2 = new Appointment("2022-12-19", 14, 16,1, 0, "MONDAY");
         appointment2.setTraining(trainingRepository.findTrainingByName("Box").orElseThrow());
 
         appointmentRepository.save(appointment1);

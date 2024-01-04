@@ -3,20 +3,19 @@ package org.raf.sk.appointmentservice.dto.appointment;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.DayOfWeek;
-import java.util.Date;
-
 @Getter
 @Setter
 public class AppointmentDto {
 
-    private Date date;
+    private Long id;
+    private String date;
     private Integer startTime;
     private Integer endTime;
     private Long trainingId;
     private Long clientId;
-    private DayOfWeek dayOfWeek;
+    private String day;
     private int maxClients;
     private int currentClients;
+    private boolean open;
 
 }

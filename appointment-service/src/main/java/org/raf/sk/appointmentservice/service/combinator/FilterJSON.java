@@ -5,15 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.DayOfWeek;
-
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FilterJSON {
 
     @JsonProperty("day")
-    private DayOfWeek day;
+    private String day;
     @JsonProperty("individual")
     private Boolean individual;
     @JsonProperty("type")

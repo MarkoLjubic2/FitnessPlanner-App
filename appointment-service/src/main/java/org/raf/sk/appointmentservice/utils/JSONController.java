@@ -7,8 +7,6 @@ import org.raf.sk.appointmentservice.service.combinator.FilterCombinator;
 import org.raf.sk.appointmentservice.service.combinator.FilterJSON;
 import org.springframework.stereotype.Component;
 
-import java.time.DayOfWeek;
-
 @Component
 public class JSONController {
 
@@ -28,7 +26,7 @@ public class JSONController {
         }
 
         if (filterJSON.getDay() != null) {
-            filterCombinator = filterCombinator.and(FilterCombinator.isDay(DayOfWeek.valueOf(filterJSON.getDay().name())));
+            filterCombinator = filterCombinator.and(FilterCombinator.isDay(filterJSON.getDay()));
         }
 
         if (filterJSON.getIndividual() != null) {

@@ -11,4 +11,5 @@ public class TrainingDto {
     private String name;
     private boolean individual;
     private double price;
+    private Long hallId;
 }

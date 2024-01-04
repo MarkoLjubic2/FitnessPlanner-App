@@ -8,7 +8,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.time.DayOfWeek;
 import java.util.Date;
 
 @Getter
@@ -21,7 +20,7 @@ public class Appointment implements Schedulable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date date;
+    private String date;
     private Integer startTime;
     private Integer endTime;
     @ManyToOne(optional = false)
@@ -29,21 +28,20 @@ public class Appointment implements Schedulable{
     private int maxClients;
     private int currentClients;
     private boolean open;
-    @Enumerated(EnumType.STRING)
-    private DayOfWeek dayOfWeek;
+    private String day;
     @CreationTimestamp
     @Column(updatable = false)
     private Date createdAt;
     @UpdateTimestamp
     private Date updatedAt;
 
-    public Appointment(Date date, Integer startTime, Integer endTime, int maxClients, int currentClients, DayOfWeek dayOfWeek) {
+    public Appointment(String date, Integer startTime, Integer endTime, int maxClients, int currentClients, String day) {
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.maxClients = maxClients;
         this.currentClients = currentClients;
-        this.dayOfWeek = dayOfWeek;
+        this.day = day;
         this.open = true;
     }
 

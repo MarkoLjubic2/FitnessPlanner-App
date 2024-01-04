@@ -20,6 +20,7 @@ public class TrainingMapper {
                     trainingDto.setName(t.getName());
                     trainingDto.setIndividual(t.isIndividual());
                     trainingDto.setPrice(t.getPrice());
+                    trainingDto.setHallId(t.getHall().getId());
                     return trainingDto;
                 })
                 .orElse(null);

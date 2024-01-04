@@ -19,13 +19,15 @@ public class AppointmentMapper {
         return Optional.ofNullable(appointment)
                 .map(a -> {
                     AppointmentDto appointmentDto = new AppointmentDto();
+                    appointmentDto.setId(a.getId());
                     appointmentDto.setDate(a.getDate());
                     appointmentDto.setStartTime(a.getStartTime());
                     appointmentDto.setEndTime(a.getEndTime());
                     appointmentDto.setTrainingId(a.getTraining().getId());
                     appointmentDto.setMaxClients(a.getMaxClients());
                     appointmentDto.setCurrentClients(a.getCurrentClients());
-                    appointmentDto.setDayOfWeek(a.getDayOfWeek());
+                    appointmentDto.setDay(a.getDay());
+                    appointmentDto.setOpen(a.isOpen());
                     return appointmentDto;
                 })
                 .orElse(null);
@@ -40,7 +42,7 @@ public class AppointmentMapper {
                     appointment.setEndTime(dto.getEndTime());
                     appointment.setMaxClients(dto.getMaxClients());
                     appointment.setCurrentClients(dto.getCurrentClients());
-                    appointment.setDayOfWeek(dto.getDayOfWeek());
+                    appointment.setDay(dto.getDay());
                     trainingRepository.findById(dto.getTrainingId()).ifPresent(appointment::setTraining);
                     return appointment;
                 })
@@ -57,7 +59,7 @@ public class AppointmentMapper {
                     appointmentDto.setTrainingId(a.getTraining().getId());
                     appointmentDto.setMaxClients(a.getMaxClients());
                     appointmentDto.setCurrentClients(a.getCurrentClients());
-                    appointmentDto.setDayOfWeek(a.getDayOfWeek());
+                    appointmentDto.setDay(a.getDay());
                     return appointmentDto;
                 })
                 .orElse(null);
@@ -72,7 +74,7 @@ public class AppointmentMapper {
                     appointment.setEndTime(dto.getEndTime());
                     appointment.setMaxClients(dto.getMaxClients());
                     appointment.setCurrentClients(dto.getCurrentClients());
-                    appointment.setDayOfWeek(dto.getDayOfWeek());
+                    appointment.setDay(dto.getDay());
                     return appointment;
                 })
                 .orElse(null);

@@ -2,7 +2,6 @@ package org.raf.sk.appointmentservice.service.combinator;
 
 import org.raf.sk.appointmentservice.domain.Schedulable;
 
-import java.time.DayOfWeek;
 import java.util.function.Predicate;
 
 public interface FilterCombinator<T extends Schedulable> extends Predicate<T> {
@@ -11,9 +10,9 @@ public interface FilterCombinator<T extends Schedulable> extends Predicate<T> {
         return reservation -> true;
     }
 
-    static <T extends Schedulable> FilterCombinator<T> isDay(DayOfWeek day) {
+    static <T extends Schedulable> FilterCombinator<T> isDay(String day) {
         return reservation -> {
-            DayOfWeek reservationDay = reservation.getDayOfWeek();
+            String reservationDay = reservation.getDay();
             return reservationDay != null && reservationDay.equals(day);
         };
     }
