@@ -24,6 +24,17 @@
   color: white;
 }
 
+.App-footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #282c34;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+}
+
 .App-link {
   color: #61dafb;
 }
@@ -34,6 +45,10 @@ body {
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+}
+
+.white-placeholder::placeholder {
+  color: white;
 }
 
 @keyframes App-logo-spin {

@@ -25,31 +25,35 @@ function Login() {
             "password": password
           })
         }).then(res => res.json())
-        .then(res => {
-          console.log(res);
-          if(res.statusCode !== 200) {
-            alert(res.message)
-          }
-          else {
-            setProfile({'loggedIn':'true', 'jwt': 'Bearer '+res.data.token, 'data': null})
-            navigate('/')
-          }
-        })
+            .then(res => {
+                console.log(res);
+                if(res.statusCode !== 200) {
+                    alert(res.message)
+                }
+                else {
+                    setProfile({'loggedIn':'true', 'jwt': 'Bearer '+res.data.token, 'data': null})
+                    localStorage.setItem('jwt', 'Bearer '+res.data.token);
+                    navigate('/')
+                }
+            })
         .catch(error => console.error('Error:', error));
     }
 
     return (
-        <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-                <Form.Label>Username</Form.Label>
-                <Form.Control placeholder="Enter username" onChange={e => setUsername(e.target.value)} />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-                <Form.Label>Password</Form.Label>
-                <Form.Control type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
-            </Form.Group>
-            <Button variant="primary" type="submit">Log in</Button>
-        </Form>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+            <h1 style={{ color: 'white' }}>Login</h1>
+            <Form onSubmit={handleSubmit}>
+                <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label style={{ color: 'white' }}>Username</Form.Label>
+                    <Form.Control style={{ width: '300px' }} placeholder="Enter username" onChange={e => setUsername(e.target.value)} />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="formBasicPassword">
+                    <Form.Label style={{ color: 'white' }}>Password</Form.Label>
+                    <Form.Control style={{ width: '300px' }} type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
+                </Form.Group>
+                <Button variant="primary" type="submit" style={{ display: 'block', marginLeft: 'auto', marginRight: 'auto' }}>Log in</Button>
+            </Form>
+        </div>
     );
 }
 

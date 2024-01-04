@@ -19,12 +19,15 @@ function CustomNavbar() {
                     <Nav className="me-auto">
                         {profile.loggedIn === 'true' ? (
                             <>
-                                <Nav.Link as={Link} to="/">All trainings</Nav.Link>
+                                <Nav.Link as={Link} to="/appointments">All trainings</Nav.Link>
                                 <Nav.Link as={Link} to="/">Scheduled trainings</Nav.Link>
                                 <NavDropdown title="Profile" id="basic-nav-dropdown">
                                     <NavDropdown.Item as={Link} to="/edit-profile">Edit Profile</NavDropdown.Item>
                                     <NavDropdown.Divider />
-                                    <NavDropdown.Item as={Link} to="/" onClick={() => setProfile(prevProfile => ({ ...prevProfile, loggedIn: 'false' }))}>Log Out</NavDropdown.Item>
+                                    <NavDropdown.Item as={Link} to="/" onClick={() => {
+                                        setProfile(prevProfile => ({ ...prevProfile, loggedIn: 'false' }));
+                                        localStorage.removeItem('jwt');
+                                    }}>Log Out</NavDropdown.Item>
                                 </NavDropdown>
                             </>
                             ) : (
