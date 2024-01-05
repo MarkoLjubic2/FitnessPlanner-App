@@ -10,6 +10,8 @@ import { useRecoilState } from 'recoil';
 import Register from "./views/Register";
 import Footer from "./components/Footer";
 import AppointmentTable from "./components/AppointmentTable";
+import Hall from "./components/Hall";
+import EditProfile from "./views/EditProfile";
 
 const Content = styled.div`
     width: 90%;
@@ -40,6 +42,8 @@ function App() {
                         <Route path="/login" element={<Login/>}/>
                         <Route path="/register" element={<Register/>}/>
                         <Route path="/appointments" element={<AppointmentTable/>}/>
+                        <Route path="/edit-profile" element={<EditProfile/>}/>
+                        <Route path="/hall" element={<Hall/>}/>
                     </Routes>
                 </Content>
                 <Footer/>

@@ -10,6 +10,7 @@ import javax.validation.constraints.Size;
 @Setter
 public abstract class AbstractUserDto {
 
+    private Long id;
     @Size(min = 4, max = 20, message = "Username must be between 4 and 20 characters")
     private String username;
     private String password;

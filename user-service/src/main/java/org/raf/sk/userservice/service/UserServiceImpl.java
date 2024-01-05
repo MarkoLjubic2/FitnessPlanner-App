@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.raf.sk.userservice.client.appointment.AppointmentUserDto;
 import org.raf.sk.userservice.client.notification.ActivationDto;
 import org.raf.sk.userservice.client.notification.NotificationMQ;
+import org.raf.sk.userservice.domain.User;
 import org.raf.sk.userservice.dto.*;
 import org.raf.sk.userservice.dto.abstraction.AbstractUserDto;
 import org.raf.sk.userservice.listener.MessageHelper;
@@ -146,7 +147,7 @@ public class UserServiceImpl implements UserService {
         Response<Boolean> validationResponse = checkUserAndTokenValidity(jwt, updateUserDto);
         if (validationResponse.getStatusCode() != STATUS_OK) return validationResponse;
 
-        return userRepository.findUserByUsername(updateUserDto.getUsername())
+        return userRepository.findById(updateUserDto.getId())
                 .map(user -> {
                     Optional.ofNullable(updateUserDto.getFirstName()).ifPresent(user::setFirstName);
                     Optional.ofNullable(updateUserDto.getLastName()).ifPresent(user::setLastName);
@@ -225,22 +226,22 @@ public class UserServiceImpl implements UserService {
         String role = tokenService.getRole(jwt);
         if (role == null || !role.equals("ADMIN"))
             return new Response<>(STATUS_UNAUTHORIZED, "Unauthorized", false);
-        if (!tokenService.isTokenValid(jwt))
-            return new Response<>(STATUS_UNAUTHORIZED, "Invalid or expired token", false);
 
         return new Response<>(STATUS_OK, "Valid admin and token", true);
     }
 
     private Response<Boolean> checkUserAndTokenValidity(String jwt, AbstractUserDto dto) {
-        String usernameFromToken = tokenService.parseToken(jwt).getSubject();
-        if (usernameFromToken == null || !usernameFromToken.equals(dto.getUsername()))
+        Long id = tokenService.getUserId(jwt);
+        Long dtoId = dto.getId();
+        if (id == null || !id.equals(dtoId))
             return new Response<>(STATUS_UNAUTHORIZED, "Unauthorized", false);
-        if (!tokenService.isTokenValid(jwt))
-            return new Response<>(STATUS_UNAUTHORIZED, "Invalid or expired token", false);
         if (dto.getEmail() != null && !isEmailValid(dto.getEmail()))
             return new Response<>(STATUS_NOT_FOUND, "Invalid email format", false);
-        if (dto.getEmail() != null && userRepository.findUserByEmail(dto.getEmail()).isPresent())
+        Optional<User> user = userRepository.findUserByEmail(dto.getEmail());
+        if (dto.getEmail() != null && user.isPresent() && !user.get().getId().equals(dtoId)) {
             return new Response<>(STATUS_NOT_FOUND, "Email is already in use", false);
+        }
+
 
         return new Response<>(STATUS_OK, "User and token are valid", true);
     }

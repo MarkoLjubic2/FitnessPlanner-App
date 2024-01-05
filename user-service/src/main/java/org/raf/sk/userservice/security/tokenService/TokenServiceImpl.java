@@ -36,23 +36,22 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public boolean isTokenValid(String jwt) {
-        try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
+    public Long getUserId(String jwt) {
+        jwt = jwt.replaceAll("Bearer ", "");
+        Claims claims = parseToken(jwt);
+        return (claims != null) ? Long.valueOf((Integer) claims.get("id")) : null;
     }
 
     @Override
     public String getRole(String jwt) {
+        jwt = jwt.replaceAll("Bearer ", "");
         Claims claims = parseToken(jwt);
         return (claims != null) ? (String) claims.get("role") : null;
     }
 
     @Override
     public String getUsername(String jwt) {
+        jwt = jwt.replaceAll("Bearer ", "");
         Claims claims = parseToken(jwt);
         return (claims != null) ? (String) claims.get("username") : null;
     }

@@ -47,7 +47,6 @@ public class UserController {
     }
 
     @ApiOperation(value = "Get user data")
-    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
     @GetMapping("/getUserData/{userId}")
     public ResponseEntity<Response<UserDto>> getUserData(@PathVariable("userId") Long userId) {
         Response<UserDto> response = userService.getUserData(userId);
@@ -138,7 +137,5 @@ public class UserController {
         Response<ManagerDto> response = userService.getManagerData(userId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
-
-
 
 }
