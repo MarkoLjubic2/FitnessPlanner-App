@@ -66,7 +66,7 @@ const AppointmentTable = () => {
     return (
         <div>
             <h1 style={{ color: 'white', textAlign: 'center' }}>Appointments</h1>
-            <table className="table">
+            <table className="table rounded-table">
                 <thead>
                 <tr>
                     <th>Day</th>

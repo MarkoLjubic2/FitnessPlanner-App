@@ -27,6 +27,7 @@ public class ReservationMapper {
                     reservationDto.setEndTime(r.getEndTime());
                     reservationDto.setTrainingId(r.getTraining().getId());
                     reservationDto.setClientId(r.getClientId());
+                    reservationDto.setDay(r.getDay());
                     return reservationDto;
                 })
                 .orElse(null);
@@ -41,6 +42,7 @@ public class ReservationMapper {
                     reservation.setStartTime(dto.getStartTime());
                     reservation.setEndTime(dto.getEndTime());
                     reservation.setClientId(dto.getClientId());
+                    reservation.setDay(dto.getDay());
                     return reservation;
                 })
                 .orElse(null);
@@ -55,6 +57,7 @@ public class ReservationMapper {
                     reservation.setEndTime(dto.getEndTime());
                     reservation.setClientId(dto.getClientId());
                     trainingRepository.findById(dto.getTrainingId()).ifPresent(reservation::setTraining);
+                    reservation.setDay(dto.getDay());
                     return reservation;
                 })
                 .orElse(null);

@@ -14,7 +14,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(indexes = {@Index(columnList = "mail", unique = true)})
+@Table
 public class Notification {
 
     @Id

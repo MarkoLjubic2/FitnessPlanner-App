@@ -108,6 +108,13 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
+    @ApiOperation(value = "Change Password")
+    @PutMapping("/changePassword")
+    public ResponseEntity<Response<Boolean>> changePassword(@RequestHeader("Authorization") String jwt, @RequestBody ChangePasswordDto changePasswordDto) {
+        Response<Boolean> response = userService.changePassword(jwt, changePasswordDto);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
+    }
+
     @ApiOperation(value = "Login")
     @PostMapping("/login")
     public ResponseEntity<Response<TokenResponseDto>> login(@RequestBody TokenRequestDto tokenRequestDto) {

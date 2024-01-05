@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.raf.sk.notificationservice.dto.ActivationDto;
 import org.raf.sk.notificationservice.dto.AppointmentReservationDto;
-import org.raf.sk.notificationservice.dto.ChangePasswordDto;
+import org.raf.sk.notificationservice.dto.PasswordChangeDto;
 import org.raf.sk.notificationservice.dto.NotificationMQ;
 import org.raf.sk.notificationservice.listener.factory.NotificationHandlerFactory;
 import org.springframework.jms.annotation.JmsListener;
@@ -30,7 +30,7 @@ public class EmailListener {
                 factory.getHandler("ACTIVATION").handle(objectMapper.convertValue(notificationMQ.getData(), ActivationDto.class));
                 break;
             case "CHANGE_PASSWORD":
-                factory.getHandler("CHANGE_PASSWORD").handle(objectMapper.convertValue(notificationMQ.getData(), ChangePasswordDto.class));
+                factory.getHandler("CHANGE_PASSWORD").handle(objectMapper.convertValue(notificationMQ.getData(), PasswordChangeDto.class));
                 break;
             case "RESERVATION":
                 factory.getHandler("RESERVATION").handle(objectMapper.convertValue(notificationMQ.getData(), AppointmentReservationDto.class));

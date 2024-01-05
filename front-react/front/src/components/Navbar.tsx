@@ -32,7 +32,7 @@ function CustomNavbar() {
                         {profile.loggedIn === 'true' ? (
                             <>
                                 <Nav.Link as={Link} to="/appointments">All trainings</Nav.Link>
-                                <Nav.Link as={Link} to="/">Scheduled trainings</Nav.Link>
+                                <Nav.Link as={Link} to="/reservations">Scheduled trainings</Nav.Link>
                                 {role === 'MANAGER' && <Nav.Link as={Link} to="/halls">Hall</Nav.Link>}
                                 {role === 'ADMIN' && (
                                     <NavDropdown title="Admin Panel" id="admin-nav-dropdown">
@@ -44,6 +44,7 @@ function CustomNavbar() {
                                 )}
                                 <NavDropdown title="Profile" id="basic-nav-dropdown">
                                     <NavDropdown.Item as={Link} to="/edit-profile">Edit Profile</NavDropdown.Item>
+                                    <NavDropdown.Item as={Link} to="/change-password">Change Password</NavDropdown.Item>
                                     <NavDropdown.Divider />
                                     <NavDropdown.Item as={Link} to="/" onClick={() => {
                                         setProfile(prevProfile => ({ ...prevProfile, loggedIn: 'false' }));

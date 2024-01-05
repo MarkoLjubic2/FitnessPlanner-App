@@ -3,6 +3,7 @@ package org.raf.sk.userservice.service;
 import lombok.AllArgsConstructor;
 import org.raf.sk.userservice.client.appointment.AppointmentUserDto;
 import org.raf.sk.userservice.client.notification.ActivationDto;
+import org.raf.sk.userservice.client.notification.PasswordChangeDto;
 import org.raf.sk.userservice.client.notification.NotificationMQ;
 import org.raf.sk.userservice.domain.User;
 import org.raf.sk.userservice.dto.*;
@@ -177,6 +178,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Response<Boolean> changePassword(String jwt, ChangePasswordDto changePasswordDto) {
+        Response<Boolean> validationResponse = checkUserAndTokenValidity(jwt, changePasswordDto);
+        if (validationResponse.getStatusCode() != STATUS_OK) return validationResponse;
+        return userRepository.findById(changePasswordDto.getId())
+                .map(user -> {
+                    if (!encoder.matches(changePasswordDto.getOldPassword(), user.getPassword())) {
+                        return new Response<>(STATUS_FORBIDDEN, "Invalid credentials", false);
+                    }
+
+                    user.setPassword(encoder.encode(changePasswordDto.getNewPassword()));
+                    userRepository.save(user);
+
+                    PasswordChangeDto notificationDto = new PasswordChangeDto(user.getUsername(), user.getEmail());
+                    NotificationMQ<PasswordChangeDto> msg = new NotificationMQ<>("CHANGE_PASSWORD", notificationDto);
+                    jmsTemplate.convertAndSend("send_emails", messageHelper.createTextMessage(msg));
+
+                    return new Response<>(STATUS_OK, "Password changed", true);
+                })
+                .orElse(new Response<>(STATUS_NOT_FOUND, "User not found", false));
+    }
+
+    @Override
     public Response<TokenResponseDto> login(TokenRequestDto tokenRequestDto) {
         return userRepository.findUserByUsername(tokenRequestDto.getUsername())
                 .map(user -> {
@@ -233,16 +256,17 @@ public class UserServiceImpl implements UserService {
     private Response<Boolean> checkUserAndTokenValidity(String jwt, AbstractUserDto dto) {
         Long id = tokenService.getUserId(jwt);
         Long dtoId = dto.getId();
+        System.out.println(id+" "+dtoId);
         if (id == null || !id.equals(dtoId))
             return new Response<>(STATUS_UNAUTHORIZED, "Unauthorized", false);
-        if (dto.getEmail() != null && !isEmailValid(dto.getEmail()))
-            return new Response<>(STATUS_NOT_FOUND, "Invalid email format", false);
-        Optional<User> user = userRepository.findUserByEmail(dto.getEmail());
-        if (dto.getEmail() != null && user.isPresent() && !user.get().getId().equals(dtoId)) {
-            return new Response<>(STATUS_NOT_FOUND, "Email is already in use", false);
+        if (!(dto instanceof ChangePasswordDto)) {
+            if (dto.getEmail() != null && !isEmailValid(dto.getEmail()))
+                return new Response<>(STATUS_NOT_FOUND, "Invalid email format", false);
+            Optional<User> user = userRepository.findUserByEmail(dto.getEmail());
+            if (dto.getEmail() != null && user.isPresent() && !user.get().getId().equals(dtoId)) {
+                return new Response<>(STATUS_NOT_FOUND, "Email is already in use", false);
+            }
         }
-
-
         return new Response<>(STATUS_OK, "User and token are valid", true);
     }
 

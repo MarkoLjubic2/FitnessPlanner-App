@@ -58,5 +58,34 @@ body {
   to {
     transform: rotate(360deg);
   }
+}
 
+.marquee {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee p {
+  display: inline-block;
+  padding-left: 100%;
+  animation: marquee linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.App-footer .marquee {
+  background-color: #1a2845;
+}
+
+.rounded-table {
+  border-radius: 15px;
+  overflow: hidden;
 }

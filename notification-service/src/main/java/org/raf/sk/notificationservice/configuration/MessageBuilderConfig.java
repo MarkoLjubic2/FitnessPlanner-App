@@ -2,7 +2,7 @@ package org.raf.sk.notificationservice.configuration;
 
 import org.raf.sk.notificationservice.dto.ActivationDto;
 import org.raf.sk.notificationservice.dto.AppointmentReservationDto;
-import org.raf.sk.notificationservice.dto.ChangePasswordDto;
+import org.raf.sk.notificationservice.dto.PasswordChangeDto;
 import org.raf.sk.notificationservice.dto.abstraction.NotificationDto;
 import org.raf.sk.notificationservice.service.factory.ActivationBuilder;
 import org.raf.sk.notificationservice.service.factory.ChangePasswordBuilder;
@@ -22,7 +22,7 @@ public class MessageBuilderConfig {
         Map<Class<? extends NotificationDto>, MessageBuilder<? extends NotificationDto>> messageBuilders = new HashMap<>();
         messageBuilders.put(ActivationDto.class, new ActivationBuilder());
         messageBuilders.put(AppointmentReservationDto.class, new ReservationBuilder());
-        messageBuilders.put(ChangePasswordDto.class, new ChangePasswordBuilder());
+        messageBuilders.put(PasswordChangeDto.class, new ChangePasswordBuilder());
         return messageBuilders;
     }
 

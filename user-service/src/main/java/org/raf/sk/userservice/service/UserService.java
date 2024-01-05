@@ -98,6 +98,15 @@ public interface UserService {
     Response<Boolean> updateManager(String jwt, UpdateManagerDto updateManagerDto);
 
     /**
+     * Changes the password for a user.
+     *
+     * @param jwt               JWT token for authentication.
+     * @param changePasswordDto Data for changing the password.
+     * @return Response object containing a Boolean indicating the success of the operation.
+     */
+    Response<Boolean> changePassword(String jwt, ChangePasswordDto changePasswordDto);
+
+    /**
      * Performs user authentication and returns a token response.
      *
      * @param tokenRequestDto Data for user authentication.

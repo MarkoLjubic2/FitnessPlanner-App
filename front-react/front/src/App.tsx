@@ -12,6 +12,8 @@ import Footer from "./components/Footer";
 import AppointmentTable from "./components/AppointmentTable";
 import Hall from "./components/Hall";
 import EditProfile from "./views/EditProfile";
+import ChangePassword from "./views/ChangePassword";
+import ScheduleTable from "./components/ScheduleTable";
 
 const Content = styled.div`
     width: 90%;
@@ -42,7 +44,9 @@ function App() {
                         <Route path="/login" element={<Login/>}/>
                         <Route path="/register" element={<Register/>}/>
                         <Route path="/appointments" element={<AppointmentTable/>}/>
+                        <Route path="/reservations" element={<ScheduleTable/>}/>
                         <Route path="/edit-profile" element={<EditProfile/>}/>
+                        <Route path="/change-password" element={<ChangePassword/>}/>
                         <Route path="/hall" element={<Hall/>}/>
                     </Routes>
                 </Content>
