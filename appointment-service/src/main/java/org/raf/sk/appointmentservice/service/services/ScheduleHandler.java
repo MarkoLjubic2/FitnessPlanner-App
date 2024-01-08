@@ -3,6 +3,7 @@ package org.raf.sk.appointmentservice.service.services;
 import lombok.AllArgsConstructor;
 import org.raf.sk.appointmentservice.client.notification.AppointmentReservationDto;
 import org.raf.sk.appointmentservice.client.notification.NotificationMQ;
+import org.raf.sk.appointmentservice.client.notification.ReminderDto;
 import org.raf.sk.appointmentservice.client.user.AppointmentUserDto;
 import org.raf.sk.appointmentservice.client.user.ManagerDto;
 import org.raf.sk.appointmentservice.domain.Appointment;
@@ -23,9 +24,11 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -54,6 +57,7 @@ public class ScheduleHandler {
                     sendReservationNotification(user, hall, training);
                     createReservation(appointmentDto);
                     updateAppointment(appointmentDto);
+                    changeTotalSessions(user.getId(), 1);
 
                     return new Response<>(STATUS_OK, "Reservation created", true);
                 })
@@ -65,7 +69,6 @@ public class ScheduleHandler {
         Appointment appointment = findAppointmentByReservation(reservation);
 
         if (appointment == null) return new Response<>(STATUS_NOT_FOUND, "Appointment not found!", false);
-
         if (tokenService.getRole(jwt).equals("MANAGER"))
             return handleManagerCancellation(reservation, appointment);
         else if (tokenService.getRole(jwt).equals("USER")) return handleUserCancellation(reservation, appointment);
@@ -86,10 +89,12 @@ public class ScheduleHandler {
         appointmentRepository.save(appointment);
         for (Reservation r : reservationRepository.findAll()) {
             if (isSameReservation(reservation, r)) {
-                reservationRepository.delete(r);
+                r.setCanceled(true);
+                reservationRepository.save(r);
                 AppointmentUserDto user = fetchUserData(reservation.getClientId());
                 if (user == null) return new Response<>(STATUS_INTERNAL_SERVER_ERROR, "Error", false);
                 sendCancelNotification(user, appointment.getTraining().getHall());
+                changeTotalSessions(user.getId(), -1);
             }
         }
         return new Response<>(STATUS_OK, "Appointment closed", true);
@@ -98,13 +103,20 @@ public class ScheduleHandler {
     private Response<Boolean> handleUserCancellation(Reservation reservation, Appointment appointment) {
         AppointmentUserDto user = fetchUserData(reservation.getClientId());
         if (user == null) return new Response<>(STATUS_INTERNAL_SERVER_ERROR, "Error", false);
-        sendCancelNotification(user, appointment.getTraining().getHall());
+        for (Reservation r : reservationRepository.findAll()) {
+            if (isSameReservation(reservation, r)) {
+                r.setCanceled(true);
+                reservationRepository.save(r);
+                sendCancelNotification(user, appointment.getTraining().getHall());
+                changeTotalSessions(user.getId(), -1);
+                break;
+            }
+        }
         appointment.setCurrentClients(appointment.getCurrentClients() - 1);
-        appointment.setOpen(true);
-
+        if (appointment.getCurrentClients() < appointment.getMaxClients()) {
+            appointment.setOpen(true);
+        }
         appointmentRepository.save(appointment);
-        reservationRepository.delete(reservation);
-
         return new Response<>(STATUS_OK, "Reservation canceled", true);
     }
 
@@ -113,7 +125,8 @@ public class ScheduleHandler {
                 r.getDate().equals(reservation.getDate()) &&
                 r.getStartTime().equals(reservation.getStartTime()) &&
                 r.getEndTime().equals(reservation.getEndTime()) &&
-                r.getTraining().getId().equals(reservation.getTraining().getId());
+                r.getTraining().getId().equals(reservation.getTraining().getId()) &&
+                !r.isCanceled();
     }
 
     private AppointmentUserDto fetchUserData(Long clientId) {
@@ -168,6 +181,11 @@ public class ScheduleHandler {
         }
     }
 
+    private void changeTotalSessions(Long userId, int value) {
+        String url = "user/changeTotalSessions/" + userId + "?value=" + value;
+        userServiceRestTemplate.exchange(url, HttpMethod.PUT, null, Void.class);
+    }
+
     private String getManagerEmail(Long managerId) {
         ResponseEntity<Response<ManagerDto>> response;
         try {
@@ -177,6 +195,23 @@ public class ScheduleHandler {
             return user.getEmail();
         } catch (Exception ignored) {
             throw new RuntimeException("User not found");
+        }
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void reminder() {
+        List<Reservation> reservations = reservationRepository.findReservationsStartingIn24Hours();
+
+        for (Reservation reservation : reservations) {
+            AppointmentUserDto user = fetchUserData(reservation.getClientId());
+            if (user == null) continue;
+            Training training = reservation.getTraining();
+            Hall hall = training.getHall();
+
+            ReminderDto notificationDto = new ReminderDto(user.getEmail(), user.getFirstName(), user.getLastName(), hall.getName());
+            NotificationMQ<ReminderDto> msg = new NotificationMQ<>("REMINDER", notificationDto);
+            jmsTemplate.convertAndSend("send_emails", messageHelper.createTextMessage(msg));
+
         }
     }
 

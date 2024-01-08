@@ -27,6 +27,7 @@ public class Reservation implements Schedulable{
     private Training training;
     private Long clientId;
     private String day;
+    private boolean canceled = false;
     @CreationTimestamp
     @Column(updatable = false)
     private Date createdAt;

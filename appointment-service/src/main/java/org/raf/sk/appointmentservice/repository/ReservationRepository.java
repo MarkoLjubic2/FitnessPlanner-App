@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,6 +22,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     Optional<Reservation> findReservationByClientId(Long clientId);
 
+    @Query("SELECT r FROM Reservation r WHERE r.date = DATEADD('day', 1, CURRENT_DATE) AND r.startTime = DATEADD('hour', 24, CURRENT_TIME)")
+    List<Reservation> findReservationsStartingIn24Hours();
+
     @Modifying
     @Query("update Reservation r set r.startTime = :startTime, r.endTime = :endTime, r.training = :trainingId, r.clientId = :clientId where r.id = :id")
     void updateReservationById(Long id, Integer startTime, Integer endTime, Long trainingId, Long clientId);
@@ -28,8 +32,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Modifying
     @Query("delete from Reservation r where r.id = :id")
     void deleteReservationById(Long id);
-
-
 
 
 }

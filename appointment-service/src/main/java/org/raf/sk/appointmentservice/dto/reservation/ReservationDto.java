@@ -14,5 +14,6 @@ public class ReservationDto {
     private Long trainingId;
     private Long clientId;
     private String day;
+    private boolean canceled;
 
 }

@@ -8,7 +8,6 @@ import org.raf.sk.notificationservice.dto.abstraction.NotificationDto;
 @Setter
 public class ReminderDto extends NotificationDto {
 
-    private String managerEmail;
     private String clientFirstName;
     private String clientLastName;
     private String hallName;

@@ -12,6 +12,7 @@ interface Reservation {
     clientId: number;
     day: string;
     trainingName: string;
+    canceled: boolean;
 }
 
 const ScheduleTable = () => {
@@ -22,6 +23,21 @@ const ScheduleTable = () => {
         const response = await fetch(process.env.REACT_APP_TRAINING_SERVICE_URL + '/' + trainingId);
         const data = await response.json();
         return data.data.name;
+    }
+
+    const cancelTraining = async (reservation: Reservation) => {
+        const response = await fetch(process.env.REACT_APP_RESERVATION_SERVICE_URL + '/cancel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': profile.jwt
+            },
+            body: JSON.stringify(reservation)
+        });
+
+        if (response.ok) {
+            setReservations(reservations.filter(r => r.id !== reservation.id));
+        }
     }
 
     useEffect(() => {
@@ -43,7 +59,7 @@ const ScheduleTable = () => {
             })
                 .then(response => response.json())
                 .then(data => {
-                    const userReservations = data.data.content.filter((reservation: Reservation) => reservation.clientId === userId);
+                    const userReservations = data.data.content.filter((reservation: Reservation) => reservation.clientId === userId && !reservation.canceled);
                     const userReservationsWithTrainingName = userReservations.map(async (reservation: Reservation) => {
                         const trainingName = await getTrainingName(reservation.trainingId);
                         return { ...reservation, trainingName };
@@ -67,6 +83,7 @@ const ScheduleTable = () => {
                     <th>Start Time</th>
                     <th>End Time</th>
                     <th>Training</th>
+                    <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -77,6 +94,9 @@ const ScheduleTable = () => {
                         <td>{reservation.startTime}</td>
                         <td>{reservation.endTime}</td>
                         <td>{reservation.trainingName}</td>
+                        <td>
+                            <button onClick={() => cancelTraining(reservation)}>Cancel Training</button>
+                        </td>
                     </tr>
                 ))}
                 </tbody>

@@ -17,9 +17,21 @@ interface Appointment {
     trainingName: string;
 }
 
+interface Reservation {
+    id: number;
+    date: string;
+    startTime: number;
+    endTime: number;
+    trainingId: number;
+    clientId: number;
+    day: string;
+    canceled: boolean;
+}
+
 const AppointmentTable = () => {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const profile = useRecoilValue(profileInfo);
+    const [reservations, setReservations] = useState<Reservation[]>([]);
 
     const getTrainingName = async (trainingId: number) => {
         const response = await fetch(process.env.REACT_APP_TRAINING_SERVICE_URL + '/' + trainingId);
@@ -47,6 +59,35 @@ const AppointmentTable = () => {
         });
 
     }
+
+    useEffect(() => {
+        fetch(process.env.REACT_APP_RESERVATION_SERVICE_URL + '', {
+            headers: {
+                'Authorization': profile.jwt
+            }
+        })
+            .then(response => response.json())
+            .then(data => setReservations(data.data.content))
+            .catch(error => console.error('There was an error!', error));
+    }, []);
+
+    const isReserved = (appointment: Appointment) => {
+        const base64Url = profile.jwt.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        const decoded = JSON.parse(jsonPayload);
+        return reservations.some(reservation =>
+            reservation.startTime === Number(appointment.startTime) &&
+            reservation.endTime === Number(appointment.endTime) &&
+            reservation.date === appointment.date &&
+            reservation.trainingId === appointment.trainingId &&
+            reservation.clientId === decoded.id &&
+            !reservation.canceled
+        );
+    };
 
     useEffect(() => {
         fetch(process.env.REACT_APP_APPOINTMENT_SERVICE_URL + '')
@@ -92,7 +133,9 @@ const AppointmentTable = () => {
                         <td>{appointment.currentClients}</td>
                         <td>{appointment.open ? 'Yes' : 'No'}</td>
                         <td>
-                            <button onClick={() => scheduleTraining(appointment)}>Schedule Training</button>
+                            <button disabled={isReserved(appointment)}
+                                    onClick={() => scheduleTraining(appointment)}>Schedule Training
+                            </button>
                         </td>
                     </tr>
                 ))}

@@ -35,6 +35,9 @@ public class EmailListener {
             case "RESERVATION":
                 factory.getHandler("RESERVATION").handle(objectMapper.convertValue(notificationMQ.getData(), AppointmentReservationDto.class));
                 break;
+            case "RESERVATION_CANCEL":
+                factory.getHandler("RESERVATION_CANCEL").handle(objectMapper.convertValue(notificationMQ.getData(), AppointmentReservationDto.class));
+                break;
             default:
                 throw new IllegalArgumentException("Unknown message type: " + notificationMQ.getType());
         }

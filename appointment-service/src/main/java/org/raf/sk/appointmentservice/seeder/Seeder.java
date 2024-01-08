@@ -31,7 +31,7 @@ public class Seeder implements CommandLineRunner {
 
     private void insertHalls() {
         Hall hall1 = new Hall("Ahiley 1", "/", 2, 1L);
-        Hall hall2 = new Hall("RAF Fitness", "/", 1, 1L);
+        Hall hall2 = new Hall("RAF Fitness", "/", 1, 2L);
         Hall hall3 = new Hall("TryCatch Gym", "/", 2, 1L);
         Hall hall4 = new Hall("Lambda Gym 2", "/", 1, 1L);
 
@@ -55,9 +55,9 @@ public class Seeder implements CommandLineRunner {
     }
 
     private void insertReservations() {
-        Reservation reservation1 = new Reservation("2022-12-09", 12, 14, "MONDAY", 1L);
+        Reservation reservation1 = new Reservation("2022-12-09", 12, 14, "MONDAY", 3L);
         reservation1.setTraining(trainingRepository.findTrainingByName("Calisthenics").orElseThrow());
-        Reservation reservation2 = new Reservation("2022-12-19", 14, 16, "WEDNESDAY", 1L);
+        Reservation reservation2 = new Reservation("2022-12-19", 14, 16, "WEDNESDAY", 3L);
         reservation2.setTraining(trainingRepository.findTrainingByName("Box").orElseThrow());
 
         reservationRepository.save(reservation1);
@@ -77,7 +77,7 @@ public class Seeder implements CommandLineRunner {
     private void insertAppointments() {
         Appointment appointment1 = new Appointment("2022-12-09", 12, 14, 1, 0, "MONDAY");
         appointment1.setTraining(trainingRepository.findTrainingByName("Calisthenics").orElseThrow());
-        Appointment appointment2 = new Appointment("2022-12-19", 14, 16,1, 0, "MONDAY");
+        Appointment appointment2 = new Appointment("2022-12-19", 14, 16,1, 0, "WEDNESDAY");
         appointment2.setTraining(trainingRepository.findTrainingByName("Box").orElseThrow());
 
         appointmentRepository.save(appointment1);
