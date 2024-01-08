@@ -54,10 +54,9 @@ public class UserController {
     }
 
     @ApiOperation(value = "Change total sessions")
-    @CheckSecurity(roles = {"ADMIN"})
     @PutMapping("/changeTotalSessions/{userId}")
-    public ResponseEntity<Response<Boolean>> changeTotalSessions(@RequestHeader("Authorization") String jwt, @PathVariable("userId") Long userId, @RequestParam int value) {
-        Response<Boolean> response = userService.changeTotalSessions(jwt, userId, value);
+    public ResponseEntity<Response<Boolean>> changeTotalSessions(@PathVariable("userId") Long userId, @RequestParam int value) {
+        Response<Boolean> response = userService.changeTotalSessions(userId, value);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 

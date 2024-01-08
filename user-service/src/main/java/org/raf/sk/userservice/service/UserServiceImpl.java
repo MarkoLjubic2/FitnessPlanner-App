@@ -62,10 +62,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response<Boolean> changeTotalSessions(String jwt, Long userId, int value) {
-        Response<Boolean> adminAndTokenCheck = checkAdminAndTokenValidity(jwt);
-        if (adminAndTokenCheck.getStatusCode() != STATUS_OK) return adminAndTokenCheck;
-
+    public Response<Boolean> changeTotalSessions(Long userId, int value) {
         return userRepository.findById(userId)
                 .map(user -> {
                     user.setTotalSessions(user.getTotalSessions() + value);

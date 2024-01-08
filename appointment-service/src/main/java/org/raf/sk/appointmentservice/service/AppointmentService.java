@@ -1,7 +1,6 @@
 package org.raf.sk.appointmentservice.service;
 
 import org.raf.sk.appointmentservice.domain.Schedulable;
-import org.raf.sk.appointmentservice.domain.Training;
 import org.raf.sk.appointmentservice.dto.appointment.AppointmentDto;
 import org.raf.sk.appointmentservice.dto.hall.CreateHallDto;
 import org.raf.sk.appointmentservice.dto.hall.HallDto;
@@ -37,5 +36,7 @@ public interface AppointmentService {
     Response<Page<ReservationDto>> findReservationByFilter(FilterCombinator<Schedulable> filter, Pageable pageable);
 
     Response<TrainingDto> findTrainingById(Long trainingId);
+
+    void reminder();
 
 }

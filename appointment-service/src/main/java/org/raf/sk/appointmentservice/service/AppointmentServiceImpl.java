@@ -100,5 +100,10 @@ public class AppointmentServiceImpl implements AppointmentService {
         return trainingHandler.findTrainingById(trainingId);
     }
 
+    @Override
+    public void reminder() {
+        scheduleHandler.reminder();
+    }
+
 
 }
