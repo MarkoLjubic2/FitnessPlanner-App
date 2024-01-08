@@ -51,50 +51,6 @@ public class UserMapper {
                 .orElse(null);
     }
 
-    public CreateUserDto userToCreateUserDto(User user) {
-        return Optional.ofNullable(user)
-                .map(u -> {
-                    CreateUserDto createUserDto = new CreateUserDto();
-                    createUserDto.setEmail(u.getEmail());
-                    createUserDto.setFirstName(u.getFirstName());
-                    createUserDto.setLastName(u.getLastName());
-                    createUserDto.setUsername(u.getUsername());
-                    createUserDto.setPassword(u.getPassword());
-                    createUserDto.setLicenceID(u.getLicenseID());
-                    createUserDto.setTotalSessions(u.getTotalSessions());
-                    return createUserDto;
-                })
-                .orElse(null);
-    }
-
-    public UpdateUserDto userToUpdateUserDto(User user) {
-        return Optional.ofNullable(user)
-                .map(u -> {
-                    UpdateUserDto updateUserDto = new UpdateUserDto();
-                    updateUserDto.setEmail(u.getEmail());
-                    updateUserDto.setFirstName(u.getFirstName());
-                    updateUserDto.setLastName(u.getLastName());
-                    updateUserDto.setUsername(u.getUsername());
-                    updateUserDto.setDateOfBirth(u.getDateOfBirth());
-                    return updateUserDto;
-                })
-                .orElse(null);
-    }
-
-    public User updateUserDtoToUser(UpdateUserDto updateUserDto) {
-        return Optional.ofNullable(updateUserDto)
-                .map(dto -> {
-                    User user = new User();
-                    user.setEmail(dto.getEmail());
-                    user.setFirstName(dto.getFirstName());
-                    user.setLastName(dto.getLastName());
-                    user.setUsername(dto.getUsername());
-                    user.setDateOfBirth(dto.getDateOfBirth());
-                    return user;
-                })
-                .orElse(null);
-    }
-
     public User createManagerDtoToManager(CreateManagerDto createManagerDto){
         return Optional.of(transferStandardDataToUser(createManagerDto))
                 .map(manager -> {
@@ -120,22 +76,6 @@ public class UserMapper {
                     managerDto.setHallId(u.getHallId());
                     managerDto.setHireDate(u.getHireDate());
                     return managerDto;
-                })
-                .orElse(null);
-    }
-
-    public CreateManagerDto managerToCreateManagerDto(User manager){
-        return Optional.ofNullable(manager)
-                .map(m -> {
-                    CreateManagerDto createManagerDto = new CreateManagerDto();
-                    createManagerDto.setEmail(m.getEmail());
-                    createManagerDto.setFirstName(m.getFirstName());
-                    createManagerDto.setLastName(m.getLastName());
-                    createManagerDto.setUsername(m.getUsername());
-                    createManagerDto.setPassword(m.getPassword());
-                    createManagerDto.setHallId(m.getHallId());
-                    createManagerDto.setHireDate(m.getHireDate());
-                    return createManagerDto;
                 })
                 .orElse(null);
     }

@@ -253,7 +253,7 @@ public class UserServiceImpl implements UserService {
     private Response<Boolean> checkUserAndTokenValidity(String jwt, AbstractUserDto dto) {
         Long id = tokenService.getUserId(jwt);
         Long dtoId = dto.getId();
-        System.out.println(id+" "+dtoId);
+
         if (id == null || !id.equals(dtoId))
             return new Response<>(STATUS_UNAUTHORIZED, "Unauthorized", false);
         if (!(dto instanceof ChangePasswordDto)) {

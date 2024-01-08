@@ -31,8 +31,6 @@ const EditHallForm: React.FC<EditHallFormProps> = ({ hall, jwt }) => {
             managerId: hall.managerId
         };
 
-        console.log(jwt)
-
         fetch(process.env.REACT_APP_HALL_SERVICE_URL + '', {
             method: 'PUT',
             headers: {

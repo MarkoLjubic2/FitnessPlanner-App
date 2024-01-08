@@ -33,6 +33,12 @@ const AppointmentTable = () => {
     const profile = useRecoilValue(profileInfo);
     const [reservations, setReservations] = useState<Reservation[]>([]);
 
+    const days = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
+    const trainingTypes = ['INDIVIDUAL', 'GROUP', 'BOTH'];
+    const [selectedDay, setSelectedDay] = useState('');
+    const [selectedTrainingType, setSelectedTrainingType] = useState('');
+    const [inputType, setInputType] = useState('');
+
     const getTrainingName = async (trainingId: number) => {
         const response = await fetch(process.env.REACT_APP_TRAINING_SERVICE_URL + '/' + trainingId);
         const data = await response.json();
@@ -104,9 +110,63 @@ const AppointmentTable = () => {
             });
     }, []);
 
+    const handleFilter = async () => {
+        const filterJSON: any = {};
+
+        if (selectedDay) {
+            filterJSON.day = selectedDay;
+        }
+
+        if (selectedTrainingType && !(selectedTrainingType === 'BOTH')) {
+            filterJSON.individual = selectedTrainingType === 'INDIVIDUAL';
+        }
+
+        if (inputType) {
+            filterJSON.type = inputType;
+        }
+
+        const response = await fetch(`${process.env.REACT_APP_APPOINTMENT_SERVICE_URL}/filter`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': profile.jwt
+            },
+            body: JSON.stringify(filterJSON)
+        });
+
+        const data = await response.json();
+        if (data && data.data) {
+            const appointmentsWithTrainingName = data.data.content.map(async (appointment: Appointment) => {
+                const trainingName = await getTrainingName(appointment.trainingId);
+                return { ...appointment, trainingName };
+            });
+            Promise.all(appointmentsWithTrainingName).then(setAppointments);
+        } else {
+            setAppointments([]);
+        }
+
+    };
+
     return (
         <div>
-            <h1 style={{ color: 'white', textAlign: 'center' }}>Appointments</h1>
+            <h1 style={{color: 'white', textAlign: 'center'}}>Appointments</h1>
+            <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '10px'}}>
+                <select onChange={(e) => setSelectedDay(e.target.value)}>
+                    <option value="">Select day</option>
+                    {days.map((day, index) => (
+                        <option key={index} value={day}>{day}</option>
+                    ))}
+                </select>
+                <select onChange={(e) => setSelectedTrainingType(e.target.value)}>
+                    <option value="">Select training type</option>
+                    {trainingTypes.map((type, index) => (
+                        <option key={index} value={type}>{type}</option>
+                    ))}
+                </select>
+                <label style={{color: 'white'}}>Type: </label>
+                <input type="text" value={inputType} onChange={(e) => setInputType(e.target.value)}/>
+                <button onClick={handleFilter}>Filter</button>
+            </div>
             <table className="table rounded-table">
                 <thead>
                 <tr>

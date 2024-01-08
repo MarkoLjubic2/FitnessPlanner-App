@@ -6,7 +6,7 @@ function ChangePassword() {
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [repeatNewPassword, setRepeatNewPassword] = useState('');
-    const [userId, setUserId] = useState(''); // Add this line
+    const [userId, setUserId] = useState('');
     let decoded: any;
 
     const handleSubmit = (e: { preventDefault: () => void; }) => {

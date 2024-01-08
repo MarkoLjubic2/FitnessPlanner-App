@@ -81,10 +81,6 @@ body {
   }
 }
 
-.App-footer .marquee {
-  background-color: #1a2845;
-}
-
 .rounded-table {
   border-radius: 15px;
   overflow: hidden;

@@ -18,7 +18,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @RequestMapping("/appointments")
 @AllArgsConstructor
-@CrossOrigin(origins = {"http://localhost:3000", "http://127.0.0.1:3000"})
+@CrossOrigin
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
@@ -31,8 +31,8 @@ public class AppointmentController {
     }
 
     @ApiOperation(value = "Get filtered appointments")
-    @GetMapping("/filter")
-    public ResponseEntity<Response<Page<AppointmentDto>>> findAppointmentByFilter(@ApiIgnore Pageable pageable, @RequestParam("filter") String filter) {
+    @PostMapping("/filter")
+    public ResponseEntity<Response<Page<AppointmentDto>>> findAppointmentByFilter(@ApiIgnore Pageable pageable, @RequestBody String filter) {
         FilterCombinator<Schedulable> filterCombinator = JSONController.convertFromJson(filter);
         return new ResponseEntity<>(appointmentService.findAppointmentByFilter(filterCombinator, pageable), HttpStatus.OK);
     }

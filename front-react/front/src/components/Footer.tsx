@@ -5,8 +5,8 @@ import Marquee from './Marquee';
 const Footer = () => {
     const messages = [
         "Every 10th training is free",
-        " - 20% discount for police and military",
-        " - Open 24/7",
+        " ---------------------- 20% discount for police and military",
+        " ---------------------- Open 24/7",
     ];
 
     return (

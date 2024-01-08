@@ -14,7 +14,7 @@ interface Hall {
 const Hall = () => {
     const [halls, setHalls] = useState<Hall[]>([]);
     const [selectedHall, setSelectedHall] = useState<Hall | null>(null);
-    const [mid, setMid] = useState<number | null>(null); // Dodajte ovu liniju
+    const [mid, setMid] = useState<number | null>(null);
     const profile = useRecoilValue(profileInfo);
 
     const handleEditClick = (hall: Hall) => {
@@ -30,9 +30,9 @@ const Hall = () => {
             }).join(''));
 
             const decoded = JSON.parse(jsonPayload);
-            setMid(decoded.id); // Izmenite ovu liniju
+            setMid(decoded.id);
         }
-    }, [window.location.pathname, profile.jwt]); // Izmenite ovu liniju
+    }, [window.location.pathname, profile.jwt]);
 
     useEffect(() => {
         if (mid !== null) {
@@ -47,7 +47,7 @@ const Hall = () => {
                     console.error('There was an error!', error);
                 });
         }
-    }, [window.location.pathname, mid]); // Izmenite ovu liniju
+    }, [window.location.pathname, mid]);
 
     return (
         <div>
