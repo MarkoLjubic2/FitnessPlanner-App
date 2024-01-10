@@ -25,7 +25,7 @@ public class NotificationController {
     @ApiOperation(value = "All notifications")
     @GetMapping
     @CheckSecurity(roles = {"ADMIN"})
-    public ResponseEntity<Response<Page<MailDto>>> getAllNotifications(String jwt, Pageable pageable) {
+    public ResponseEntity<Response<Page<MailDto>>> getAllNotifications(@RequestHeader("Authorization") String jwt, Pageable pageable) {
         Response<Page<MailDto>> response = notificationService.findAll(jwt, pageable);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }

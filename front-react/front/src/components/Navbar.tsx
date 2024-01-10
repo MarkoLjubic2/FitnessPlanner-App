@@ -36,10 +36,8 @@ function CustomNavbar() {
                                 {role === 'MANAGER' && <Nav.Link as={Link} to="/halls">Hall</Nav.Link>}
                                 {role === 'ADMIN' && (
                                     <NavDropdown title="Admin Panel" id="admin-nav-dropdown">
-                                        <NavDropdown.Item as={Link} to="/add-manager">Add Manager</NavDropdown.Item>
                                         <NavDropdown.Item as={Link} to="/mail-archive">Mail Archive</NavDropdown.Item>
-                                        <NavDropdown.Item as={Link} to="/ban-user">Ban User</NavDropdown.Item>
-                                        <NavDropdown.Item as={Link} to="/unban-user">Unban User</NavDropdown.Item>
+                                        <NavDropdown.Item as={Link} to="/ban-unban">Ban/Unban User</NavDropdown.Item>
                                     </NavDropdown>
                                 )}
                                 <NavDropdown title="Profile" id="basic-nav-dropdown">
@@ -59,6 +57,13 @@ function CustomNavbar() {
                             </>
                         )}
                     </Nav>
+                    {profile.loggedIn === 'true' && (
+                        <Nav className="ml-auto">
+                            <Nav.Item className="navbar-text">
+                                Hello, {profile.username}
+                            </Nav.Item>
+                        </Nav>
+                    )}
                 </Navbar.Collapse>
             </Container>
         </Navbar>

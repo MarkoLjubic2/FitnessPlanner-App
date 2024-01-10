@@ -14,6 +14,8 @@ import Hall from "./components/Hall";
 import EditProfile from "./views/EditProfile";
 import ChangePassword from "./views/ChangePassword";
 import ScheduleTable from "./components/ScheduleTable";
+import NotificationTable from "./components/NotificationTable";
+import BanTable from "./components/BanTable";
 
 const Content = styled.div`
     width: 90%;
@@ -25,8 +27,9 @@ function ProfileLoader() {
 
     useEffect(() => {
         const token = localStorage.getItem('jwt');
-        if (token) {
-            setProfile({'loggedIn':'true', 'jwt': token, 'data': null});
+        const username = localStorage.getItem('username');
+        if (token && username) {
+            setProfile({'loggedIn':'true', 'username': username,  'jwt': token, 'data': null});
         }
     }, []);
 
@@ -48,6 +51,8 @@ function App() {
                         <Route path="/edit-profile" element={<EditProfile/>}/>
                         <Route path="/change-password" element={<ChangePassword/>}/>
                         <Route path="/hall" element={<Hall/>}/>
+                        <Route path="/mail-archive" element={<NotificationTable/>}/>
+                        <Route path="/ban-unban" element={<BanTable/>}/>
                     </Routes>
                 </Content>
                 <Footer/>

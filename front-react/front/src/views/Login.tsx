@@ -31,8 +31,9 @@ function Login() {
                     alert(res.message)
                 }
                 else {
-                    setProfile({'loggedIn':'true', 'jwt': 'Bearer '+res.data.token, 'data': null})
+                    setProfile({'loggedIn':'true', 'username': username, 'jwt': 'Bearer '+res.data.token, 'data': null})
                     localStorage.setItem('jwt', 'Bearer '+res.data.token);
+                    localStorage.setItem('username', username);
                     navigate('/')
                 }
             })
