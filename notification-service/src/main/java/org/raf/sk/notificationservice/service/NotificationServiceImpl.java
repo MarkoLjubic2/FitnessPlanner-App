@@ -40,7 +40,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public <T extends NotificationDto> Response<Boolean> sendNotification(String typeName, T dto) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo("vjukic9222rn@raf.rs");
+        message.setTo(dto.getMail());
 
         Optional<Type> type = typeRepository.findTypeByName(typeName);
 
