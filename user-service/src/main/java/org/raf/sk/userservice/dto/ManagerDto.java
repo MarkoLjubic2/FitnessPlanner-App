@@ -6,16 +6,20 @@ import org.raf.sk.userservice.domain.Role;
 import org.raf.sk.userservice.domain.Status;
 import org.raf.sk.userservice.dto.abstraction.AbstractUserDto;
 
+import javax.validation.constraints.Email;
 import java.util.Date;
 
 @Getter
 @Setter
-public class ManagerDto extends AbstractUserDto {
+public class ManagerDto {
 
     private Long id;
-    private Role userRole;
-    private Status userStatus;
-    private String hall;
-    private Date hireDate;
+    private String username;
+    @Email(message = "Email should be valid")
+    private String email;
+    private String firstName;
+    private String lastName;
+    private Long hallId;
+    private String hireDate;
 
 }

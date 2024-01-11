@@ -2,11 +2,10 @@ package org.raf.sk.userservice.mapper;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import lombok.AllArgsConstructor;
+import org.raf.sk.userservice.client.appointment.AppointmentUserDto;
 import org.raf.sk.userservice.domain.User;
-import org.raf.sk.userservice.dto.CreateManagerDto;
-import org.raf.sk.userservice.dto.CreateUserDto;
-import org.raf.sk.userservice.dto.UpdateUserDto;
-import org.raf.sk.userservice.dto.UserDto;
+import org.raf.sk.userservice.dto.*;
 import org.raf.sk.userservice.dto.abstraction.AbstractUserDto;
 import org.raf.sk.userservice.repository.RoleRepository;
 import org.raf.sk.userservice.repository.StatusRepository;
@@ -15,15 +14,11 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
+@AllArgsConstructor
 public class UserMapper {
 
     private final RoleRepository roleRepository;
     private final StatusRepository statusRepository;
-
-    public UserMapper(RoleRepository roleRepository, StatusRepository statusRepository) {
-        this.roleRepository = roleRepository;
-        this.statusRepository = statusRepository;
-    }
 
     public UserDto userToUserDto(User user) {
         return Optional.ofNullable(user)
@@ -48,56 +43,9 @@ public class UserMapper {
         return Optional.of(transferStandardDataToUser(createUserDto))
                 .map(user -> {
                     roleRepository.findRoleByName("USER").ifPresent(user::setUserRole);
+                    statusRepository.findStatusByName("UNVERIFIED").ifPresent(user::setUserStatus);
                     user.setLicenseID(createUserDto.getLicenceID());
                     user.setTotalSessions(0);
-                    return user;
-                })
-                .orElse(null);
-    }
-
-    public CreateUserDto userToCreateUserDto(User user) {
-        return Optional.ofNullable(user)
-                .map(u -> {
-                    CreateUserDto createUserDto = new CreateUserDto();
-                    createUserDto.setEmail(u.getEmail());
-                    createUserDto.setFirstName(u.getFirstName());
-                    createUserDto.setLastName(u.getLastName());
-                    createUserDto.setUsername(u.getUsername());
-                    createUserDto.setPassword(u.getPassword());
-                    createUserDto.setLicenceID(u.getLicenseID());
-                    createUserDto.setTotalSessions(u.getTotalSessions());
-                    return createUserDto;
-                })
-                .orElse(null);
-    }
-
-    public UpdateUserDto userToUpdateUserDto(User user) {
-        return Optional.ofNullable(user)
-                .map(u -> {
-                    UpdateUserDto updateUserDto = new UpdateUserDto();
-                    updateUserDto.setEmail(u.getEmail());
-                    updateUserDto.setFirstName(u.getFirstName());
-                    updateUserDto.setLastName(u.getLastName());
-                    updateUserDto.setUsername(u.getUsername());
-                    updateUserDto.setDateOfBirth(u.getDateOfBirth());
-                    updateUserDto.setLicenceID(u.getLicenseID());
-                    updateUserDto.setTotalSessions(u.getTotalSessions());
-                    return updateUserDto;
-                })
-                .orElse(null);
-    }
-
-    public User updateUserDtoToUser(UpdateUserDto updateUserDto) {
-        return Optional.ofNullable(updateUserDto)
-                .map(dto -> {
-                    User user = new User();
-                    user.setEmail(dto.getEmail());
-                    user.setFirstName(dto.getFirstName());
-                    user.setLastName(dto.getLastName());
-                    user.setUsername(dto.getUsername());
-                    user.setDateOfBirth(dto.getDateOfBirth());
-                    user.setLicenseID(dto.getLicenceID());
-                    user.setTotalSessions(dto.getTotalSessions());
                     return user;
                 })
                 .orElse(null);
@@ -109,21 +57,40 @@ public class UserMapper {
                     roleRepository.findRoleByName("MANAGER").ifPresent(manager::setUserRole);
                     manager.setLicenseID("-1");
                     manager.setTotalSessions(-1);
+                    manager.setHallId(createManagerDto.getHallId());
+                    manager.setHireDate(createManagerDto.getHireDate());
                     return manager;
                 })
                 .orElse(null);
     }
 
-    public CreateManagerDto managerToCreateManagerDto(User manager){
-        return Optional.ofNullable(manager)
-                .map(m -> {
-                    CreateManagerDto createManagerDto = new CreateManagerDto();
-                    createManagerDto.setEmail(m.getEmail());
-                    createManagerDto.setFirstName(m.getFirstName());
-                    createManagerDto.setLastName(m.getLastName());
-                    createManagerDto.setUsername(m.getUsername());
-                    createManagerDto.setPassword(m.getPassword());
-                    return createManagerDto;
+    public ManagerDto userToManagerDto(User user){
+        return Optional.ofNullable(user)
+                .map(u -> {
+                    ManagerDto managerDto = new ManagerDto();
+                    managerDto.setId(u.getId());
+                    managerDto.setEmail(u.getEmail());
+                    managerDto.setFirstName(u.getFirstName());
+                    managerDto.setLastName(u.getLastName());
+                    managerDto.setUsername(u.getUsername());
+                    managerDto.setHallId(u.getHallId());
+                    managerDto.setHireDate(u.getHireDate());
+                    return managerDto;
+                })
+                .orElse(null);
+    }
+
+    public AppointmentUserDto userToAppointmentUserDto(User user) {
+        return Optional.ofNullable(user)
+                .map(u -> {
+                    AppointmentUserDto appointmentUserDto = new AppointmentUserDto();
+                    appointmentUserDto.setId(u.getId());
+                    appointmentUserDto.setEmail(u.getEmail());
+                    appointmentUserDto.setFirstName(u.getFirstName());
+                    appointmentUserDto.setLastName(u.getLastName());
+                    appointmentUserDto.setUsername(u.getUsername());
+                    appointmentUserDto.setTotalSessions(u.getTotalSessions());
+                    return appointmentUserDto;
                 })
                 .orElse(null);
     }

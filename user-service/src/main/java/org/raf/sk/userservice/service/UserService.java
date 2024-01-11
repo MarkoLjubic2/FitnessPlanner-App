@@ -1,5 +1,6 @@
 package org.raf.sk.userservice.service;
 
+import org.raf.sk.userservice.client.appointment.AppointmentUserDto;
 import org.raf.sk.userservice.dto.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,10 +13,11 @@ public interface UserService {
     /**
      * Retrieves a paginated list of users.
      *
+     * @param jwt      JWT token for authentication.
      * @param pageable Pageable object containing pagination information.
      * @return Response object containing a Page of UserDto.
      */
-    Response<Page<UserDto>> findAll(Pageable pageable);
+    Response<Page<UserDto>> findAll(String jwt, Pageable pageable);
 
     /**
      * Checks if a user with the specified ID exists.
@@ -23,7 +25,7 @@ public interface UserService {
      * @param userId ID of the user to check.
      * @return Response object containing a Boolean indicating the existence of the user.
      */
-    Response<Boolean> findUser(Long userId);
+    Response<Boolean> userExists(Long userId);
 
     /**
      * Retrieves user data for the specified user ID.
@@ -45,18 +47,20 @@ public interface UserService {
     /**
      * Bans a user based on the provided username.
      *
+     * @param jwt      JWT token for authentication.
      * @param username Username of the user to be banned.
      * @return Response object containing a Boolean indicating the success of the operation.
      */
-    Response<Boolean> banUser(String username);
+    Response<Boolean> banUser(String jwt, String username);
 
     /**
      * Unbans a user based on the provided username.
      *
+     * @param jwt      JWT token for authentication.
      * @param username Username of the user to be unbanned.
      * @return Response object containing a Boolean indicating the success of the operation.
      */
-    Response<Boolean> unbanUser(String username);
+    Response<Boolean> unbanUser(String jwt, String username);
 
     /**
      * Adds a new user.
@@ -93,11 +97,44 @@ public interface UserService {
     Response<Boolean> updateManager(String jwt, UpdateManagerDto updateManagerDto);
 
     /**
+     * Changes the password for a user.
+     *
+     * @param jwt               JWT token for authentication.
+     * @param changePasswordDto Data for changing the password.
+     * @return Response object containing a Boolean indicating the success of the operation.
+     */
+    Response<Boolean> changePassword(String jwt, ChangePasswordDto changePasswordDto);
+
+    /**
      * Performs user authentication and returns a token response.
      *
      * @param tokenRequestDto Data for user authentication.
      * @return Response object containing a TokenResponseDto.
      */
     Response<TokenResponseDto> login(TokenRequestDto tokenRequestDto);
+
+    /**
+     * Performs user registration.
+     *
+     * @param jwt               JWT token for authentication.
+     * @return Response object containing a Boolean indicating the success of the operation.
+     */
+    Response<Boolean> verifyUser(String jwt);
+
+    /**
+     * Retrieves user data for the specified user ID.
+     *
+     * @param userId ID of the user to retrieve data for.
+     * @return Response object containing the UserDto for the specified user ID.
+     */
+    Response<AppointmentUserDto> getAppointmentUserData(Long userId);
+
+    /**
+     * Retrieves manager data for the specified user ID.
+     *
+     * @param userId ID of the user to retrieve data for.
+     * @return Response object containing the ManagerDto for the specified user ID.
+     */
+    Response<ManagerDto> getManagerData(Long userId);
 
 }
