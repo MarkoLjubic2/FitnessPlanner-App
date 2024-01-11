@@ -15,6 +15,8 @@ public interface HallRepository extends JpaRepository<Hall, Long> {
 
     Optional<Hall> findHallByName(String name);
 
+    Optional<Hall> findHallByManagerId(Long managerId);
+
     @Modifying
     @Query("update Hall h set h.name = :name, h.description = :description, h.coaches = :coaches, h.managerId = :managerId where h.id = :id")
     void updateHallById(Long id, String name, String description, int coaches, Long managerId);

@@ -32,7 +32,8 @@ function CustomNavbar() {
                         {profile.loggedIn === 'true' ? (
                             <>
                                 <Nav.Link as={Link} to="/appointments">All trainings</Nav.Link>
-                                <Nav.Link as={Link} to="/reservations">Scheduled trainings</Nav.Link>
+                                {role === 'USER' && <Nav.Link as={Link} to="/reservations">Scheduled trainings</Nav.Link>}
+                                {role === 'MANAGER' && <Nav.Link as={Link} to="/manager">Scheduled trainings</Nav.Link>}
                                 {role === 'MANAGER' && <Nav.Link as={Link} to="/halls">Hall</Nav.Link>}
                                 {role === 'ADMIN' && (
                                     <NavDropdown title="Admin Panel" id="admin-nav-dropdown">

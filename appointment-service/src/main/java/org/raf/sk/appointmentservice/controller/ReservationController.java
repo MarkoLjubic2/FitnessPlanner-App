@@ -56,4 +56,10 @@ public class ReservationController {
     public ResponseEntity<Response<Boolean>> cancelReservation(@RequestHeader("Authorization") String jwt, @RequestBody ReservationDto reservationDto) {
         return new ResponseEntity<>(appointmentService.cancelReservation(jwt, reservationDto), HttpStatus.OK);
     }
+
+    @ApiOperation(value = "Get reservation by manager")
+    @GetMapping("/manager")
+    public ResponseEntity<Response<Page<ReservationDto>>> getReservationByManager(@RequestHeader("Authorization") String jwt) {
+        return new ResponseEntity<>(appointmentService.getReservationByManager(jwt), HttpStatus.OK);
+    }
 }

@@ -38,7 +38,11 @@ public class TokenServiceImpl implements TokenService {
     public Long getUserId(String jwt) {
         jwt = jwt.replaceAll("Bearer ", "");
         Claims claims = parseToken(jwt);
-        return (claims != null) ? (Long) claims.get("userId") : null;
+        if (claims != null) {
+            Number id = (Number) claims.get("id");
+            return id.longValue();
+        }
+        return null;
     }
 
     @Override

@@ -153,7 +153,7 @@ public class ScheduleHandler {
     private void sendCancelNotification(AppointmentUserDto user, Hall hall) {
         String hallName = hall.getName();
 
-        AppointmentReservationDto reservationDto = new AppointmentReservationDto("", user.getEmail(), user.getFirstName(), user.getLastName(), hallName, 0);
+        AppointmentReservationDto reservationDto = new AppointmentReservationDto(user.getEmail(), "", user.getFirstName(), user.getLastName(), hallName, 0);
         NotificationMQ<AppointmentReservationDto> msg = new NotificationMQ<>("RESERVATION_CANCEL", reservationDto);
         jmsTemplate.convertAndSend("send_emails", messageHelper.createTextMessage(msg));
     }

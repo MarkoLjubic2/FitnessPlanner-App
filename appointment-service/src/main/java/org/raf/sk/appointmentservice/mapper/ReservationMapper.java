@@ -55,7 +55,7 @@ public class ReservationMapper {
         return Optional.ofNullable(createReservationDto)
                 .map(dto -> {
                     Reservation reservation = new Reservation();
-                    reservation.setDate(LocalDate.now().toString());
+                    reservation.setDate(createReservationDto.getDate());
                     reservation.setStartTime(dto.getStartTime());
                     reservation.setEndTime(dto.getEndTime());
                     reservation.setClientId(dto.getClientId());

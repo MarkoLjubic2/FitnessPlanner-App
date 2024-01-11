@@ -16,6 +16,7 @@ import ChangePassword from "./views/ChangePassword";
 import ScheduleTable from "./components/ScheduleTable";
 import NotificationTable from "./components/NotificationTable";
 import BanTable from "./components/BanTable";
+import ScheduleTableManager from "./components/ScheduleTableManager";
 
 const Content = styled.div`
     width: 90%;
@@ -48,9 +49,10 @@ function App() {
                         <Route path="/register" element={<Register/>}/>
                         <Route path="/appointments" element={<AppointmentTable/>}/>
                         <Route path="/reservations" element={<ScheduleTable/>}/>
+                        <Route path="/manager" element={<ScheduleTableManager/>}/>
                         <Route path="/edit-profile" element={<EditProfile/>}/>
                         <Route path="/change-password" element={<ChangePassword/>}/>
-                        <Route path="/hall" element={<Hall/>}/>
+                        <Route path="/halls" element={<Hall/>}/>
                         <Route path="/mail-archive" element={<NotificationTable/>}/>
                         <Route path="/ban-unban" element={<BanTable/>}/>
                     </Routes>

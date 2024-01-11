@@ -101,6 +101,11 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    public Response<Page<ReservationDto>> getReservationByManager(String jwt) {
+        return searchHandler.getReservationByManager(jwt);
+    }
+
+    @Override
     public void reminder() {
         scheduleHandler.reminder();
     }

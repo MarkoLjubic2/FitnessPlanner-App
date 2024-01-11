@@ -19,6 +19,7 @@ const EditHallForm: React.FC<EditHallFormProps> = ({ hall, jwt }) => {
     const [name, setName] = useState(hall.name);
     const [description, setDescription] = useState(hall.description);
     const [coaches, setCoaches] = useState(hall.coaches);
+    const [isFormVisible, setIsFormVisible] = useState(true); // New state variable
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -39,20 +40,21 @@ const EditHallForm: React.FC<EditHallFormProps> = ({ hall, jwt }) => {
             },
             body: JSON.stringify(updatedHall)
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'OK') {
+            .then(response => {
+                if (response.status === 200) {
                     alert('Hall successfully updated');
+                    setIsFormVisible(false); // Hide the form
                 } else {
                     alert('There was an error updating the hall');
                 }
+                return response.json();
             })
             .catch(error => {
                 console.error('There was an error!', error);
             });
     };
 
-    return (
+    return isFormVisible ? (
         <Form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
             <Form.Group className="mb-3" controlId="formHorizontalName">
                 <Form.Label style={{ color: 'white' }}>Name</Form.Label>
@@ -71,7 +73,7 @@ const EditHallForm: React.FC<EditHallFormProps> = ({ hall, jwt }) => {
 
             <Button type="submit">Submit</Button>
         </Form>
-    );
+    ) : null;
 };
 
 export default EditHallForm;

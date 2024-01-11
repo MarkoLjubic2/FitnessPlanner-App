@@ -37,6 +37,7 @@ public interface AppointmentService {
 
     Response<TrainingDto> findTrainingById(Long trainingId);
 
-    void reminder();
+    Response<Page<ReservationDto>> getReservationByManager(String jwt);
 
+    void reminder();
 }
