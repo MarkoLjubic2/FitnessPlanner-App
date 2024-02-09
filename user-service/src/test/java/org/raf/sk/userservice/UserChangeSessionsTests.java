@@ -62,11 +62,10 @@ public class UserChangeSessionsTests {
         User user = new User();
         user.setTotalSessions(initialSessions);
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(tokenService.isTokenValid(any())).thenReturn(true);
         when(tokenService.getRole(any())).thenReturn("ADMIN");
 
         // Act
-        Response<Boolean> response = userService.changeTotalSessions("valid_jwt", 1L, change);
+        Response<Boolean> response = userService.changeTotalSessions( 1L, change);
 
         // Assert
         assertUserResponse(response, STATUS_OK, "Total sessions changed", true);

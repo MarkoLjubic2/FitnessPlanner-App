@@ -40,4 +40,6 @@ public interface AppointmentService {
     Response<Page<ReservationDto>> getReservationByManager(String jwt);
 
     void reminder();
+
+    void cancelTrainingsWithLessThanThreeClients();
 }

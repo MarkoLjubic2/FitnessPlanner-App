@@ -62,7 +62,6 @@ public class UserBanUnbanTests {
     public void ban_user_not_found_test() {
         // Arrange
         when(userRepository.findUserByUsername(any())).thenReturn(Optional.empty());
-        when(tokenService.isTokenValid(any())).thenReturn(true);
         when(tokenService.getRole(any())).thenReturn("ADMIN");
 
         // Act
@@ -81,7 +80,6 @@ public class UserBanUnbanTests {
         user.setUserStatus(status);
         when(userRepository.findUserByUsername(any())).thenReturn(Optional.of(user));
         when(statusRepository.findStatusByName("BANNED")).thenReturn(Optional.of(new Status(1L, "BANNED")));
-        when(tokenService.isTokenValid(any())).thenReturn(true);
         when(tokenService.getRole(any())).thenReturn("ADMIN");
 
         // Act
@@ -100,7 +98,6 @@ public class UserBanUnbanTests {
         user.setUserStatus(status);
         when(userRepository.findUserByUsername(any())).thenReturn(Optional.of(user));
         when(statusRepository.findStatusByName("BANNED")).thenReturn(Optional.of(new Status(1L, "BANNED")));
-        when(tokenService.isTokenValid(any())).thenReturn(true);
         when(tokenService.getRole(any())).thenReturn("ADMIN");
 
         // Act
@@ -115,7 +112,6 @@ public class UserBanUnbanTests {
     public void unban_user_not_found_test() {
         // Arrange
         when(userRepository.findUserByUsername(any())).thenReturn(Optional.empty());
-        when(tokenService.isTokenValid(any())).thenReturn(true);
         when(tokenService.getRole(any())).thenReturn("ADMIN");
 
         // Act
@@ -134,7 +130,6 @@ public class UserBanUnbanTests {
         user.setUserStatus(status);
         when(userRepository.findUserByUsername(any())).thenReturn(Optional.of(user));
         when(statusRepository.findStatusByName("VERIFIED")).thenReturn(Optional.of(new Status(1L, "VERIFIED")));
-        when(tokenService.isTokenValid(any())).thenReturn(true);
         when(tokenService.getRole(any())).thenReturn("ADMIN");
 
         // Act
@@ -153,7 +148,6 @@ public class UserBanUnbanTests {
         user.setUserStatus(status);
         when(userRepository.findUserByUsername(any())).thenReturn(Optional.of(user));
         when(statusRepository.findStatusByName("VERIFIED")).thenReturn(Optional.of(new Status(1L, "VERIFIED")));
-        when(tokenService.isTokenValid(any())).thenReturn(true);
         when(tokenService.getRole(any())).thenReturn("ADMIN");
 
         // Act
@@ -167,7 +161,6 @@ public class UserBanUnbanTests {
     @Test
     public void ban_user_invalid_jwt_test() {
         // Arrange
-        when(tokenService.isTokenValid(any())).thenReturn(false);
         when(tokenService.getRole(any())).thenReturn("ADMIN");
 
         // Act
@@ -180,7 +173,6 @@ public class UserBanUnbanTests {
     @Test
     public void unban_user_invalid_jwt_test() {
         // Arrange
-        when(tokenService.isTokenValid(any())).thenReturn(false);
         when(tokenService.getRole(any())).thenReturn("ADMIN");
 
         // Act
@@ -193,7 +185,6 @@ public class UserBanUnbanTests {
     @Test
     public void ban_user_unauthorized_test() {
         // Arrange
-        when(tokenService.isTokenValid(any())).thenReturn(true);
         when(tokenService.getRole(any())).thenReturn("USER");
 
         // Act
@@ -206,7 +197,6 @@ public class UserBanUnbanTests {
     @Test
     public void unban_user_unauthorized_test() {
         // Arrange
-        when(tokenService.isTokenValid(any())).thenReturn(true);
         when(tokenService.getRole(any())).thenReturn("USER");
 
         // Act
