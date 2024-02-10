@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.raf.sk.appointmentservice.domain.Schedulable;
 import org.raf.sk.appointmentservice.dto.appointment.AppointmentDto;
+import org.raf.sk.appointmentservice.security.CheckSecurity;
 import org.raf.sk.appointmentservice.service.AppointmentService;
 import org.raf.sk.appointmentservice.service.Response;
 import org.raf.sk.appointmentservice.service.combinator.FilterCombinator;
@@ -33,13 +34,16 @@ public class AppointmentController {
 
     @ApiOperation(value = "Get all appointments")
     @GetMapping
-    public ResponseEntity<Response<Page<AppointmentDto>>> findAllAppointments(@ApiIgnore Pageable pageable) {
+    @CheckSecurity(roles = {"ADMIN", "MANAGER", "USER"})
+    public ResponseEntity<Response<Page<AppointmentDto>>> findAllAppointments(@RequestHeader("Authorization") String jwt, @ApiIgnore Pageable pageable) {
         return new ResponseEntity<>(appointmentService.findAllAppointments(pageable), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Get filtered appointments")
     @PostMapping("/filter")
-    public ResponseEntity<Response<Page<AppointmentDto>>> findAppointmentByFilter(@ApiIgnore Pageable pageable, @RequestBody String filter) {
+    @CheckSecurity(roles = {"ADMIN", "MANAGER", "USER"})
+    public ResponseEntity<Response<Page<AppointmentDto>>> findAppointmentByFilter(@RequestHeader("Authorization") String jwt,
+                                                                                  @ApiIgnore Pageable pageable, @RequestBody String filter) {
         FilterCombinator<Schedulable> filterCombinator = JSONController.convertFromJson(filter);
         return new ResponseEntity<>(appointmentService.findAppointmentByFilter(filterCombinator, pageable), HttpStatus.OK);
     }

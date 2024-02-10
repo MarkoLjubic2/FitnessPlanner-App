@@ -9,9 +9,9 @@
         <relativePath/>
     </parent>
     <groupId>com.raf</groupId>
-    <artifactId>api-getaway</artifactId>
+    <artifactId>api-gateway</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>api-getaway</name>
+    <name>api-gateway</name>
 
     <properties>
         <java.version>17</java.version>
