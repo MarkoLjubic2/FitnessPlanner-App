@@ -19,7 +19,7 @@ const EditHallForm: React.FC<EditHallFormProps> = ({ hall, jwt }) => {
     const [name, setName] = useState(hall.name);
     const [description, setDescription] = useState(hall.description);
     const [coaches, setCoaches] = useState(hall.coaches);
-    const [isFormVisible, setIsFormVisible] = useState(true); // New state variable
+    const [isFormVisible, setIsFormVisible] = useState(true);
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -43,7 +43,7 @@ const EditHallForm: React.FC<EditHallFormProps> = ({ hall, jwt }) => {
             .then(response => {
                 if (response.status === 200) {
                     alert('Hall successfully updated');
-                    setIsFormVisible(false); // Hide the form
+                    setIsFormVisible(false);
                 } else {
                     alert('There was an error updating the hall');
                 }

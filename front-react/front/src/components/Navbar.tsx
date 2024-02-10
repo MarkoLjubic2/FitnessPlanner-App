@@ -5,22 +5,24 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import {useRecoilState} from "recoil";
+import { useRecoilState } from "recoil";
+import { decodeJwt } from '../util/decoder';
 
 function CustomNavbar() {
     const [profile, setProfile] = useRecoilState(profileInfo);
     let role;
 
     if (profile.jwt) {
-        const base64Url = profile.jwt.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-
-        const decoded = JSON.parse(jsonPayload);
+        const decoded = decodeJwt(profile.jwt);
         role = decoded.role;
     }
+
+    const handleLogout = () => {
+        setProfile(prevProfile => ({ ...prevProfile, loggedIn: 'false' }));
+        localStorage.removeItem('jwt');
+        document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        window.location.href = '/';
+    };
 
     return (
         <Navbar expand="lg" className="navbar-dark bg-dark">
@@ -45,10 +47,9 @@ function CustomNavbar() {
                                     <NavDropdown.Item as={Link} to="/edit-profile">Edit Profile</NavDropdown.Item>
                                     <NavDropdown.Item as={Link} to="/change-password">Change Password</NavDropdown.Item>
                                     <NavDropdown.Divider />
-                                    <NavDropdown.Item as={Link} to="/" onClick={() => {
-                                        setProfile(prevProfile => ({ ...prevProfile, loggedIn: 'false' }));
-                                        localStorage.removeItem('jwt');
-                                    }}>Log Out</NavDropdown.Item>
+                                    <NavDropdown.Item as={Link} to="/" onClick={
+                                        () => { handleLogout(); }
+                                    }>Log Out</NavDropdown.Item>
                                 </NavDropdown>
                             </>
                         ) : (
