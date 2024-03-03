@@ -124,6 +124,11 @@
 			<artifactId>spring-retry</artifactId>
 			<version>1.3.1</version>
 		</dependency>
+		<!-- Eureka -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -131,7 +136,7 @@
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>2021.0.0</version>
+				<version>${spring-cloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

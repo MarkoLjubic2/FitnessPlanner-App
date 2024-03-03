@@ -32,13 +32,15 @@ public class HallController {
 
     @ApiOperation(value = "Get all halls")
     @GetMapping
-    public ResponseEntity<Response<Page<HallDto>>> getHalls(@ApiIgnore Pageable pageable) {
+    @CheckSecurity(roles = {"ADMIN", "MANAGER", "USER"})
+    public ResponseEntity<Response<Page<HallDto>>> getHalls(@RequestHeader("Authorization") String jwt, @ApiIgnore Pageable pageable) {
         return new ResponseEntity<>(appointmentService.findAllHalls(pageable), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Get hall by id")
     @GetMapping("/{id}")
-    public ResponseEntity<Response<HallDto>> getHall(@PathVariable("id") Long id) {
+    @CheckSecurity(roles = {"ADMIN", "MANAGER", "USER"})
+    public ResponseEntity<Response<HallDto>> getHall(@RequestHeader("Authorization") String jwt, @PathVariable("id") Long id) {
         return new ResponseEntity<>(appointmentService.findHallById(id), HttpStatus.OK);
     }
 

@@ -110,5 +110,10 @@ public class AppointmentServiceImpl implements AppointmentService {
         scheduleHandler.reminder();
     }
 
+    @Override
+    public void cancelTrainingsWithLessThanThreeClients() {
+        scheduleHandler.cancelTrainingsWithLessThanThreeClients();
+    }
+
 
 }

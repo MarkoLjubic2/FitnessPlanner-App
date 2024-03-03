@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { profileInfo } from '../atoms/loggedAtom';
+import Cookies from "js-cookie";
 
 interface Notification {
     id: number;
@@ -10,38 +9,27 @@ interface Notification {
     time: string;
 }
 
+const jwt = Cookies.get('jwt');
+
 const NotificationTable = () => {
     const [notifications, setNotifications] = useState<Notification[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const profile = useRecoilValue(profileInfo);
-    const setProfile = useSetRecoilState(profileInfo);
 
     useEffect(() => {
-        const storedJwt = localStorage.getItem('jwt');
-        if (storedJwt) {
-            setProfile(prevProfile => ({ ...prevProfile, jwt: storedJwt }));
-        }
-        setIsLoading(false);
-    }, [setProfile]);
+        if (!jwt) return;
 
-    useEffect(() => {
-        if (!isLoading && profile.jwt) {
-            localStorage.setItem('jwt', profile.jwt);
-
-            fetch(process.env.REACT_APP_NOTIFICATION_SERVICE_URL + '', {
-                headers: {
-                    'Authorization': profile.jwt
-                }
+        fetch(process.env.REACT_APP_NOTIFICATION_SERVICE_URL + '', {
+            headers: {
+                'Authorization': 'Bearer ' + jwt
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                setNotifications(data.data.content);
             })
-                .then(response => response.json())
-                .then(data => {
-                    setNotifications(data.data.content);
-                })
-                .catch(error => {
-                    console.error('There was an error!', error);
-                });
-        }
-    }, [profile, isLoading]);
+            .catch(error => {
+                console.error('There was an error!', error);
+            });
+    }, []);
 
     return (
         <div>

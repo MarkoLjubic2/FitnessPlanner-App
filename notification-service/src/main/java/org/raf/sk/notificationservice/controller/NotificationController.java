@@ -39,8 +39,9 @@ public class NotificationController {
 
     @ApiOperation(value = "Send notification")
     @PostMapping
-    public ResponseEntity<Response<Boolean>> sendNotification(@ApiParam(value = "Notification to send", required = true)
-                                                                  @RequestBody NotificationDto notificationDto, @RequestParam String typeName) {
+    @CheckSecurity(roles = {"ADMIN", "MANAGER", "USER"})
+    public ResponseEntity<Response<Boolean>> sendNotification(@RequestHeader("Authorization") String jwt,
+              @ApiParam(value = "Notification to send", required = true) @RequestBody NotificationDto notificationDto, @RequestParam String typeName) {
         Response<Boolean> response = notificationService.sendNotification(typeName, notificationDto);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
@@ -55,6 +56,7 @@ public class NotificationController {
 
     @ApiOperation(value = "All notifications by user")
     @GetMapping("/user")
+    @CheckSecurity(roles = {"ADMIN", "MANAGER", "USER"})
     public ResponseEntity<Response<Page<MailDto>>> getAllNotificationsByUser(@RequestHeader("Authorization") String jwt, Pageable pageable) {
         Response<Page<MailDto>> response = notificationService.findAllByUser(jwt, pageable);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));

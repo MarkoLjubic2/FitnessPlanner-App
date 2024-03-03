@@ -22,6 +22,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public Claims parseToken(String jwt) {
+        jwt = jwt.replaceAll("Bearer ", "");
         Claims claims;
         try {
             claims = Jwts.parser()
@@ -36,7 +37,6 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public String getRoleFromToken(String jwt) {
-        jwt = jwt.replaceAll("Bearer ", "");
         Claims claims = parseToken(jwt);
         if (claims == null) return null;
         return claims.get("role", String.class);
@@ -44,7 +44,6 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public String getMailFromToken(String jwt) {
-        jwt = jwt.replaceAll("Bearer ", "");
         Claims claims = parseToken(jwt);
         if (claims == null) return null;
         return claims.getSubject();

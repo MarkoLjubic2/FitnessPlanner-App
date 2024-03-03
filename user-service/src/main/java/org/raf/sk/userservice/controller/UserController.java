@@ -39,36 +39,39 @@ public class UserController {
     @ApiOperation(value = "Check if user exists")
     @GetMapping("/userExists/{userId}")
     @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
-    public ResponseEntity<Response<Boolean>> userExists(@PathVariable Long userId) {
+    public ResponseEntity<Response<Boolean>> userExists(@RequestHeader("Authorization") String jwt, @PathVariable Long userId) {
         Response<Boolean> response = userService.userExists(userId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @ApiOperation(value = "Get user data")
     @GetMapping("/getUserData/{userId}")
-    public ResponseEntity<Response<UserDto>> getUserData(@PathVariable("userId") Long userId) {
+    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
+    public ResponseEntity<Response<UserDto>> getUserData(@RequestHeader("Authorization") String jwt, @PathVariable("userId") Long userId) {
         Response<UserDto> response = userService.getUserData(userId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @ApiOperation(value = "Change total sessions")
     @PutMapping("/changeTotalSessions/{userId}")
-    public ResponseEntity<Response<Boolean>> changeTotalSessions(@PathVariable("userId") Long userId, @RequestParam int value) {
+    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
+    public ResponseEntity<Response<Boolean>> changeTotalSessions(@RequestHeader("Authorization") String jwt,
+                                                                 @PathVariable("userId") Long userId, @RequestParam int value) {
         Response<Boolean> response = userService.changeTotalSessions(userId, value);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @ApiOperation(value = "Ban user")
-    @CheckSecurity(roles = {"ADMIN"})
     @PutMapping("/banUser/{username}")
+    @CheckSecurity(roles = {"ADMIN"})
     public ResponseEntity<Response<Boolean>> banUser(@RequestHeader("Authorization") String jwt, @PathVariable("username") String username) {
         Response<Boolean> response = userService.banUser(jwt, username);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @ApiOperation(value = "Unban user")
-    @CheckSecurity(roles = {"ADMIN"})
     @PutMapping("/unbanUser/{username}")
+    @CheckSecurity(roles = {"ADMIN"})
     public ResponseEntity<Response<Boolean>> unbanUser(@RequestHeader("Authorization") String jwt, @PathVariable("username") String username) {
         Response<Boolean> response = userService.unbanUser(jwt, username);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
@@ -82,24 +85,24 @@ public class UserController {
     }
 
     @ApiOperation(value = "Add manager")
-    @CheckSecurity(roles = {"ADMIN"})
     @PostMapping("/addManager")
-    public ResponseEntity<Response<Boolean>> addManager(@RequestBody CreateManagerDto createManagerDto) {
+    @CheckSecurity(roles = {"ADMIN"})
+    public ResponseEntity<Response<Boolean>> addManager(@RequestHeader("Authorization") String jwt, @RequestBody CreateManagerDto createManagerDto) {
         Response<Boolean> response = userService.addManager(createManagerDto);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @ApiOperation(value = "Update user")
-    @CheckSecurity(roles = {"ADMIN", "USER"})
     @PutMapping("/updateUser")
+    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
     public ResponseEntity<Response<Boolean>> updateUser(@RequestHeader("Authorization") String jwt, @RequestBody UpdateUserDto updateUserDto) {
         Response<Boolean> response = userService.updateUser(jwt, updateUserDto);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @ApiOperation(value = "Update manager")
-    @CheckSecurity(roles = {"ADMIN", "MANAGER"})
     @PutMapping("/updateManager")
+    @CheckSecurity(roles = {"ADMIN", "MANAGER"})
     public ResponseEntity<Response<Boolean>> updateManager(@RequestHeader("Authorization") String jwt, @RequestBody UpdateManagerDto updateManagerDto) {
         Response<Boolean> response = userService.updateManager(jwt, updateManagerDto);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
@@ -107,6 +110,7 @@ public class UserController {
 
     @ApiOperation(value = "Change Password")
     @PutMapping("/changePassword")
+    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
     public ResponseEntity<Response<Boolean>> changePassword(@RequestHeader("Authorization") String jwt, @RequestBody ChangePasswordDto changePasswordDto) {
         Response<Boolean> response = userService.changePassword(jwt, changePasswordDto);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
@@ -130,14 +134,16 @@ public class UserController {
 
     @ApiOperation(value = "Get appointment user data")
     @GetMapping("/getAppointmentUserData/{userId}")
-    public ResponseEntity<Response<AppointmentUserDto>> getAppointmentUserData(@PathVariable("userId") Long userId) {
+    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
+    public ResponseEntity<Response<AppointmentUserDto>> getAppointmentUserData(@RequestHeader("Authorization") String jwt, @PathVariable("userId") Long userId) {
         Response<AppointmentUserDto> response = userService.getAppointmentUserData(userId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
     @ApiOperation(value = "Get manager data")
     @GetMapping("/getManagerData/{userId}")
-    public ResponseEntity<Response<ManagerDto>> getManagerData(@PathVariable("userId") Long userId) {
+    @CheckSecurity(roles = {"ADMIN", "USER", "MANAGER"})
+    public ResponseEntity<Response<ManagerDto>> getManagerData(@RequestHeader("Authorization") String jwt, @PathVariable("userId") Long userId) {
         Response<ManagerDto> response = userService.getManagerData(userId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }

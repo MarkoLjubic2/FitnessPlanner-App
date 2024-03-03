@@ -70,7 +70,6 @@ public class UserSearchTests {
         Page<User> usersPage = new PageImpl<>(List.of());
         when(userRepository.findAll(any(Pageable.class))).thenReturn(usersPage);
 
-        when(tokenService.isTokenValid(any())).thenReturn(true);
         when(tokenService.getRole(any())).thenReturn("ADMIN");
 
         // Act
@@ -92,7 +91,6 @@ public class UserSearchTests {
         when(userMapper.userToUserDto(user1)).thenReturn(userDto1);
         when(userMapper.userToUserDto(user2)).thenReturn(userDto2);
 
-        when(tokenService.isTokenValid(any())).thenReturn(true);
         when(tokenService.getRole(any())).thenReturn("ADMIN");
 
         // Act

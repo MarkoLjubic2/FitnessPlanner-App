@@ -1,48 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { profileInfo } from '../atoms/loggedAtom';
+import Cookies from "js-cookie";
 
 interface User {
     id: number;
     username: string;
 }
 
+const jwt = Cookies.get('jwt');
+
 const BanTable = () => {
     const [users, setUsers] = useState<User[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const profile = useRecoilValue(profileInfo);
-    const setProfile = useSetRecoilState(profileInfo);
 
     useEffect(() => {
-        const storedJwt = localStorage.getItem('jwt');
-        if (storedJwt) {
-            setProfile(prevProfile => ({ ...prevProfile, jwt: storedJwt }));
-        }
-        setIsLoading(false);
-    }, [setProfile]);
-
-    useEffect(() => {
-        if (!isLoading && profile.jwt) {
-            localStorage.setItem('jwt', profile.jwt);
-
-            fetch(process.env.REACT_APP_USER_SERVICE_URL + '', {
-                headers: {
-                    'Authorization': profile.jwt
-                }
+        if (!jwt) return;
+        fetch(process.env.REACT_APP_USER_SERVICE_URL + '', {
+            headers: {
+                'Authorization': 'Bearer ' + jwt
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                setUsers(data.data.content);
             })
-                .then(response => response.json())
-                .then(data => {
-                    setUsers(data.data.content);
-                })
-                .catch(error => console.error('There was an error!', error));
-        }
-    }, [profile, isLoading]);
+            .catch(error => console.error('There was an error!', error));
+    }, []);
 
     const banUser = (username: string) => {
         fetch(process.env.REACT_APP_USER_SERVICE_URL + '/banUser/' + username, {
             method: 'PUT',
             headers: {
-                'Authorization': profile.jwt
+                'Authorization': 'Bearer ' + jwt
             }
         })
             .then(response => response.json())
@@ -60,7 +47,7 @@ const BanTable = () => {
         fetch(process.env.REACT_APP_USER_SERVICE_URL + '/unbanUser/' + username, {
             method: 'PUT',
             headers: {
-                'Authorization': profile.jwt
+                'Authorization': 'Bearer ' + jwt
             }
         })
             .then(response => response.json())
@@ -72,10 +59,6 @@ const BanTable = () => {
                 }
             })
             .catch(error => console.error('There was an error!', error));
-    }
-
-    if (isLoading) {
-        return <div>Loading...</div>;
     }
 
     return (

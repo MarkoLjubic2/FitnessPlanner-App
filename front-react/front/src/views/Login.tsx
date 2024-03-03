@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { profileInfo } from '../atoms/loggedAtom';
 import { useRecoilState } from 'recoil';
 import Button from 'react-bootstrap/Button';
@@ -10,7 +9,6 @@ function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [profile, setProfile] = useRecoilState(profileInfo);
-    const navigate = useNavigate();
 
     const handleSubmit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
@@ -34,7 +32,8 @@ function Login() {
                     setProfile({'loggedIn':'true', 'username': username, 'jwt': 'Bearer '+res.data.token, 'data': null})
                     localStorage.setItem('jwt', 'Bearer '+res.data.token);
                     localStorage.setItem('username', username);
-                    navigate('/')
+                    document.cookie = `jwt=${res.data.token}; path=/`;
+                    window.location.href = '/';
                 }
             })
         .catch(error => console.error('Error:', error));

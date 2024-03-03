@@ -49,7 +49,7 @@ public class SearchHandler {
 
         Page<Appointment> filteredPage = new PageImpl<>(filteredAppointments, pageable, filteredAppointments.size());
         if (filteredAppointments.isEmpty())
-            return new Response<>(STATUS_NOT_FOUND, "Appointments not found", null);
+            return new Response<>(STATUS_NOT_FOUND, "Appointments not found", Page.empty());
 
         return new Response<>(STATUS_OK, "Appointments found", filteredPage.map(appointmentMapper::appointmentToAppointmentDto));
     }
@@ -66,7 +66,7 @@ public class SearchHandler {
 
         Page<Reservation> filteredPage = new PageImpl<>(filteredReservations, pageable, filteredReservations.size());
         if (filteredReservations.isEmpty())
-            return new Response<>(STATUS_NOT_FOUND, "Reservations not found", null);
+            return new Response<>(STATUS_NOT_FOUND, "Reservations not found", Page.empty());
 
         return new Response<>(STATUS_OK, "Reservations found", filteredPage.map(reservationMapper::reservationToReservationDto));
     }

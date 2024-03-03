@@ -215,4 +215,27 @@ public class ScheduleHandler {
         }
     }
 
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void cancelTrainingsWithLessThanThreeClients() {
+        List<Reservation> reservations = reservationRepository.findReservationsStartingIn24Hours();
+
+        reservations.forEach(reservation -> {
+            Appointment appointment = findAppointmentByReservation(reservation);
+            if (appointment != null) {
+                if (appointment.isOpen() && !appointment.getTraining().isIndividual() &&
+                        appointment.getCurrentClients() != 0 &&
+                        appointment.getCurrentClients() < 3) {
+                    appointment.setOpen(false);
+                    appointmentRepository.save(appointment);
+                    reservation.setCanceled(true);
+                    reservationRepository.save(reservation);
+                    AppointmentUserDto user = fetchUserData(reservation.getClientId());
+                    if (user == null) return;
+                    sendCancelNotification(user, appointment.getTraining().getHall());
+                    changeTotalSessions(user.getId(), -1);
+                }
+            }
+        });
+    }
+
 }

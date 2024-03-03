@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useRecoilValue } from 'recoil';
-import { profileInfo } from '../atoms/loggedAtom';
+import { decodeJwt } from '../util/decoder';
+import Cookies from "js-cookie";
 
 interface Reservation {
     id: number;
@@ -15,12 +15,17 @@ interface Reservation {
     canceled: boolean;
 }
 
+const jwt = Cookies.get('jwt');
+
 const ScheduleTable = () => {
     const [reservations, setReservations] = useState<Reservation[]>([]);
-    const profile = useRecoilValue(profileInfo);
 
     const getTrainingName = async (trainingId: number) => {
-        const response = await fetch(process.env.REACT_APP_TRAINING_SERVICE_URL + '/' + trainingId);
+        const response = await fetch(process.env.REACT_APP_TRAINING_SERVICE_URL + '/' + trainingId, {
+            headers: {
+                'Authorization': 'Bearer ' + jwt
+            }
+        });
         const data = await response.json();
         return data.data.name;
     }
@@ -30,7 +35,7 @@ const ScheduleTable = () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': profile.jwt
+                'Authorization': 'Bearer ' + jwt
             },
             body: JSON.stringify(reservation)
         });
@@ -41,35 +46,27 @@ const ScheduleTable = () => {
     }
 
     useEffect(() => {
-        const jwt = localStorage.getItem('jwt');
-        if (jwt) {
-            const base64Url = jwt.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
+        if (!jwt) return;
 
-            const decoded = JSON.parse(jsonPayload);
-            const userId = decoded.id;
-
-            fetch(process.env.REACT_APP_RESERVATION_SERVICE_URL + '', {
-                headers: {
-                    'Authorization': jwt
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    const userReservations = data.data.content.filter((reservation: Reservation) => reservation.clientId === userId && !reservation.canceled);
-                    const userReservationsWithTrainingName = userReservations.map(async (reservation: Reservation) => {
-                        const trainingName = await getTrainingName(reservation.trainingId);
-                        return { ...reservation, trainingName };
-                    });
-                    Promise.all(userReservationsWithTrainingName).then(setReservations);
-                })
-                .catch(error => {
-                    console.error('There was an error!', error);
+        const decoded = decodeJwt(jwt);
+        const userId = decoded.id;
+        fetch(process.env.REACT_APP_RESERVATION_SERVICE_URL + '', {
+            headers: {
+                'Authorization': 'Bearer ' + jwt
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const userReservations = data.data.content.filter((reservation: Reservation) => reservation.clientId === userId && !reservation.canceled);
+                const userReservationsWithTrainingName = userReservations.map(async (reservation: Reservation) => {
+                    const trainingName = await getTrainingName(reservation.trainingId);
+                    return { ...reservation, trainingName };
                 });
-        }
+                Promise.all(userReservationsWithTrainingName).then(setReservations);
+            })
+            .catch(error => {
+                console.error('There was an error!', error);
+            });
     }, []);
 
     return (

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import { decodeJwt } from '../util/decoder';
 
 function EditProfile() {
     const [username, setUsername] = useState('');
@@ -11,16 +12,15 @@ function EditProfile() {
     useEffect(() => {
         const jwt = localStorage.getItem('jwt');
         if (jwt) {
-            const base64Url = jwt.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-
-            const decoded = JSON.parse(jsonPayload);
+            const decoded = decodeJwt(jwt);
             const userId = decoded.id;
 
-            fetch(process.env.REACT_APP_USER_SERVICE_URL + '/getUserData/' + userId)
+            fetch(process.env.REACT_APP_USER_SERVICE_URL + '/getUserData/' + userId, {
+                headers: {
+                    'Authorization': jwt
+                }
+
+            })
                 .then(response => response.json())
                 .then(data => {
                     const user = data.data;
@@ -38,13 +38,7 @@ function EditProfile() {
         const jwt = localStorage.getItem('jwt');
         let userId = null;
         if (jwt) {
-            const base64Url = jwt.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-
-            const decoded = JSON.parse(jsonPayload);
+            const decoded = decodeJwt(jwt);
             userId = decoded.id;
         }
 

@@ -20,9 +20,11 @@ public class MessageBuilderConfig {
     @Bean
     public Map<Class<? extends NotificationDto>, MessageBuilder<? extends NotificationDto>> messageBuilders() {
         Map<Class<? extends NotificationDto>, MessageBuilder<? extends NotificationDto>> messageBuilders = new HashMap<>();
+
         messageBuilders.put(ActivationDto.class, new ActivationBuilder());
         messageBuilders.put(AppointmentReservationDto.class, new ReservationBuilder());
         messageBuilders.put(PasswordChangeDto.class, new ChangePasswordBuilder());
+
         return messageBuilders;
     }
 

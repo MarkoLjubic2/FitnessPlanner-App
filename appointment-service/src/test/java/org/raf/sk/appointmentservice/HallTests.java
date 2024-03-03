@@ -11,8 +11,8 @@ import org.raf.sk.appointmentservice.domain.Hall;
 import org.raf.sk.appointmentservice.dto.hall.HallDto;
 import org.raf.sk.appointmentservice.mapper.HallMapper;
 import org.raf.sk.appointmentservice.repository.HallRepository;
-import org.raf.sk.appointmentservice.service.AppointmentServiceImpl;
 import org.raf.sk.appointmentservice.service.Response;
+import org.raf.sk.appointmentservice.service.services.HallHandler;
 import org.raf.sk.appointmentservice.util.TestUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -31,7 +31,7 @@ import static org.raf.sk.appointmentservice.constants.Constants.STATUS_OK;
 public class HallTests {
 
     @InjectMocks
-    private AppointmentServiceImpl appointmentService;
+    private HallHandler hallHandler;
     @Mock
     private HallRepository hallRepository;
     @Mock
@@ -55,7 +55,7 @@ public class HallTests {
         when(hallMapper.hallToHallDto(h2)).thenReturn(dto2);
 
         // Act
-        Response<Page<HallDto>> response = appointmentService.findAllHalls(PageRequest.of(0, 10));
+        Response<Page<HallDto>> response = hallHandler.findAllHalls(PageRequest.of(0, 10));
 
         // Assert
         TestUtils.assertResponse(response, STATUS_OK, "All halls", hallsPage.map(hallMapper::hallToHallDto));
@@ -72,7 +72,7 @@ public class HallTests {
         when(hallMapper.hallToHallDto(hall)).thenReturn(hallDto);
 
         // Act
-        Response<HallDto> response = appointmentService.findHallById(1L);
+        Response<HallDto> response = hallHandler.findHallById(1L);
 
         // Assert
         TestUtils.assertResponse(response, STATUS_OK, "Hall found", hallDto);
@@ -85,7 +85,7 @@ public class HallTests {
         when(hallRepository.getHallById(any(Long.class))).thenReturn(Optional.empty());
 
         // Act
-        Response<HallDto> response = appointmentService.findHallById(1L);
+        Response<HallDto> response = hallHandler.findHallById(1L);
 
         // Assert
         TestUtils.assertResponse(response, STATUS_NOT_FOUND, "Hall not found", null);

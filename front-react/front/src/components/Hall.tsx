@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import {useRecoilValue} from 'recoil';
-import { profileInfo } from '../atoms/loggedAtom';
 import EditHallForm from "../views/EditHall";
+import { decodeJwt } from '../util/decoder';
+import Cookies from "js-cookie";
 
 interface Hall {
     id: number;
@@ -11,43 +11,41 @@ interface Hall {
     managerId: number;
 }
 
+const jwt = Cookies.get('jwt');
+
 const Hall = () => {
     const [halls, setHalls] = useState<Hall[]>([]);
     const [selectedHall, setSelectedHall] = useState<Hall | null>(null);
-    const [mid, setMid] = useState<number | null>(null);
-    const profile = useRecoilValue(profileInfo);
+    const [managerId, setManagerId] = useState<number | null>(null);
 
     const handleEditClick = (hall: Hall) => {
         setSelectedHall(hall);
     };
 
     useEffect(() => {
-        if (profile.jwt) {
-            const base64Url = profile.jwt.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-
-            const decoded = JSON.parse(jsonPayload);
-            setMid(decoded.id);
+        if (jwt) {
+            const decoded = decodeJwt(jwt);
+            setManagerId(decoded.id);
         }
-    }, [window.location.pathname, profile.jwt]);
+    }, [window.location.pathname]);
 
     useEffect(() => {
-        if (mid !== null) {
-            fetch(process.env.REACT_APP_HALL_SERVICE_URL + '')
+        if (managerId !== null) {
+            fetch(process.env.REACT_APP_HALL_SERVICE_URL + '', {
+                headers: {
+                    'Authorization': 'Bearer ' + jwt
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
-                    const filteredHalls = data.data.content.filter((hall: Hall) => hall.managerId === mid);
-                    console.log(filteredHalls);
+                    const filteredHalls = data.data.content.filter((hall: Hall) => hall.managerId === managerId);
                     setHalls(filteredHalls);
                 })
                 .catch(error => {
                     console.error('There was an error!', error);
                 });
         }
-    }, [window.location.pathname, mid]);
+    }, [window.location.pathname, managerId]);
 
     return (
         <div>
@@ -74,7 +72,7 @@ const Hall = () => {
                 ))}
                 </tbody>
             </table>
-            {selectedHall && <EditHallForm hall={selectedHall} jwt={profile.jwt} />}
+            {jwt ? (selectedHall && <EditHallForm hall={selectedHall} jwt={jwt} />) : (<div></div>)}
         </div>
     );
 }

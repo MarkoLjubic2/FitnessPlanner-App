@@ -54,6 +54,7 @@ public class UserAddUpdateTests {
 
     // Helper
     private <U, V> void assertUserResponse(Response<U> response, int expectedStatusCode, String expectedMessage, V expectedData) {
+        System.out.println(response.getMessage());
         assertThat(response.getStatusCode()).isEqualTo(expectedStatusCode);
         assertThat(response.getMessage()).isEqualTo(expectedMessage);
         assertThat(response.getData()).isEqualTo(expectedData);
@@ -106,9 +107,11 @@ public class UserAddUpdateTests {
         // Arrange
         UpdateUserDto dto = new UpdateUserDto();
         dto.setUsername("username");
+        dto.setEmail("test@mail.com");
+        dto.setId(1L);
         when(userRepository.findUserByUsername(any())).thenReturn(Optional.empty());
-        when(tokenService.isTokenValid(any())).thenReturn(true);
         when(tokenService.parseToken(any())).thenReturn(Jwts.claims().setSubject("username"));
+        when(tokenService.getUserId(any())).thenReturn(1L);
 
         // Act
         Response<Boolean> response = userService.updateUser("valid_jwt", dto);
@@ -122,14 +125,13 @@ public class UserAddUpdateTests {
         // Arrange
         UpdateUserDto dto = new UpdateUserDto();
         dto.setUsername("username");
-        when(tokenService.isTokenValid(any())).thenReturn(false);
         when(tokenService.parseToken(any())).thenReturn(Jwts.claims().setSubject("username"));
 
         // Act
         Response<Boolean> response = userService.updateUser("invalid_jwt", dto);
 
         // Assert
-        assertUserResponse(response, STATUS_UNAUTHORIZED, "Invalid or expired token", false);
+        assertUserResponse(response, STATUS_UNAUTHORIZED, "Unauthorized", false);
     }
 
     @Test
@@ -137,7 +139,6 @@ public class UserAddUpdateTests {
         // Arrange
         UpdateUserDto dto = new UpdateUserDto();
         dto.setUsername("username");
-        when(tokenService.isTokenValid(any())).thenReturn(true);
         when(tokenService.parseToken(any())).thenReturn(Jwts.claims().setSubject("different_username"));
         when(userRepository.findUserByUsername(any())).thenReturn(Optional.of(new User()));
 
@@ -153,10 +154,13 @@ public class UserAddUpdateTests {
         // Arrange
         UpdateUserDto dto = new UpdateUserDto();
         dto.setUsername("username");
+        dto.setEmail("test@mail.com");
+        dto.setId(1L);
         User user = new User();
         when(userRepository.findUserByUsername(any())).thenReturn(Optional.of(user));
-        when(tokenService.isTokenValid(any())).thenReturn(true);
         when(tokenService.parseToken(any())).thenReturn(Jwts.claims().setSubject("username"));
+        when(tokenService.getUserId(any())).thenReturn(1L);
+        when(userRepository.findById(any())).thenReturn(Optional.of(user));
 
         // Act
         Response<Boolean> response = userService.updateUser("valid_jwt", dto);

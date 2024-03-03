@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useRecoilValue } from 'recoil';
-import { profileInfo } from '../atoms/loggedAtom';
+import { decodeJwt } from '../util/decoder';
+import Cookies from 'js-cookie';
 
 interface Appointment {
     id: number;
@@ -28,48 +28,56 @@ interface Reservation {
     canceled: boolean;
 }
 
-const AppointmentTable = () => {
-    const [appointments, setAppointments] = useState<Appointment[]>([]);
-    const profile = useRecoilValue(profileInfo);
-    const [reservations, setReservations] = useState<Reservation[]>([]);
+const jwt = Cookies.get('jwt');
 
+const AppointmentTable = () => {
     const days = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
     const trainingTypes = ['INDIVIDUAL', 'GROUP', 'BOTH'];
+
+    const [appointments, setAppointments] = useState<Appointment[]>([]);
+    const [reservations, setReservations] = useState<Reservation[]>([]);
+
     const [selectedDay, setSelectedDay] = useState('');
     const [selectedTrainingType, setSelectedTrainingType] = useState('');
     const [inputType, setInputType] = useState('');
 
     const getTrainingName = async (trainingId: number) => {
-        const response = await fetch(process.env.REACT_APP_TRAINING_SERVICE_URL + '/' + trainingId);
+        if (!jwt) return;
+
+        const response = await fetch(process.env.REACT_APP_TRAINING_SERVICE_URL + '/' + trainingId, {
+            headers: {
+                'Authorization': 'Bearer ' + jwt
+            }
+        });
+
         const data = await response.json();
         return data.data.name;
     }
 
     const scheduleTraining = async (appointment: Appointment) => {
-        const base64Url = profile.jwt.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
+        if (!jwt) return;
 
-        const decoded = JSON.parse(jsonPayload);
+        const decoded = decodeJwt(jwt);
         appointment.clientId = decoded.id;
 
         const response = await fetch(process.env.REACT_APP_RESERVATION_SERVICE_URL + '/schedule', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + profile.jwt
+                'Authorization': 'Bearer ' + jwt
             },
             body: JSON.stringify(appointment)
         });
 
+        return await response.json();
     }
 
     useEffect(() => {
+        if (!jwt) return;
+
         fetch(process.env.REACT_APP_RESERVATION_SERVICE_URL + '', {
             headers: {
-                'Authorization': profile.jwt
+                'Authorization': 'Bearer ' + jwt
             }
         })
             .then(response => response.json())
@@ -78,13 +86,10 @@ const AppointmentTable = () => {
     }, []);
 
     const isReserved = (appointment: Appointment) => {
-        const base64Url = profile.jwt.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
+        if (!jwt) return;
 
-        const decoded = JSON.parse(jsonPayload);
+        const decoded = decodeJwt(jwt);
+
         return reservations.some(reservation =>
             reservation.startTime === Number(appointment.startTime) &&
             reservation.endTime === Number(appointment.endTime) &&
@@ -96,7 +101,13 @@ const AppointmentTable = () => {
     };
 
     useEffect(() => {
-        fetch(process.env.REACT_APP_APPOINTMENT_SERVICE_URL + '')
+        if (!jwt) return;
+
+        fetch(process.env.REACT_APP_APPOINTMENT_SERVICE_URL + '', {
+            headers: {
+                'Authorization': 'Bearer ' + jwt
+            }
+        })
             .then(response => response.json())
             .then(data => {
                 const appointmentsWithTrainingName = data.data.content.map(async (appointment: Appointment) => {
@@ -113,23 +124,15 @@ const AppointmentTable = () => {
     const handleFilter = async () => {
         const filterJSON: any = {};
 
-        if (selectedDay) {
-            filterJSON.day = selectedDay;
-        }
-
-        if (selectedTrainingType && !(selectedTrainingType === 'BOTH')) {
-            filterJSON.individual = selectedTrainingType === 'INDIVIDUAL';
-        }
-
-        if (inputType) {
-            filterJSON.type = inputType;
-        }
+        if (selectedDay) filterJSON.day = selectedDay;
+        if (inputType) filterJSON.type = inputType;
+        if (selectedTrainingType && !(selectedTrainingType === 'BOTH')) filterJSON.individual = selectedTrainingType === 'INDIVIDUAL';
 
         const response = await fetch(`${process.env.REACT_APP_APPOINTMENT_SERVICE_URL}/filter`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': profile.jwt
+                'Authorization': 'Bearer ' + jwt
             },
             body: JSON.stringify(filterJSON)
         });

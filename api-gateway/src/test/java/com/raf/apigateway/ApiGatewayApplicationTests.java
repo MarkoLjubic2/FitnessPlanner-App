@@ -1,10 +1,10 @@
-package com.raf.apigetaway;
+package com.raf.apigateway;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ApiGetawayApplicationTests {
+class ApiGatewayApplicationTests {
 
     @Test
     void contextLoads() {
